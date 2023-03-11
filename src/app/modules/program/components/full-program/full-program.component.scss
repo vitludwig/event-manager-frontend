@@ -1,0 +1,68 @@
+@import '../../../../styles/variables';
+
+.list-horizontal {
+	width: 100%;
+	height: 100%;
+
+	.list-timeline {
+		display: flex;
+
+		&__segment {
+			//min-width: 50px;
+			position: relative;
+
+			&__border {
+				position: absolute;
+				width: 1px;
+				height: 100vh;
+				background-color: rgb(var(--cy__color--border), 0.3);
+			}
+
+			&__time {
+				padding: 0 10px;
+			}
+		}
+	}
+
+	.list-events {
+		display: flex;
+		flex-direction: column;
+
+		&__place {
+			.place {
+				&__title {
+					padding: 10px;
+
+					&__text {
+						position: sticky;
+						left: 15px;
+						border: 1px solid transparent;
+						border-radius: 13px;
+						padding: 5px 10px;
+					}
+				}
+
+				&__segment-list {
+					display: flex;
+					flex-direction: row;
+
+					.place__segment {
+						position: relative;
+						//width: 50px;
+						height: 50px;
+
+						&__event {
+							position: absolute;
+							left: 0;
+							background-color: var(--mdc-theme-surface);
+							z-index: 1;
+							padding: 0 10px;
+							border: 1px solid transparent;
+							border-radius: 5px;
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,41 @@
+<div class="list-horizontal" [style.width]="allSegments.length * segmentWidth + 'px'">
+	<div class="list-timeline">
+		<div class="list-timeline__segment"
+			[style.min-width]="segmentWidth + 'px'"
+			*ngFor="let segment of allSegments"
+		>
+			<div class="list-timeline__segment__border" *ngIf="segment.time"></div>
+			<span class="list-timeline__segment__time">{{ segment.time }}</span>
+		</div>
+	</div>
+
+	<div class="list-events">
+		<div class="list-events__place"
+			*ngFor="let place of places"
+		>
+			<div class="place__title">
+				<span class="place__title__text" [style.background-color]="place.color">{{place.name}}</span>
+			</div>
+			<div class="place__segment-list">
+				<div class="place__segment"
+					[style.min-width]="segmentWidth + 'px'"
+					*ngFor="let segment of allSegments"
+				>
+
+					<div class="place__segment__event"
+						[style.right]="-(segmentWidth * (place.events[segment.index].segmentCount - 1)) + 'px'"
+						*ngIf="place.events[segment.index]"
+					>
+						{{ place.events[segment.index].name }}
+						<div>
+							<small>
+								{{ place.events[segment.index].start | date: 'HH:mm' }}
+								- {{ place.events[segment.index].end | date: 'HH:mm' }}
+							</small>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
