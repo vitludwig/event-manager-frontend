@@ -1,0 +1,22 @@
+// Some overrides goes here
+@import "overides/mat-dialog";
+@import "overides/mat-drawer";
+@import "overides/mat-option";
+@import "overides/mat-table";
+@import "overides/mat-toolbar";
+@import "overides/mat-button";
+@import "overides/mat-snackbar";
+@import "overides/mat-chip";
+@import "overides/mat-tabs";
+
+:root {
+	--mdc-theme-surface: #424242
+}
+
+.main-content, .login-container {
+	height: calc(100vh - var(--cy__toolbar--height));
+}
+
+.mdc-menu-surface {
+	background-color: var(--mdc-theme-surface, #1e1e1e)
+}

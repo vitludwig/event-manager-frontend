@@ -1,0 +1,16 @@
+.mat-drawer {
+  margin-top: -2px;
+  margin-left: -2px;
+  margin-bottom: -2px;
+
+  &-container {
+    height: 100vh;
+    app-bottom-menu ~ &, & & {
+      height: calc(100vh - var(--cy__toolbar--height));
+    }
+  }
+
+  &-backdrop.mat-drawer-shown {
+    background-color: rgba(#000000, 0.8);
+  }
+}

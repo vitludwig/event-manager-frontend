@@ -1,0 +1,20 @@
+:host {
+	box-sizing: border-box;
+	display: block;
+	height: 100%;
+}
+
+.program {
+	height: 100%;
+
+	&__bottom-nav {
+		height: 100%;
+	}
+}
+
+.mat-mdc-tab-body-content {
+	margin: 8px;
+}
+
+
+
