@@ -1,41 +1,66 @@
-<div class="list-horizontal" [style.width]="allSegments.length * segmentWidth + 'px'">
-	<div class="list-timeline">
-		<div class="list-timeline__segment"
-			[style.min-width]="segmentWidth + 'px'"
-			*ngFor="let segment of allSegments"
+<div class="full-program">
+	<mat-button-toggle-group class="full-program__day-toggle w-100">
+		<mat-button-toggle *ngFor="let day of days"
+			[value]="day.id"
+			(click)="setDay(day.id)"
+			[class.active]="day.id === selectedDay"
+			class="full-program__day-toggle__item flex-grow-1"
 		>
-			<div class="list-timeline__segment__border" *ngIf="segment.time"></div>
-			<span class="list-timeline__segment__time">{{ segment.time }}</span>
-		</div>
-	</div>
+			{{day.name}}
+		</mat-button-toggle>
+	</mat-button-toggle-group>
 
-	<div class="list-events">
-		<div class="list-events__place"
-			*ngFor="let place of places"
-		>
-			<div class="place__title">
-				<span class="place__title__text" [style.background-color]="place.color">{{place.name}}</span>
-			</div>
-			<div class="place__segment-list">
-				<div class="place__segment"
+	<div class="full-program__list">
+		<div class="list-horizontal"
+			*ngIf="allSegments.length > 0; else noEvents"
+			[style.width]="allSegments.length * segmentWidth + 'px'">
+			<div class="list-timeline">
+				<div class="list-timeline__segment"
 					[style.min-width]="segmentWidth + 'px'"
-					*ngFor="let segment of allSegments"
+					*ngFor="let segment of allSegments; let isFirst = first"
 				>
+					<div class="list-timeline__segment__border"
+						*ngIf="segment.time && !isFirst"></div>
+					<span class="list-timeline__segment__time">{{ segment.time }}</span>
+				</div>
+			</div>
 
-					<div class="place__segment__event"
-						[style.right]="-(segmentWidth * (place.events[segment.index].segmentCount - 1)) + 'px'"
-						*ngIf="place.events[segment.index]"
-					>
-						{{ place.events[segment.index].name }}
-						<div>
-							<small>
-								{{ place.events[segment.index].start | date: 'HH:mm' }}
-								- {{ place.events[segment.index].end | date: 'HH:mm' }}
-							</small>
+			<div class="list-events">
+				<div class="list-events__place"
+					*ngFor="let place of places"
+				>
+					<div class="place__title">
+				<span class="place__title__text"
+					[style.background-color]="place.color">{{place.name}}</span>
+					</div>
+					<div class="place__segment-list">
+						<div class="place__segment"
+							[style.min-width]="segmentWidth + 'px'"
+							*ngFor="let segment of allSegments"
+						>
+
+							<div class="place__segment__event"
+								[style.right]="-(segmentWidth * (place.events[segment.index].segmentCount - 1)) + 'px'"
+								*ngIf="place.events[segment.index]"
+							>
+								{{ place.events[segment.index].name }}
+								<div>
+									<small>
+										{{ place.events[segment.index].start | date: 'HH:mm' }}
+										- {{ place.events[segment.index].end | date: 'HH:mm' }}
+									</small>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<ng-template #noEvents>
+		<div class="full-program__no-events">
+			<h2>No events for this day</h2>
+		</div>
+	</ng-template>
 </div>

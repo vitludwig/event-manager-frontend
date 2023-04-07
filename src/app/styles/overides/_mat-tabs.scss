@@ -7,4 +7,20 @@
 			height: 100%;
 		}
 	}
+
+	.mat-mdc-tab {
+		background-color: rgb(var(--cy__color--background));
+
+		.mdc-tab__text-label {
+			color: #eee;
+		}
+
+		&.mdc-tab--active {
+			background-color: rgb(var(--cy__color--primary-500));
+
+			.mdc-tab__text-label {
+				color: #eee;
+			}
+		}
+	}
 }

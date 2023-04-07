@@ -1,14 +1,46 @@
 @import '../../../../styles/variables';
 
+.full-program {
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+
+	&__list {
+		width: 100%;
+		overflow: auto;
+		flex-grow: 1;
+	}
+
+	&__day-toggle {
+		border: 0;
+		border-bottom: 1px solid rgba(var(--cy__color--border), 0.25);
+
+		&__item {
+			&.active {
+				background-color: rgb(var(--cy__color--primary-500));
+			}
+		}
+	}
+
+	&__no-events {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+	}
+}
+
 .list-horizontal {
 	width: 100%;
 	height: 100%;
+	padding: 0 15px;
 
 	.list-timeline {
 		display: flex;
 
 		&__segment {
-			//min-width: 50px;
 			position: relative;
 
 			&__border {
