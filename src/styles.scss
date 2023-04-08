@@ -1,3 +1,4 @@
+
 @use "app/styles/functions/hex2rgb" as rgb;
 @use '@angular/material' as mat;
 
@@ -9,6 +10,8 @@
 
 // import our custom theme
 @import 'app/styles/cyber.theme.scss';
+@import 'app/styles/variables';
+
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 // specify theme class eg: <body class="my-theme"> ... </body>
@@ -18,7 +21,7 @@
 @include angular-material-theme($theme);
 //@include angular-material-theme($theme);
 
-@import "app/styles/variables";
+
 @import "app/styles/overides";
 @import "app/styles/utilities";
 

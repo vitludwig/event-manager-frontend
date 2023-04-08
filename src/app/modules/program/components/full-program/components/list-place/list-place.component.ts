@@ -20,11 +20,11 @@ export class ListPlaceComponent {
 	public segments: IProgramSegment[];
 
 	@Output()
-	public select: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
+	public placeSelect: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
 
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	protected showEventDetail(event: IProgramEvent): void {
-		this.select.emit(event);
+		this.placeSelect.emit(event);
 	}
 }

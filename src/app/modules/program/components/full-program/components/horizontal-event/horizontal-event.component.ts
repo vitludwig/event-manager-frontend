@@ -2,7 +2,6 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {IProgramEvent} from '../../../../types/IProgramPlace';
-import {IEvent} from '../../../../types/IEvent';
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {TruncatePipe} from '../../../../../../common/pipes/truncate/truncate.pipe';
 import {MatIconModule} from '@angular/material/icon';
@@ -19,12 +18,12 @@ export class HorizontalEventComponent {
 	public event: IProgramEvent;
 
 	@Output()
-	public select: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
+	public eventSelect: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
 
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	protected showDetail(event: IProgramEvent): void {
-		this.select.emit(event);
+		this.eventSelect.emit(event);
 		console.log('showEventDetail', event);
 	}
 }

@@ -11,7 +11,7 @@
 			*ngFor="let segment of segments"
 		>
 			<app-horizontal-event [event]="place.events[segment.index]"
-				(select)="showEventDetail($event)"></app-horizontal-event>
+				(eventSelect)="showEventDetail($event)"></app-horizontal-event>
 		</div>
 	</div>
 </div>
