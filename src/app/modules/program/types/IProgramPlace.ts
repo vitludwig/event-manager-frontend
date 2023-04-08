@@ -1,6 +1,7 @@
 import {IEvent} from './IEvent';
 
 export interface IProgramPlace {
+	id: string;
 	name: string;
 	color: string;
 	events: Record<number, IProgramEvent>

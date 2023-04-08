@@ -1,9 +1,13 @@
 .body-wrapper {
-  height: 100vh;
-  displaY: flex;
-  flex-direction: column;
+	height: 100vh;
+	displaY: flex;
+	flex-direction: column;
+
+	.main-content {
+		height: 100%;
+	}
 }
 
 .mat-drawer-container {
-  flex-grow: 1;
+	flex-grow: 1;
 }

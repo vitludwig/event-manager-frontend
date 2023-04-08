@@ -1,1 +1,3 @@
-<p>personal-program works!</p>
+<div *ngFor="let day of programService.days | keyvalue">
+	{{ day.value | date: 'EEEE' }}
+</div>

@@ -1,0 +1,17 @@
+<div class="place">
+	<div class="place__title">
+		<span class="place__title__text"
+			[style.background-color]="place.color"
+		>{{place.name}}</span>
+	</div>
+
+	<div class="place__segment-list">
+		<div class="place__segment"
+			[style.min-width]="FullProgramConfig.segmentWidth + 'px'"
+			*ngFor="let segment of segments"
+		>
+			<app-horizontal-event [event]="place.events[segment.index]"
+				(select)="showEventDetail($event)"></app-horizontal-event>
+		</div>
+	</div>
+</div>

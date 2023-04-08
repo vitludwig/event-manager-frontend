@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {ProgramService} from '../../services/program/program.service';
 
 @Component({
 	selector: 'app-personal-program',
@@ -10,4 +11,6 @@ import { CommonModule } from '@angular/common';
 })
 export class PersonalProgramComponent {
 
+	constructor(protected programService: ProgramService) {
+	}
 }

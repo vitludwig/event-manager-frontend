@@ -1,0 +1,31 @@
+<div mat-dialog-content
+	class="event-detail"
+>
+	<button mat-icon-button
+		mat-dialog-close
+		class="event-detail__close"
+		aria-label="Close event detail"
+	>
+		<mat-icon>keyboard_backspace</mat-icon>
+	</button>
+
+	<div class="event-detail__image">
+		<div class="image-overlay"></div>
+		<img [src]="data.event.image ?? 'assets/images/cybertown_logo_square.jpg'"
+			alt="Event image">
+	</div>
+
+	<div class="event-detail__content">
+		<div class="event-detail__content__title">
+			<h2>{{data.event.name}}</h2>
+			<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
+			<div>{{ data.event.placeId }}</div>
+		</div>
+		<mat-divider></mat-divider>
+		<div class="event-detail__content__description">
+			<p>{{data.event.description}}</p>
+		</div>
+	</div>
+</div>
+
+

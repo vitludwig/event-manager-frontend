@@ -1,0 +1,11 @@
+<div class="list-timeline">
+	<div class="list-timeline__segment"
+		[style.min-width]="FullProgramConfig.segmentWidth + 'px'"
+		*ngFor="let segment of segments; let isFirst = first"
+	>
+		<div class="list-timeline__segment__border"
+			*ngIf="segment.time && !isFirst">
+		</div>
+		<span class="list-timeline__segment__time">{{ segment.time }}</span>
+	</div>
+</div>

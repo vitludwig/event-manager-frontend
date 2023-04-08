@@ -6,48 +6,43 @@ import {CommonModule} from '@angular/common';
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
 import * as dayjs from 'dayjs';
-import {TransformWidthPipe} from './pipes/transform-width.pipe';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
 import {PersonalProgramComponent} from '../personal-program/personal-program.component';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {Dayjs} from 'dayjs';
+import {IProgramSegment} from './types/IProgramSegment';
+import {FullProgramConfig} from './FullProgramConfig';
+import {HorizontalEventComponent} from './components/horizontal-event/horizontal-event.component';
+import {EventDetailPreviewComponent} from './components/event-detail-preview/event-detail-preview.component';
+import {ListTimelineComponent} from './components/list-timeline/list-timeline.component';
+import {ListPlaceComponent} from './components/list-place/list-place.component';
+import {ListDaySelectComponent} from './components/list-day-select/list-day-select.component';
 
 @Component({
 	selector: 'app-full-program',
 	standalone: true,
-	imports: [CommonModule, TransformWidthPipe, MatTabsModule, PersonalProgramComponent, MatButtonToggleModule],
+	imports: [
+		CommonModule,
+		MatTabsModule,
+		PersonalProgramComponent,
+		HorizontalEventComponent,
+		EventDetailPreviewComponent,
+		ListTimelineComponent,
+		ListPlaceComponent,
+		ListDaySelectComponent,
+	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
 })
 export class FullProgramComponent implements OnInit {
-	protected segmentWidth: number = 80; // in px
-	protected places: IProgramPlace[] = [
-		{
-			name: 'namesti',
-			color: '#d2348a',
-			events: {},
-		},
-		{
-			name: 'bunkr1',
-			color: '#d2348a',
-			events: {},
-		},
-		{
-			name: 'bunkr2',
-			color: '#d2348a',
-			events: {},
-		}
-
-	];
-
-	/**
-	 * There are 96 15-minutes segments in a day
-	 * Create array of number with value 1-96
-	 */
-	protected allSegments: { time: string | null, index: number }[] = [];
-	protected days: {id: number; name: string}[] = [];
+	// n-minute segments for day
+	protected allSegments: IProgramSegment[] = [];
+	protected days: { id: number; name: string }[] = [];
+	protected places: Record<string, IProgramPlace> = {};
 	protected selectedDay: number = 1;
+	protected selectedEvent: IProgramEvent | null = null;
+
+	protected readonly FullProgramConfig = FullProgramConfig;
 
 	#firstEventAt: Dayjs;
 
@@ -58,50 +53,9 @@ export class FullProgramComponent implements OnInit {
 	}
 
 	public ngOnInit(): void {
+		this.loadPlaces();
 		this.loadDays();
 		this.setDay(1);
-	}
-
-	/**
-	 * Loads all segments for day based from day's events start and end times
-	 *
-	 * @param events
-	 * @protected
-	 */
-	protected loadDayTimeSegments(events: IEvent[]): void {
-		if(events.length === 0) {
-			this.allSegments = [];
-			return;
-		}
-		// TODO: find a way how to optimize this - store days and compute this only if they differ
-		const allStarts = events.map((event) => event.start);
-		const allEnds = events.map((event) => event.end);
-		const firstEventAt = allStarts.reduce((prev, curr) => prev < curr ? prev : curr);
-		this.#firstEventAt = dayjs(firstEventAt);
-		const lastEventAt = allEnds.reduce((prev, curr) => prev > curr ? prev : curr);
-		const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(this.#firstEventAt.diff(dayjs(lastEventAt))));
-		console.log('segmentCount', segmentCount);
-
-		const time = dayjs(firstEventAt);
-		this.allSegments = Array(segmentCount).fill(1).map((value, index) => {
-			return {
-				time: (index * 15) % 4 === 0 ? time.add(index * 15, 'minutes').format('HH:mm') : null,
-				index: index
-			};
-		});
-	}
-
-	/**
-	 * Loads days from program service and transforms them into array of objects with day name and id
-	 * @protected
-	 */
-	protected loadDays(): void {
-		this.days = Object.entries(this.programService.days).map(([id, date]) => {
-			return {
-				id: Number(id),
-				name: dayjs(date).format('dddd')
-			};
-		});
 	}
 
 	/**
@@ -112,11 +66,56 @@ export class FullProgramComponent implements OnInit {
 	protected setDay(day: number): void {
 		this.selectedDay = day;
 		this.programService.getEvents(day).subscribe((events) => {
+			console.log('events', events);
 			this.loadDayTimeSegments(events);
 			this.loadEvents(events);
 		});
 	}
 
+	protected showEventDetail(event: IProgramEvent): void {
+		this.selectedEvent = event;
+	}
+
+	protected setEventFavorite(eventId: string, favorite: boolean): void {
+		this.programService.setEventFavorite(eventId, favorite);
+	}
+
+	/**
+	 * Loads all segments for day based on start and end times of day's events
+	 *
+	 * @param events
+	 * @protected
+	 */
+	private loadDayTimeSegments(events: IEvent[]): void {
+		this.allSegments = [];
+		if(events.length === 0) {
+			return;
+		}
+		// TODO: find a way how to optimize this - store days and compute this only if they differ
+		const allStarts = events.map((event) => event.start);
+		const allEnds = events.map((event) => event.end);
+		const firstEventAt = allStarts.reduce((prev, curr) => prev < curr ? prev : curr);
+		const lastEventAt = allEnds.reduce((prev, curr) => prev > curr ? prev : curr);
+		// round it to whole hour, so we don't display thresholds like 9:15
+		this.#firstEventAt = dayjs(firstEventAt).set('minutes', 0);
+
+		const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(this.#firstEventAt.diff(dayjs(lastEventAt))));
+		const startingTime = this.#firstEventAt;
+
+		this.allSegments = Array(segmentCount).fill(1).map((value, index) => {
+			let time = null;
+
+			// Increment time by 15 minutes on every segment and display it only on full hours
+			const incIndex = index * FullProgramConfig.segmentDuration;
+			if(incIndex % (60 / FullProgramConfig.segmentDuration) === 0) {
+				time = startingTime.add(incIndex, 'minutes').format('HH:mm');
+			}
+			return {
+				time: time,
+				index: index
+			};
+		});
+	}
 
 	/**
 	 * Loads events into places
@@ -129,7 +128,11 @@ export class FullProgramComponent implements OnInit {
 		let eventEnd;
 		let startSegment;
 		let segmentCount;
-		const events: IProgramEvent[] = [];
+
+		// reset places events
+		for(const place of Object.values(this.places)) {
+			place.events = {};
+		}
 
 		for(const event of allEvents) {
 			eventStart = dayjs(event.start);
@@ -138,20 +141,41 @@ export class FullProgramComponent implements OnInit {
 			// convert to seconds -> minutes -> 15 minutes segments
 			startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
 			segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
-
-			events[startSegment] = {
+			this.places[event.placeId].events[startSegment] = {
 				...event,
 				startSegment,
 				segmentCount
 			};
 		}
-
-		for(const place of this.places) {
-			place.events = events;
-		}
 	}
 
+	private loadPlaces(): void {
+		this.programService.getPlaces().subscribe((places) => {
+			for(const place of places) {
+				this.places[place.id] = place;
+			}
+		});
+	}
+
+	/**
+	 * Loads days from program service and transforms them into array of objects with day name and id
+	 * @protected
+	 */
+	private loadDays(): void {
+		this.days = Object.entries(this.programService.days).map(([id, date]) => {
+			return {
+				id: Number(id),
+				name: dayjs(date).format('dddd')
+			};
+		});
+	}
+
+	/**
+	 * Converts milliseconds to n-minutes segments
+	 * @param milliseconds
+	 * @private
+	 */
 	private getSegmentsFromMilliseconds(milliseconds: number): number {
-		return Math.ceil(milliseconds / 1000 / 60 / 15);
+		return Math.ceil(milliseconds / 1000 / 60 / FullProgramConfig.segmentDuration);
 	}
 }

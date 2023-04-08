@@ -2,7 +2,9 @@ export interface IEvent {
 	id: string;
 	name: string;
 	description: string;
+	image?: string;
 	start: number;
 	end: number;
-	place?: string;
+	placeId: string;
+	favorite: boolean;
 }

@@ -2,6 +2,18 @@
 	width: 100%;
 }
 
+.d-flex {
+	display: flex;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.justify-content-between {
+	justify-content: space-between;
+}
+
 .flex-grow-1 {
 	flex-grow: 1;
 }

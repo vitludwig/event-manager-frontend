@@ -13,7 +13,7 @@ import {BottomMenuComponent} from './modules/layout/components/bottom-menu/botto
 
 @NgModule({
 	declarations: [
-		AppComponent
+		AppComponent,
 	],
 	imports: [
 		BrowserModule,

@@ -1,0 +1,23 @@
+.place {
+	&__title {
+		padding: 10px 0;
+
+		&__text {
+			position: sticky;
+			left: 15px;
+			border: 1px solid transparent;
+			border-radius: 13px;
+			padding: 5px 10px;
+		}
+	}
+
+	&__segment-list {
+		display: flex;
+		flex-direction: row;
+
+		.place__segment {
+			position: relative;
+			height: 50px;
+		}
+	}
+}
