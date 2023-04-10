@@ -7,13 +7,13 @@ import {TruncatePipe} from '../../../../../../common/pipes/truncate/truncate.pip
 import {MatIconModule} from '@angular/material/icon';
 
 @Component({
-	selector: 'app-horizontal-event',
+	selector: 'app-list-event',
 	standalone: true,
 	imports: [CommonModule, MatButtonModule, TruncatePipe, MatIconModule],
-	templateUrl: './horizontal-event.component.html',
-	styleUrls: ['./horizontal-event.component.scss']
+	templateUrl: './list-event.component.html',
+	styleUrls: ['./list-event.component.scss']
 })
-export class HorizontalEventComponent {
+export class ListEventComponent {
 	@Input()
 	public event: IProgramEvent;
 

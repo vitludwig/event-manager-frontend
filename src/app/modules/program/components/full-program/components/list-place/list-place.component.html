@@ -10,8 +10,8 @@
 			[style.min-width]="FullProgramConfig.segmentWidth + 'px'"
 			*ngFor="let segment of segments"
 		>
-			<app-horizontal-event [event]="place.events[segment.index]"
-				(eventSelect)="showEventDetail($event)"></app-horizontal-event>
+			<app-list-event [event]="place.events[segment.index]"
+				(eventSelect)="showEventDetail($event)"></app-list-event>
 		</div>
 	</div>
 </div>

@@ -25,11 +25,6 @@
 		</div>
 	</div>
 
-	<app-event-detail-preview *ngIf="selectedEvent"
-		[event]="selectedEvent"
-		(favoriteChange)="setEventFavorite(selectedEvent.id, $event)">
-	</app-event-detail-preview>
-
 	<ng-template #noEvents>
 		<div class="full-program__no-events">
 			<h2>No events for this day</h2>

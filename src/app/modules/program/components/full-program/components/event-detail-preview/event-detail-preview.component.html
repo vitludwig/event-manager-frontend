@@ -1,13 +1,13 @@
 <div class="event-detail">
 	<div class="event-detail__content" (click)="openFullDetail()">
 		<div class="event-detail__content__image">
-			<img [src]="event.image ?? 'assets/images/cybertown_logo_square.jpg'"
+			<img [src]="data.event.image ?? 'assets/images/cybertown_logo_square.jpg'"
 				alt="Event image">
 		</div>
 
 		<div class="event-detail__content__info">
-			<h3>{{ event.name }}</h3>
-			<div>{{ event.start | date: 'HH:mm' }}- {{ event.end | date: 'HH:mm' }}</div>
+			<h3>{{ data.event.name }}</h3>
+			<div>{{ data.event.start | date: 'HH:mm' }}- {{ data.event.end | date: 'HH:mm' }}</div>
 		</div>
 	</div>
 
@@ -15,7 +15,7 @@
 		<button mat-icon-button
 			(click)="toggleFavorite()">
 			<mat-icon>
-				{{ event.favorite ? 'favorite' : 'favorite_border' }}
+				{{ data.event.favorite ? 'favorite' : 'favorite_border' }}
 			</mat-icon>
 		</button>
 	</div>

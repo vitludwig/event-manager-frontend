@@ -12,11 +12,12 @@ import {PersonalProgramComponent} from '../personal-program/personal-program.com
 import {Dayjs} from 'dayjs';
 import {IProgramSegment} from './types/IProgramSegment';
 import {FullProgramConfig} from './FullProgramConfig';
-import {HorizontalEventComponent} from './components/horizontal-event/horizontal-event.component';
+import {ListEventComponent} from './components/list-event/list-event.component';
 import {EventDetailPreviewComponent} from './components/event-detail-preview/event-detail-preview.component';
 import {ListTimelineComponent} from './components/list-timeline/list-timeline.component';
 import {ListPlaceComponent} from './components/list-place/list-place.component';
 import {ListDaySelectComponent} from './components/list-day-select/list-day-select.component';
+import {MatBottomSheet, MatBottomSheetModule} from '@angular/material/bottom-sheet';
 
 @Component({
 	selector: 'app-full-program',
@@ -25,11 +26,12 @@ import {ListDaySelectComponent} from './components/list-day-select/list-day-sele
 		CommonModule,
 		MatTabsModule,
 		PersonalProgramComponent,
-		HorizontalEventComponent,
+		ListEventComponent,
 		EventDetailPreviewComponent,
 		ListTimelineComponent,
 		ListPlaceComponent,
 		ListDaySelectComponent,
+		MatBottomSheetModule,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
@@ -48,6 +50,7 @@ export class FullProgramComponent implements OnInit {
 
 	constructor(
 		private programService: ProgramService,
+		private bottomSheet: MatBottomSheet,
 	) {
 
 	}
@@ -73,11 +76,11 @@ export class FullProgramComponent implements OnInit {
 	}
 
 	protected showEventDetail(event: IProgramEvent): void {
+		this.bottomSheet.open(EventDetailPreviewComponent, {
+			data: {event: event},
+			panelClass: 'mat-bottom-sheet-fullwidth',
+		});
 		this.selectedEvent = event;
-	}
-
-	protected setEventFavorite(eventId: string, favorite: boolean): void {
-		this.programService.setEventFavorite(eventId, favorite);
 	}
 
 	/**

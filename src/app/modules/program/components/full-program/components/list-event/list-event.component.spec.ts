@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HorizontalEventComponent } from './horizontal-event.component';
+import { ListEventComponent } from './list-event.component';
 
 describe('HorizontalEventComponent', () => {
-  let component: HorizontalEventComponent;
-  let fixture: ComponentFixture<HorizontalEventComponent>;
+  let component: ListEventComponent;
+  let fixture: ComponentFixture<ListEventComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ HorizontalEventComponent ]
+      imports: [ ListEventComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HorizontalEventComponent);
+    fixture = TestBed.createComponent(ListEventComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
