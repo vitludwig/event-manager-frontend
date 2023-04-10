@@ -17,3 +17,7 @@
 .mdc-menu-surface {
 	background-color: var(--mdc-theme-surface, #1e1e1e)
 }
+
+.cdk-overlay-dark-backdrop {
+	background: rgba(0, 0, 0, 0.8);
+}

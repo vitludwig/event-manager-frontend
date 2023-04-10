@@ -18,6 +18,13 @@ import {ListTimelineComponent} from './components/list-timeline/list-timeline.co
 import {ListPlaceComponent} from './components/list-place/list-place.component';
 import {ListDaySelectComponent} from './components/list-day-select/list-day-select.component';
 import {MatBottomSheet, MatBottomSheetModule} from '@angular/material/bottom-sheet';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {ListFilterComponent} from './components/list-filter/list-filter.component';
+import {IProgramFilterOptions} from './types/IProgramFilterOptions';
+import {EEventType} from '../../types/EEventType';
 
 @Component({
 	selector: 'app-full-program',
@@ -32,6 +39,10 @@ import {MatBottomSheet, MatBottomSheetModule} from '@angular/material/bottom-she
 		ListPlaceComponent,
 		ListDaySelectComponent,
 		MatBottomSheetModule,
+		MatToolbarModule,
+		MatButtonModule,
+		MatIconModule,
+		MatDialogModule,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
@@ -40,17 +51,34 @@ export class FullProgramComponent implements OnInit {
 	// n-minute segments for day
 	protected allSegments: IProgramSegment[] = [];
 	protected days: { id: number; name: string }[] = [];
-	protected places: Record<string, IProgramPlace> = {};
-	protected selectedDay: number = 1;
+	protected places: IProgramPlace[] = [];
+	/**
+	 * Events grouped by place and start date
+	 * Example: {<placeId>>: {<startTime>: event1}
+	 * @protected
+	 */
+	protected eventsByPlaces: Record<string, Record<number, IProgramEvent>> = {};
 	protected selectedEvent: IProgramEvent | null = null;
+
+	protected get selectedDay(): number {
+		return this.#selectedDay;
+	}
+
+	protected set selectedDay(value: number) {
+		this.#selectedDay = value;
+		this.applyFilters({eventType: null, placeId: null});
+	}
 
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	#firstEventAt: Dayjs;
+	#selectedDay: number = 1;
+	#userFilterOptions: IProgramFilterOptions = {eventType: null, placeId: null};
 
 	constructor(
 		private programService: ProgramService,
 		private bottomSheet: MatBottomSheet,
+		private dialog: MatDialog,
 	) {
 
 	}
@@ -58,7 +86,7 @@ export class FullProgramComponent implements OnInit {
 	public ngOnInit(): void {
 		this.loadPlaces();
 		this.loadDays();
-		this.setDay(1);
+		this.loadEvents();
 	}
 
 	/**
@@ -66,12 +94,11 @@ export class FullProgramComponent implements OnInit {
 	 * @param day
 	 * @protected
 	 */
-	protected setDay(day: number): void {
-		this.selectedDay = day;
+	protected loadEvents(day: number = this.selectedDay): void {
 		this.programService.getEvents(day).subscribe((events) => {
 			console.log('events', events);
 			this.loadDayTimeSegments(events);
-			this.loadEvents(events);
+			this.loadEventsByPlaces(events);
 		});
 	}
 
@@ -81,6 +108,32 @@ export class FullProgramComponent implements OnInit {
 			panelClass: 'mat-bottom-sheet-fullwidth',
 		});
 		this.selectedEvent = event;
+	}
+
+	protected showFilters(): void {
+		const dialog = this.dialog.open(ListFilterComponent, {
+			data: {options: this.#userFilterOptions},
+		});
+
+		dialog.afterClosed().subscribe((result) => {
+			console.log('result:', result);
+			if(result) {
+				this.#userFilterOptions = result;
+				this.applyFilters(result);
+			}
+		});
+	}
+
+	private applyFilters(options?: IProgramFilterOptions): void {
+		if(!options) {
+			return;
+		}
+
+		console.log('filter');
+		this.places = [];
+		this.eventsByPlaces = {};
+		this.programService.filterPlaces(options.placeId);
+		this.programService.filterEvents(this.selectedDay, options.eventType);
 	}
 
 	/**
@@ -94,6 +147,12 @@ export class FullProgramComponent implements OnInit {
 		if(events.length === 0) {
 			return;
 		}
+
+		// Filter events by place if place filter is set, so we don't display empty start/end segments
+		if(Array.isArray(this.#userFilterOptions.placeId) && this.#userFilterOptions.placeId.length > 0) {
+			events = events.filter((event) => this.#userFilterOptions.placeId?.includes(event.placeId));
+		}
+
 		// TODO: find a way how to optimize this - store days and compute this only if they differ
 		const allStarts = events.map((event) => event.start);
 		const allEnds = events.map((event) => event.end);
@@ -121,21 +180,16 @@ export class FullProgramComponent implements OnInit {
 	}
 
 	/**
-	 * Loads events into places
+	 * Load events to hashmap by place and start time
 	 * @param allEvents
 	 * @private
 	 */
-	private loadEvents(allEvents: IEvent[]): void {
+	private loadEventsByPlaces(allEvents: IEvent[]): void {
 		let dayStart;
 		let eventStart;
 		let eventEnd;
 		let startSegment;
 		let segmentCount;
-
-		// reset places events
-		for(const place of Object.values(this.places)) {
-			place.events = {};
-		}
 
 		for(const event of allEvents) {
 			eventStart = dayjs(event.start);
@@ -144,7 +198,12 @@ export class FullProgramComponent implements OnInit {
 			// convert to seconds -> minutes -> 15 minutes segments
 			startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
 			segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
-			this.places[event.placeId].events[startSegment] = {
+
+			if(!this.eventsByPlaces[event.placeId]) {
+				this.eventsByPlaces[event.placeId] = {};
+			}
+
+			this.eventsByPlaces[event.placeId][startSegment] = {
 				...event,
 				startSegment,
 				segmentCount
@@ -154,9 +213,8 @@ export class FullProgramComponent implements OnInit {
 
 	private loadPlaces(): void {
 		this.programService.getPlaces().subscribe((places) => {
-			for(const place of places) {
-				this.places[place.id] = place;
-			}
+			console.log('new places', places);
+			this.places = places;
 		});
 	}
 

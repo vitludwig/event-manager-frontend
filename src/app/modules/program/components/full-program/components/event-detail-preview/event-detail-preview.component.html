@@ -6,17 +6,15 @@
 		</div>
 
 		<div class="event-detail__content__info">
-			<h3>{{ data.event.name }}</h3>
-			<div>{{ data.event.start | date: 'HH:mm' }}- {{ data.event.end | date: 'HH:mm' }}</div>
+			<h4>{{ data.event.name }}</h4>
+			<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
 		</div>
 	</div>
 
 	<div class="event-detail__controls">
 		<button mat-icon-button
 			(click)="toggleFavorite()">
-			<mat-icon>
-				{{ data.event.favorite ? 'favorite' : 'favorite_border' }}
-			</mat-icon>
+			<mat-icon>{{ data.event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
 		</button>
 	</div>
 </div>

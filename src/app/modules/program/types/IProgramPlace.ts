@@ -4,7 +4,6 @@ export interface IProgramPlace {
 	id: string;
 	name: string;
 	color: string;
-	events: Record<number, IProgramEvent>
 }
 
 export interface IProgramEvent extends IEvent {

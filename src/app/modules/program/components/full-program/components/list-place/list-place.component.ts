@@ -19,6 +19,9 @@ export class ListPlaceComponent {
 	@Input()
 	public segments: IProgramSegment[];
 
+	@Input()
+	public events: Record<number, IProgramEvent>;
+
 	@Output()
 	public placeSelect: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
 

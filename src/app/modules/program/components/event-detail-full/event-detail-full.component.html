@@ -19,7 +19,7 @@
 		<div class="event-detail__content__title">
 			<h2>{{data.event.name}}</h2>
 			<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
-			<div>{{ data.event.placeId }}</div>
+			<div>{{ (place$ | async)?.name }}</div>
 		</div>
 		<mat-divider></mat-divider>
 		<div class="event-detail__content__description">

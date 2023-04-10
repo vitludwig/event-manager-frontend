@@ -2,11 +2,11 @@
 	&.event-detail-full-overlay {
 		align-self: center;
 		height: 100%;
-		max-width: 90vw !important;
-		max-height: 95vh;
+		max-width: 100vw !important;
+		max-height: 100vh;
 
 		.mdc-dialog__surface {
-			background-color: rgb(var(--cy__color--background));
+			//background-color: rgb(var(--cy__color--background));
 		}
 	}
 }
@@ -57,7 +57,7 @@
 
 		&__title {
 			word-wrap: break-word;
-			color: white;
+			color: #eee;
 			text-align: center;
 
 			h3 {

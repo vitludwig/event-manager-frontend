@@ -1,4 +1,4 @@
-<div class="place">
+<div class="place" *ngIf="events">
 	<div class="place__title">
 		<span class="place__title__text"
 			[style.background-color]="place.color"
@@ -10,7 +10,7 @@
 			[style.min-width]="FullProgramConfig.segmentWidth + 'px'"
 			*ngFor="let segment of segments"
 		>
-			<app-list-event [event]="place.events[segment.index]"
+			<app-list-event [event]="events[segment.index]"
 				(eventSelect)="showEventDetail($event)"></app-list-event>
 		</div>
 	</div>

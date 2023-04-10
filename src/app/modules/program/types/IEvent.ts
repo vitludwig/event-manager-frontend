@@ -1,3 +1,5 @@
+import {EEventType} from './EEventType';
+
 export interface IEvent {
 	id: string;
 	name: string;
@@ -7,4 +9,5 @@ export interface IEvent {
 	end: number;
 	placeId: string;
 	favorite: boolean;
+	type: EEventType;
 }

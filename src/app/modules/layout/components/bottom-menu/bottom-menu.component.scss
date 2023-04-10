@@ -13,6 +13,8 @@
 	&__button {
 		flex-grow: 1;
 		height: 100%;
+		border-radius: 0;
+
 		mat-icon {
 			transform: scale(1.5);
 		}

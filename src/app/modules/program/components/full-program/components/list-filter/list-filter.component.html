@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Filter events</h2>
+
+<div mat-dialog-content>
+	<mat-form-field>
+		<mat-label>Filter places</mat-label>
+		<mat-select [(ngModel)]="placeId"
+			placeholder="Place"
+			multiple
+		>
+			<mat-option *ngFor="let place of places$ | async"
+				[value]="place.id"
+			>
+				{{ place.name }}
+			</mat-option>
+		</mat-select>
+	</mat-form-field>
+
+	<mat-form-field>
+		<mat-label>Filter event types</mat-label>
+		<mat-select [(ngModel)]="eventType"
+			placeholder="Event type"
+			multiple
+		>
+			<mat-option *ngFor="let item of eventTypes | keyvalue"
+				[value]="item.key"
+			>
+				{{ item.value }}
+			</mat-option>
+		</mat-select>
+	</mat-form-field>
+
+</div>
+
+<mat-dialog-actions align="end">
+	<button mat-raised-button mat-dialog-close>Cancel</button>
+	<button mat-raised-button color="accent" (click)="resetFilters()">Reset filters</button>
+	<button mat-raised-button color="primary" (click)="applyFilters()">Apply</button>
+</mat-dialog-actions>

@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Inject, Input, Output} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
 import {IProgramEvent} from '../../../../types/IProgramPlace';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {TruncatePipe} from '../../../../../../common/pipes/truncate/truncate.pipe';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {EventDetailFullComponent} from '../../../event-detail-full/event-detail-full.component';
-import {MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheet} from '@angular/material/bottom-sheet';
 import {ProgramService} from '../../../../services/program/program.service';
 
 @Component({
@@ -21,6 +21,7 @@ export class EventDetailPreviewComponent {
 	constructor(
 		private programService: ProgramService,
 		private dialog: MatDialog,
+		private bottomSheet: MatBottomSheet,
 		@Inject(MAT_BOTTOM_SHEET_DATA) public data: {event: IProgramEvent},
 	) {
 	}
@@ -28,6 +29,7 @@ export class EventDetailPreviewComponent {
 	protected toggleFavorite(): void {
 		this.data.event.favorite = !this.data.event.favorite;
 		this.programService.setEventFavorite(this.data.event.id, this.data.event.favorite);
+		this.bottomSheet.dismiss();
 	}
 
 	protected openFullDetail(): void {
