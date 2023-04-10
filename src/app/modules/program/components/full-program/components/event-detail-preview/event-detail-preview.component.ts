@@ -28,7 +28,7 @@ export class EventDetailPreviewComponent {
 
 	protected toggleFavorite(): void {
 		this.data.event.favorite = !this.data.event.favorite;
-		this.programService.setEventFavorite(this.data.event.id, this.data.event.favorite);
+		this.programService.updateEvent(this.data.event, 'favorite', this.data.event.favorite);
 		this.bottomSheet.dismiss();
 	}
 

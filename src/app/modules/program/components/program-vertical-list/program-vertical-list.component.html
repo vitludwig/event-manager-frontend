@@ -1,0 +1,20 @@
+<mat-list class="list-vertical"
+	role="list"
+>
+	<ng-container *ngFor="let day of groupEvents | keyvalue">
+		<mat-list-item role="listitem" class="list-vertical__day">
+			{{ day.key | date: 'EEEE'}}
+		</mat-list-item>
+
+		<mat-list *ngIf="day.value.length > 0"
+			role="list"
+		>
+			<mat-list-item *ngFor="let event of day.value"
+				role="listitem"
+				class="list-vertical__event"
+			>
+				{{ event.name }}
+			</mat-list-item>
+		</mat-list>
+	</ng-container>
+</mat-list>

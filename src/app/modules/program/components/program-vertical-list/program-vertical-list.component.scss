@@ -1,0 +1,16 @@
+:host {
+	.mat-mdc-list {
+		padding: 0;
+	}
+}
+
+.list-vertical {
+	&__day {
+		font-size: 10px;
+		text-transform: capitalize;
+	}
+
+	&__event {
+		background-color: #1e1e1e !important;
+	}
+}

@@ -24,7 +24,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {ListFilterComponent} from './components/list-filter/list-filter.component';
 import {IProgramFilterOptions} from './types/IProgramFilterOptions';
-import {EEventType} from '../../types/EEventType';
 
 @Component({
 	selector: 'app-full-program',
@@ -66,14 +65,13 @@ export class FullProgramComponent implements OnInit {
 
 	protected set selectedDay(value: number) {
 		this.#selectedDay = value;
-		this.applyFilters({eventType: null, placeId: null});
+		this.applyFilters(this.programService.userFilterOptions);
 	}
 
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	#firstEventAt: Dayjs;
 	#selectedDay: number = 1;
-	#userFilterOptions: IProgramFilterOptions = {eventType: null, placeId: null};
 
 	constructor(
 		private programService: ProgramService,
@@ -89,19 +87,6 @@ export class FullProgramComponent implements OnInit {
 		this.loadEvents();
 	}
 
-	/**
-	 * Sets selected day and loads events for that day
-	 * @param day
-	 * @protected
-	 */
-	protected loadEvents(day: number = this.selectedDay): void {
-		this.programService.getEvents(day).subscribe((events) => {
-			console.log('events', events);
-			this.loadDayTimeSegments(events);
-			this.loadEventsByPlaces(events);
-		});
-	}
-
 	protected showEventDetail(event: IProgramEvent): void {
 		this.bottomSheet.open(EventDetailPreviewComponent, {
 			data: {event: event},
@@ -112,13 +97,13 @@ export class FullProgramComponent implements OnInit {
 
 	protected showFilters(): void {
 		const dialog = this.dialog.open(ListFilterComponent, {
-			data: {options: this.#userFilterOptions},
+			data: {options: this.programService.userFilterOptions},
 		});
 
 		dialog.afterClosed().subscribe((result) => {
 			console.log('result:', result);
 			if(result) {
-				this.#userFilterOptions = result;
+				this.programService.userFilterOptions = result;
 				this.applyFilters(result);
 			}
 		});
@@ -133,7 +118,10 @@ export class FullProgramComponent implements OnInit {
 		this.places = [];
 		this.eventsByPlaces = {};
 		this.programService.filterPlaces(options.placeId);
-		this.programService.filterEvents(this.selectedDay, options.eventType);
+		this.programService.filterEvents({
+			eventType: options.eventType,
+			onlyFavorite: options.onlyFavorite,
+		});
 	}
 
 	/**
@@ -149,8 +137,8 @@ export class FullProgramComponent implements OnInit {
 		}
 
 		// Filter events by place if place filter is set, so we don't display empty start/end segments
-		if(Array.isArray(this.#userFilterOptions.placeId) && this.#userFilterOptions.placeId.length > 0) {
-			events = events.filter((event) => this.#userFilterOptions.placeId?.includes(event.placeId));
+		if(Array.isArray(this.programService.userFilterOptions.placeId) && this.programService.userFilterOptions.placeId.length > 0) {
+			events = events.filter((event) => this.programService.userFilterOptions.placeId?.includes(event.placeId));
 		}
 
 		// TODO: find a way how to optimize this - store days and compute this only if they differ
@@ -211,6 +199,20 @@ export class FullProgramComponent implements OnInit {
 		}
 	}
 
+	/**
+	 * Sets selected day and loads events for that day
+	 * @param day
+	 * @protected
+	 */
+	private loadEvents(day: number = this.selectedDay): void {
+		this.programService.getEvents(day).subscribe((events) => {
+			console.log('events', events);
+			events = this.filterEventsByDay(events, this.selectedDay);
+			this.loadDayTimeSegments(events);
+			this.loadEventsByPlaces(events);
+		});
+	}
+
 	private loadPlaces(): void {
 		this.programService.getPlaces().subscribe((places) => {
 			console.log('new places', places);
@@ -238,5 +240,11 @@ export class FullProgramComponent implements OnInit {
 	 */
 	private getSegmentsFromMilliseconds(milliseconds: number): number {
 		return Math.ceil(milliseconds / 1000 / 60 / FullProgramConfig.segmentDuration);
+	}
+
+	private filterEventsByDay(events: IEvent[], day: number): IEvent[] {
+		return events.filter((event) => {
+			return dayjs(event.start).isSame(this.programService.days[day], 'day');
+		});
 	}
 }

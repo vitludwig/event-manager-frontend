@@ -1,9 +1,8 @@
-
 .place__segment__event {
 	height: 50px;
 	position: absolute;
 	left: 0;
-	background-color: var(--mdc-theme-surface);
+	background-color: var(--mdc-theme-surface) !important;
 	z-index: 1;
 	padding: 10px;
 	border: 1px solid transparent;

@@ -4,6 +4,7 @@ import {IEvent} from '../../types/IEvent';
 import * as dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {EEventType} from '../../types/EEventType';
+import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 
 @Injectable({
 	providedIn: 'root'
@@ -82,7 +83,7 @@ export class ProgramService {
 		},
 
 	];
-	#allEvents$: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
+	#events$: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
 
 	#places: IProgramPlace[] = [
 		{
@@ -101,7 +102,10 @@ export class ProgramService {
 			color: '#d2348a',
 		}
 	];
+
 	#places$: BehaviorSubject<IProgramPlace[]> = new BehaviorSubject(this.#places);
+
+	public userFilterOptions: IProgramFilterOptions = {};
 
 	public days: Record<number, number> = {
 		1: 1678489200000, // 11.3.2022 00:00
@@ -109,31 +113,38 @@ export class ProgramService {
 		3: 1678662000000, // 13.3.2022 00:00,
 	};
 
-	public getEvents(day: number): Observable<IEvent[]> {
-		const result = this.#allEvents.filter((event) => {
-			return dayjs(event.start).isSame(this.days[day], 'day');
-		});
+	public getEvents(day?: number): Observable<IEvent[]> {
+		// TODO: implement websocket
+		let result = this.#allEvents;
+		if(day) {
+			result = this.#allEvents.filter((event) => {
+				return dayjs(event.start).isSame(this.days[day], 'day');
+			});
+		}
 
-		this.#allEvents$.next(result);
+		this.#events$.next(result);
 
-		return this.#allEvents$;
+		return this.#events$;
 	}
 
-	public filterEvents(day: number, eventType: EEventType[] | null = null): void {
-		let result = this.#allEvents.filter((event) => {
-			return dayjs(event.start).isSame(this.days[day], 'day');
-		});
+	/**
+	 * Apply filters to events and propagate new value
+	 * @param filterOptions
+	 */
+	public filterEvents(filterOptions: Partial<IProgramFilterOptions>): void {
+		const result = this.applyEventFilters(this.#allEvents, filterOptions);
 
-		if(eventType) {
-			result = result.filter((event) => eventType.includes(event.type));
-		}
-		this.#allEvents$.next(result);
+		this.#events$.next(result);
 	}
 
 	public getPlaces(): Observable<IProgramPlace[]> {
 		return this.#places$;
 	}
 
+	/**
+	 * Local place filtering
+	 * @param placeId
+	 */
 	public filterPlaces(placeId: string[] | null = null): void {
 		if(placeId) {
 			const newPlaces = this.#places.filter((place) => placeId.includes(place.id));
@@ -147,13 +158,41 @@ export class ProgramService {
 		return of(this.#places.find((place) => place.id === id));
 	}
 
-	public setEventFavorite(id: string, favorite: boolean): void {
-		const newEvents = this.#allEvents$.getValue().map((event) => {
-			if(event.id === id) {
-				event.favorite = favorite;
+	public updateEvent(event: IEvent, property: keyof IEvent, value: string | number | boolean): void {
+		const eventToUpdate: IEvent | undefined = this.#allEvents.find((e) => e.id === event.id);
+		if(eventToUpdate && Object.prototype.hasOwnProperty.call(eventToUpdate, property)) {
+			// TODO: resolve typing issue
+			// @ts-ignore
+			eventToUpdate[property] = value;
+		}
+		const newEvents = this.applyEventFilters(this.#allEvents, this.userFilterOptions);
+		this.#events$.next(newEvents);
+	}
+
+	private applyEventFilters(events: IEvent[], filterOptions: IProgramFilterOptions): IEvent[] {
+		let result = events;
+		if(!filterOptions || !Object.keys(filterOptions).length) {
+			return result;
+		}
+
+		result = result.filter((event) => {
+			let include = true;
+
+			if(filterOptions.placeId !== undefined) {
+				include = !filterOptions.placeId?.includes(event.type) ?? true;
 			}
-			return event;
+
+			if(filterOptions.eventType !== undefined) {
+				include = !filterOptions.eventType?.includes(event.type) ?? true;
+			}
+
+			if(filterOptions.onlyFavorite === true) {
+				include = event.favorite
+			}
+
+			return include;
 		});
-		this.#allEvents$.next(newEvents);
+
+		return result;
 	}
 }
