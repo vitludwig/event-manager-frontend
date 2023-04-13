@@ -11,11 +11,11 @@
 @import "overides/mat-bottom-sheet";
 
 :root {
-	--mdc-theme-surface: #222222
+	--mdc-theme-surface: #222222;
 }
 
 .mdc-menu-surface {
-	background-color: var(--mdc-theme-surface, #1e1e1e)
+	background-color: var(--mdc-theme-surface, #1e1e1e);
 }
 
 .cdk-overlay-dark-backdrop {

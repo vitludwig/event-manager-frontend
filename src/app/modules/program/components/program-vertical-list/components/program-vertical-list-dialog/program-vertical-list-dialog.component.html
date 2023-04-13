@@ -1,0 +1,33 @@
+<div mat-dialog-content
+	class="event-list-dialog"
+>
+	<div class="event-list-dialog__header">
+		<button mat-icon-button
+			mat-dialog-close
+			class="event-detail__close"
+			aria-label="Close list"
+		>
+			<mat-icon>keyboard_backspace</mat-icon>
+		</button>
+
+		<mat-form-field appearance="outline"
+			class="event-list-dialog__header__search-input">
+			<input matInput
+				placeholder="Search"
+				#searchInput
+				[(ngModel)]="search"
+				(ngModelChange)="searchEvents(searchInput.value)"
+
+			>
+			<mat-icon matPrefix
+				class="my-icon">search
+			</mat-icon>
+		</mat-form-field>
+	</div>
+
+	<div class="event-list-dialog__content">
+		<app-program-vertical-list [events]="filteredEvents"></app-program-vertical-list>
+	</div>
+</div>
+
+

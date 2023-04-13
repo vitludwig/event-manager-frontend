@@ -1,12 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
-import {IProgramEvent} from '../../types/IProgramPlace';
-import {IProgramDay} from '../full-program/types/IProgramDay';
+import {IProgramPlace} from '../../types/IProgramPlace';
 import {ProgramService} from '../../services/program/program.service';
 import * as dayjs from 'dayjs';
 import {IEvent} from '../../types/IEvent';
+import {MatIconModule} from '@angular/material/icon';
+import {Subject, takeUntil} from 'rxjs';
+import {MatRippleModule} from '@angular/material/core';
+import {EventDetailFullComponent} from '../event-detail-full/event-detail-full.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
 	selector: 'app-program-vertical-list',
@@ -14,26 +18,68 @@ import {IEvent} from '../../types/IEvent';
 	imports: [
 		CommonModule,
 		MatListModule,
-		MatButtonModule
+		MatButtonModule,
+		MatIconModule,
+		MatRippleModule,
 	],
 	templateUrl: './program-vertical-list.component.html',
 	styleUrls: ['./program-vertical-list.component.scss']
 })
-export class ProgramVerticalListComponent implements OnInit{
+export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	@Input()
-	public events: IEvent[] | null = [];
+	public set events(value: IEvent[] | null) {
+		this.#events = value;
+		this.groupEvents = this.getGroupedEventsByDay(value);
+	}
 
+	public get events(): IEvent[] | null {
+		return this.#events;
+	}
+
+	protected placesById: Record<string, IProgramPlace> = {};
 	protected groupEvents: Record<number, IEvent[]> = {};
+
+	#events: IEvent[] | null = [];
+	#unsubscribe: Subject<void> = new Subject<void>();
 
 	constructor(
 		private programService: ProgramService,
+		private dialog: MatDialog,
 	) {
 
 	}
 
 	public ngOnInit(): void {
 		this.groupEvents = this.getGroupedEventsByDay(this.events);
-		console.log('groupevents', this.groupEvents);
+
+		this.programService.getPlaces()
+			.pipe(takeUntil(this.#unsubscribe))
+			.subscribe(places => {
+			for(const place of places) {
+				this.placesById[place.id] = place;
+			}
+		});
+	}
+
+	public ngOnDestroy(): void {
+		this.#unsubscribe.next();
+	}
+
+	protected openFullDetail(event: IEvent): void {
+		this.dialog.open(EventDetailFullComponent, {
+			data: {
+				event: event,
+			},
+			width: '100%',
+			height: '100%',
+			panelClass: 'full-overlay',
+			closeOnNavigation: true,
+		});
+	}
+
+	protected toggleFavorite(event: IEvent): void {
+		event.favorite = !event.favorite;
+		this.programService.updateEvent(event, 'favorite', event.favorite);
 	}
 
 	private getGroupedEventsByDay(events: IEvent[] | null): Record<number, IEvent[]> {
@@ -46,8 +92,8 @@ export class ProgramVerticalListComponent implements OnInit{
 
 		for(const event of events) {
 			const eventDayStart = dayjs(event.start).startOf('day').valueOf();
-			console.log(eventDayStart);
 			const day = days.find(day => day === eventDayStart);
+
 			if(day) {
 				if(!result[day]) {
 					result[day] = [];

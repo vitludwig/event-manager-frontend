@@ -39,8 +39,9 @@ export class EventDetailPreviewComponent {
 			},
 			width: '100%',
 			height: '100%',
-			panelClass: 'event-detail-full-overlay',
+			panelClass: 'full-overlay',
 			closeOnNavigation: true,
 		});
+		this.bottomSheet.dismiss();
 	}
 }

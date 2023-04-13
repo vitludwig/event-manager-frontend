@@ -1,20 +1,50 @@
-<mat-list class="list-vertical"
-	role="list"
->
-	<ng-container *ngFor="let day of groupEvents | keyvalue">
-		<mat-list-item role="listitem" class="list-vertical__day">
-			{{ day.key | date: 'EEEE'}}
-		</mat-list-item>
+<div class="list-vertical">
+	<mat-list class=""
+		role="list"
+	>
+		<ng-container *ngFor="let day of groupEvents | keyvalue">
+			<div role="listitem"
+				class="list-vertical__day">
+				{{ day.key | date: 'EEEE'}}
+			</div>
 
-		<mat-list *ngIf="day.value.length > 0"
-			role="list"
-		>
-			<mat-list-item *ngFor="let event of day.value"
-				role="listitem"
-				class="list-vertical__event"
+			<div *ngIf="day.value.length > 0"
+				role="list"
 			>
-				{{ event.name }}
-			</mat-list-item>
-		</mat-list>
-	</ng-container>
-</mat-list>
+				<div *ngFor="let event of day.value"
+					(click)="openFullDetail(event)"
+					role="listitem"
+					class="list-vertical__event"
+					matRipple
+				>
+					<div class="list-vertical__event__content">
+						<span class="list-vertical__event__content__time">
+							<small>
+								<div>{{ event.start | date: 'HH:mm' }}</div>
+								<div>{{ event.end | date: 'HH:mm' }}</div>
+							</small>
+						</span>
+						<div class="d-flex">
+							<span class="list-vertical__event__content__image">
+								<img [src]="event.image ?? 'assets/images/cybertown_logo_square.jpg'"
+									alt="Event image">
+							</span>
+
+							<span class="list-vertical__event__content__title">
+								{{ event.name }}
+								<small>{{ placesById[event.placeId].name }}</small>
+							</span>
+						</div>
+					</div>
+					<div class="list-vertical__event__actions">
+						<button mat-icon-button
+							class="list-vertical__event__actions__favorite"
+							(click)="toggleFavorite(event)">
+							<mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+	</mat-list>
+</div>

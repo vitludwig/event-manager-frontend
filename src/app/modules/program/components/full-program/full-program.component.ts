@@ -1,5 +1,5 @@
 import {
-	Component,
+	Component, OnDestroy,
 	OnInit
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -24,6 +24,10 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {ListFilterComponent} from './components/list-filter/list-filter.component';
 import {IProgramFilterOptions} from './types/IProgramFilterOptions';
+import {
+	ProgramVerticalListDialogComponent
+} from '../program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
+import {Subject, takeUntil} from 'rxjs';
 
 @Component({
 	selector: 'app-full-program',
@@ -46,7 +50,7 @@ import {IProgramFilterOptions} from './types/IProgramFilterOptions';
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
 })
-export class FullProgramComponent implements OnInit {
+export class FullProgramComponent implements OnInit, OnDestroy {
 	// n-minute segments for day
 	protected allSegments: IProgramSegment[] = [];
 	protected days: { id: number; name: string }[] = [];
@@ -72,6 +76,7 @@ export class FullProgramComponent implements OnInit {
 
 	#firstEventAt: Dayjs;
 	#selectedDay: number = 1;
+	#unsubscribe: Subject<void> = new Subject<void>();
 
 	constructor(
 		private programService: ProgramService,
@@ -87,6 +92,10 @@ export class FullProgramComponent implements OnInit {
 		this.loadEvents();
 	}
 
+	public ngOnDestroy(): void {
+		this.#unsubscribe.next();
+	}
+
 	protected showEventDetail(event: IProgramEvent): void {
 		this.bottomSheet.open(EventDetailPreviewComponent, {
 			data: {event: event},
@@ -94,6 +103,14 @@ export class FullProgramComponent implements OnInit {
 		});
 		this.selectedEvent = event;
 	}
+
+	protected showEventList(): void {
+		this.dialog.open(ProgramVerticalListDialogComponent, {
+			data: {events: this.programService.allEvents},
+			panelClass: 'full-overlay',
+		});
+	}
+
 
 	protected showFilters(): void {
 		const dialog = this.dialog.open(ListFilterComponent, {
@@ -205,7 +222,9 @@ export class FullProgramComponent implements OnInit {
 	 * @protected
 	 */
 	private loadEvents(day: number = this.selectedDay): void {
-		this.programService.getEvents(day).subscribe((events) => {
+		this.programService.getEvents(day)
+			.pipe(takeUntil(this.#unsubscribe))
+			.subscribe((events) => {
 			console.log('events', events);
 			events = this.filterEventsByDay(events, this.selectedDay);
 			this.loadDayTimeSegments(events);
@@ -214,7 +233,9 @@ export class FullProgramComponent implements OnInit {
 	}
 
 	private loadPlaces(): void {
-		this.programService.getPlaces().subscribe((places) => {
+		this.programService.getPlaces()
+			.pipe(takeUntil(this.#unsubscribe))
+			.subscribe((places) => {
 			console.log('new places', places);
 			this.places = places;
 		});

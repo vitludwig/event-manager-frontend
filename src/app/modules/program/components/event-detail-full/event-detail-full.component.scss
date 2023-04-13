@@ -1,11 +1,3 @@
-::ng-deep {
-	&.event-detail-full-overlay {
-		align-self: center;
-		height: 100%;
-		max-width: 100vw !important;
-		max-height: 100vh;
-	}
-}
 
 :host {
 	display: block;
@@ -19,8 +11,13 @@
 .event-detail {
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 	min-height: 100%;
 
+	mat-dialog-content {
+		display: flex;
+		flex-direction: column;
+	}
 	&__close {
 		position: absolute;
 		top: 0;
@@ -64,6 +61,15 @@
 		&__description {
 			padding-top: 10px;
 			color: #eee;
+		}
+	}
+
+	&__actions {
+		padding: 15px;
+
+		.favorite-button {
+			transform: scale(1.5);
+			color: white;
 		}
 	}
 }

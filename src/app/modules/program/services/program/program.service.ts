@@ -107,6 +107,10 @@ export class ProgramService {
 
 	public userFilterOptions: IProgramFilterOptions = {};
 
+	public get allEvents(): IEvent[] {
+		return this.#allEvents;
+	}
+
 	public days: Record<number, number> = {
 		1: 1678489200000, // 11.3.2022 00:00
 		2: 1678575600000, // 12.3.2022 00:00,

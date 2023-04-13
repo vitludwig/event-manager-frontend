@@ -24,4 +24,9 @@ export class EventDetailFullComponent {
 	) {
 		this.place$ = this.programService.getPlaceById(this.data.event.placeId);
 	}
+
+	protected toggleFavorite(): void {
+		this.data.event.favorite = !this.data.event.favorite;
+		this.programService.updateEvent(this.data.event, 'favorite', this.data.event.favorite);
+	}
 }

@@ -1,16 +1,67 @@
 :host {
+	display: block;
+	height: 100%;
+	overflow: auto;
+
 	.mat-mdc-list {
 		padding: 0;
 	}
 }
 
 .list-vertical {
+	height: 100%;
+	overflow: scroll;
+	position: relative;
+
 	&__day {
-		font-size: 10px;
+		font-size: 14px;
 		text-transform: capitalize;
+		background-color: #0f0f0f;
+		position: sticky;
+		top: 0;
+		left: 0;
+		padding: 10px 15px;
 	}
 
 	&__event {
 		background-color: #1e1e1e !important;
+		display: flex;
+		justify-content: space-between;
+		align-self: center;
+		padding: 15px 15px 20px 20px;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid rgba(var(--cy__color--border), 0.25);
+		}
+
+		&__content {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			&__image {
+				margin-left: 15px;
+				height: 50px;
+
+				img {
+					height: 100%;
+					width: auto;
+				}
+			}
+
+			&__title {
+				font-size: 18px;
+				word-wrap: break-word;
+				margin-left: 15px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-evenly;
+			}
+		}
+
+		&__actions {
+			display: flex;
+			align-items: center;
+		}
 	}
 }
