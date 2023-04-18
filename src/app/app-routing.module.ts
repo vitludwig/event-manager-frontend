@@ -13,6 +13,10 @@ const routes: Routes = [
 		loadComponent: () => import('./modules/program/program.component').then((c) => c.ProgramComponent),
 	},
 	{
+		path: ERoute.EVENT_DETAIL + '/:id',
+		loadComponent: () => import('./modules/program/components/event-detail-full/event-detail-full.component').then((c) => c.EventDetailFullComponent),
+	},
+	{
 		path: '**',
 		redirectTo: ERoute.PROGRAM,
 	},

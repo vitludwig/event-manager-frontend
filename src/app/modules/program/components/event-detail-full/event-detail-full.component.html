@@ -1,38 +1,49 @@
 <div class="event-detail">
-	<mat-dialog-content>
-		<button mat-icon-button
-			mat-dialog-close
-			class="event-detail__close"
-			aria-label="Close event detail"
-		>
-			<mat-icon>keyboard_backspace</mat-icon>
-		</button>
+	<ng-container *ngIf="event && place; else noData">
+		<div>
+			<button mat-icon-button
+				(click)="navigateBack()"
+				class="event-detail__close"
+				aria-label="Close event detail"
+			>
+				<mat-icon>keyboard_backspace</mat-icon>
+			</button>
 
-		<div class="event-detail__image">
-			<div class="image-overlay"></div>
-			<img [src]="data.event.image ?? 'assets/images/cybertown_logo_square.jpg'"
-				alt="Event image">
+			<div class="event-detail__image">
+				<div class="image-overlay"></div>
+				<img [src]="event.image ?? 'assets/images/cybertown_logo_square.jpg'"
+					alt="Event image">
+			</div>
+
+			<div class="event-detail__content">
+				<div class="event-detail__content__title">
+					<h2>{{ event.name }}</h2>
+					<div>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</div>
+					<div>{{ place.name }}</div>
+				</div>
+				<mat-divider></mat-divider>
+				<div class="event-detail__content__description">
+					<p>{{event.description}}</p>
+				</div>
+			</div>
 		</div>
 
-		<div class="event-detail__content">
-			<div class="event-detail__content__title">
-				<h2>{{data.event.name}}</h2>
-				<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
-				<div>{{ (place$ | async)?.name }}</div>
-			</div>
-			<mat-divider></mat-divider>
-			<div class="event-detail__content__description">
-				<p>{{data.event.description}}</p>
+		<div class="event-detail__actions">
+			<button mat-icon-button
+				class="favorite-button"
+				(click)="toggleFavorite()">
+				<mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+			</button>
+		</div>
+	</ng-container>
+
+	<ng-template #noData>
+		<div class="event-detail__no-data">
+			<div class="event-detail__no-data__text">
+				<mat-icon>error_outline</mat-icon>
+				<h2>Event not found</h2>
 			</div>
 		</div>
-	</mat-dialog-content>
-
-	<mat-dialog-actions align="end" class="event-detail__actions">
-		<button mat-icon-button
-			class="favorite-button"
-			(click)="toggleFavorite()">
-			<mat-icon>{{ data.event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
-		</button>
-	</mat-dialog-actions>
+	</ng-template>
 </div>
 

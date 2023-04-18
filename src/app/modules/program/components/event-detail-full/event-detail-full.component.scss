@@ -29,6 +29,7 @@
 	&__image {
 		width: 100%;
 		position: relative;
+		text-align: center;
 
 		.image-overlay {
 			position: absolute;
@@ -40,7 +41,7 @@
 		}
 
 		img {
-			width: 100%;
+			max-width: 100%;
 			height: auto;
 		}
 	}
@@ -66,10 +67,27 @@
 
 	&__actions {
 		padding: 15px;
+		display: flex;
+		justify-content: flex-end;
 
 		.favorite-button {
 			transform: scale(1.5);
 			color: white;
+		}
+	}
+
+	&__no-data {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+
+		&__text {
+			text-align: center;
 		}
 	}
 }

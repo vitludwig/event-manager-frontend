@@ -10,6 +10,10 @@ import {IProgramFilterOptions} from '../../components/full-program/types/IProgra
 	providedIn: 'root'
 })
 export class ProgramService {
+	/**
+	 * All events in program
+	 * @private
+	 */
 	#allEvents: IEvent[] = [
 		{
 			id: '0',
@@ -83,6 +87,15 @@ export class ProgramService {
 		},
 
 	];
+
+	/**
+	 * Filtered events in program
+	 * This subject is used to subscribe to all changes and filtering in events, but these changes are also propagated
+	 * to allEvents, so we can use it offline
+	 *
+	 * TODO: implement store?
+	 * @private
+	 */
 	#events$: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
 
 	#places: IProgramPlace[] = [
@@ -116,6 +129,11 @@ export class ProgramService {
 		2: 1678575600000, // 12.3.2022 00:00,
 		3: 1678662000000, // 13.3.2022 00:00,
 	};
+
+	public async loadProgramData(): Promise<void> {
+		// TODO: load all events and place from server on app init and store them in local storage, so we can
+		// display basic data offline
+	}
 
 	public getEvents(day?: number): Observable<IEvent[]> {
 		// TODO: implement websocket
@@ -160,6 +178,10 @@ export class ProgramService {
 
 	public getPlaceById(id: string): Observable<IProgramPlace | undefined> {
 		return of(this.#places.find((place) => place.id === id));
+	}
+
+	public getEventById(id: string): Observable<IEvent | undefined> {
+		return of(this.#allEvents.find((event) => event.id === id));
 	}
 
 	public updateEvent(event: IEvent, property: keyof IEvent, value: string | number | boolean): void {
