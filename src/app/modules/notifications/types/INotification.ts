@@ -1,6 +1,14 @@
 export interface INotification {
 	id: string;
-	title: string;
-	description: string;
-	type: unknown;
+	text?: string;
+	type: number;
+	target: unknown;
+	eventId?: string;
+	changedProperties?: INotificationProperty[];
+	created: string;
+}
+
+export interface INotificationProperty {
+	name: string;
+	value: string;
 }

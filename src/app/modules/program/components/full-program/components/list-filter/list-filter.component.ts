@@ -49,7 +49,7 @@ export class ListFilterComponent {
 		private programService: ProgramService,
 		private dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions>,
 	) {
-		this.places$ = this.programService.getPlaces();
+		this.places$ = this.programService.places$;
 		this.placeId = data.options.placeId ?? null;
 		this.eventType = data.options.eventType ?? null;
 		this.onlyFavorite = data.options.onlyFavorite ?? false;

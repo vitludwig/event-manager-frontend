@@ -1,0 +1,19 @@
+// style notifications-list as list of two-line notifications
+.notifications-list {
+	&__item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+
+		&__title {
+			display: flex;
+			flex-direction: column;
+		}
+
+		&__text {
+			display: flex;
+			flex-direction: column;
+		}
+	}
+}

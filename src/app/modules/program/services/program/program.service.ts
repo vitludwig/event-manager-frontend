@@ -3,90 +3,25 @@ import {BehaviorSubject, Observable, of} from 'rxjs';
 import {IEvent} from '../../types/IEvent';
 import * as dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
-import {EEventType} from '../../types/EEventType';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
+import {EventService} from '../event/event.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ProgramService {
+	public userFilterOptions: IProgramFilterOptions = {};
+	public get allEvents(): IEvent[] {
+		return this.#allEvents;
+	}
+
 	/**
 	 * All events in program
 	 * @private
 	 */
-	#allEvents: IEvent[] = [
-		{
-			id: '0',
-			name: 'worksop1',
-			description: 'desc0',
-			start: 1678518900000, // 8:15 | 11.3 in seconds
-			end: 1678520700000, // 8:45 | 11.3
-			favorite: false,
-			placeId: '1',
-			type: EEventType.WORKSHOP,
-		},
-		{
-			id: '1',
-			name: 'prednaska1',
-			description: 'desc1',
-			start: 1678523400000, // 9:30 | 11.3
-			end: 1678525200000, // 10:00 | 11.3
-			favorite: false,
-			placeId: '1',
-			type: EEventType.LECTURE,
-		},
-		{
-			id: '2',
-			name: 'Neco jineho 1',
-			description: 'desc2',
-			start: 1678532400000, // 12:00 | 11.3
-			end: 1678539600000, // 14:00 | 11.3
-			favorite: false,
-			placeId: '2',
-			type: EEventType.OTHER,
-		},
-		{
-			id: '3',
-			name: 'koncert 1',
-			description: 'desc3',
-			start: 1678572000000, // 23:00 | 11.3
-			end: 1678579200000, // 02:00 | 12.3
-			favorite: false,
-			placeId: '2',
-			type: EEventType.CONCERT,
-		},
-		{
-			id: '4',
-			name: 'prednaska 2',
-			description: 'desc4',
-			start: 1678572000000, // 23:00 | 11.3
-			end: 1678579200000, // 02:00 | 12.3
-			favorite: false,
-			placeId: '3',
-			type: EEventType.LECTURE,
-		},
-		{
-			id: '5',
-			name: 'worksop 2',
-			description: 'desc5',
-			start: 1678611600000, // 10:00 | 12.3
-			end: 1678618800000, // 12:00 | 12.3
-			favorite: false,
-			placeId: '3',
-			type: EEventType.WORKSHOP,
-		},
-		{
-			id: '6',
-			name: 'koncert 3',
-			description: 'desc6',
-			start: 1678604400000, // 08:00 | 12.3
-			end: 1678608000000, // 09:00 | 12.3
-			favorite: false,
-			placeId: '3',
-			type: EEventType.CONCERT,
-		},
+	#allEvents: IEvent[] = [];
 
-	];
+	#allPlaces: IProgramPlace[] = [];
 
 	/**
 	 * Filtered events in program
@@ -96,57 +31,63 @@ export class ProgramService {
 	 * TODO: implement store?
 	 * @private
 	 */
-	#events$: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
+	#events: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
+	#places: BehaviorSubject<IProgramPlace[]> = new BehaviorSubject(this.#allPlaces);
+	#days: BehaviorSubject<Record<number, number>> = new BehaviorSubject<Record<number, number>>({});
 
-	#places: IProgramPlace[] = [
-		{
-			id: '1',
-			name: 'namesti',
-			color: '#d2348a',
-		},
-		{
-			id: '2',
-			name: 'bunkr1',
-			color: '#d2348a',
-		},
-		{
-			id: '3',
-			name: 'bunkr2',
-			color: '#d2348a',
+	public places$: Observable<IProgramPlace[]> = this.#places.asObservable();
+	public days$ = this.#days.asObservable();
+
+	constructor(
+		private eventService: EventService,
+	) { }
+
+	public async initWebsocket(): Promise<void> {
+		try {
+			await this.eventService.initWebsocket()
+			await this.loadProgramData();
+
+			this.eventService.on<IEvent>('newEvent', (data) => {
+				console.log('new event: ', data);
+				this.#allEvents = [...this.#allEvents, data];
+
+				this.propagateEventUpdate();
+			});
+
+			this.eventService.on<IEvent>('updateEvent', (data) => {
+				console.log('update event: ', data);
+				const index = this.#allEvents.findIndex((event) => event.id === data.id);
+				this.#allEvents[index] = data;
+
+				this.propagateEventUpdate();
+			});
+		} catch(e) {
+			console.error('Error while initializing websocket communication: ', e);
 		}
-	];
-
-	#places$: BehaviorSubject<IProgramPlace[]> = new BehaviorSubject(this.#places);
-
-	public userFilterOptions: IProgramFilterOptions = {};
-
-	public get allEvents(): IEvent[] {
-		return this.#allEvents;
 	}
 
-	public days: Record<number, number> = {
-		1: 1678489200000, // 11.3.2022 00:00
-		2: 1678575600000, // 12.3.2022 00:00,
-		3: 1678662000000, // 13.3.2022 00:00,
-	};
-
 	public async loadProgramData(): Promise<void> {
-		// TODO: load all events and place from server on app init and store them in local storage, so we can
-		// display basic data offline
+		this.#allPlaces = await this.eventService.getPlaces();
+		this.#allEvents = await this.eventService.getEvents();
+		console.log('allevents', this.#allEvents);
+		this.loadDays();
+
+		// TODO: store them in local storage, so we can display basic data offline
 	}
 
 	public getEvents(day?: number): Observable<IEvent[]> {
 		// TODO: implement websocket
 		let result = this.#allEvents;
+
 		if(day) {
 			result = this.#allEvents.filter((event) => {
-				return dayjs(event.start).isSame(this.days[day], 'day');
+				return dayjs(event.start).isSame(day, 'day');
 			});
 		}
 
-		this.#events$.next(result);
+		this.#events.next(result);
 
-		return this.#events$;
+		return this.#events;
 	}
 
 	/**
@@ -156,11 +97,7 @@ export class ProgramService {
 	public filterEvents(filterOptions: Partial<IProgramFilterOptions>): void {
 		const result = this.applyEventFilters(this.#allEvents, filterOptions);
 
-		this.#events$.next(result);
-	}
-
-	public getPlaces(): Observable<IProgramPlace[]> {
-		return this.#places$;
+		this.#events.next(result);
 	}
 
 	/**
@@ -169,15 +106,15 @@ export class ProgramService {
 	 */
 	public filterPlaces(placeId: string[] | null = null): void {
 		if(placeId) {
-			const newPlaces = this.#places.filter((place) => placeId.includes(place.id));
-			this.#places$.next(newPlaces);
+			const newPlaces = this.#allPlaces.filter((place) => placeId.includes(place.id));
+			this.#places.next(newPlaces);
 		} else {
-			this.#places$.next(this.#places);
+			this.#places.next(this.#allPlaces);
 		}
 	}
 
 	public getPlaceById(id: string): Observable<IProgramPlace | undefined> {
-		return of(this.#places.find((place) => place.id === id));
+		return of(this.#allPlaces.find((place) => place.id === id));
 	}
 
 	public getEventById(id: string): Observable<IEvent | undefined> {
@@ -191,8 +128,13 @@ export class ProgramService {
 			// @ts-ignore
 			eventToUpdate[property] = value;
 		}
+
+		this.propagateEventUpdate();
+	}
+
+	private propagateEventUpdate(): void {
 		const newEvents = this.applyEventFilters(this.#allEvents, this.userFilterOptions);
-		this.#events$.next(newEvents);
+		this.#events.next(newEvents);
 	}
 
 	private applyEventFilters(events: IEvent[], filterOptions: IProgramFilterOptions): IEvent[] {
@@ -220,5 +162,16 @@ export class ProgramService {
 		});
 
 		return result;
+	}
+
+	private loadDays(): void {
+		const days = this.#days.getValue();
+		this.#allEvents.forEach((event) => {
+			const date = dayjs(event.start).startOf('day').valueOf();
+			if(!days[date]) {
+				days[date] = date;
+			}
+		});
+		this.#days.next(days);
 	}
 }

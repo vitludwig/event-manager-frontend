@@ -1,4 +1,5 @@
 import {EEventType} from './EEventType';
+import {IProgramPlace} from './IProgramPlace';
 
 export interface IEvent {
 	id: string;
@@ -8,6 +9,7 @@ export interface IEvent {
 	start: number;
 	end: number;
 	placeId: string;
+	place: IProgramPlace;
 	favorite: boolean;
 	type: EEventType;
 }

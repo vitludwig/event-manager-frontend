@@ -17,6 +17,10 @@ const routes: Routes = [
 		loadComponent: () => import('./modules/program/components/event-detail-full/event-detail-full.component').then((c) => c.EventDetailFullComponent),
 	},
 	{
+		path: ERoute.NOTIFICATIONS,
+		loadComponent: () => import('./modules/notifications/notifications.component').then((c) => c.NotificationsComponent),
+	},
+	{
 		path: '**',
 		redirectTo: ERoute.PROGRAM,
 	},

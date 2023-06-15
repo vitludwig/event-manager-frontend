@@ -29,7 +29,7 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	@Input()
 	public set events(value: IEvent[] | null) {
 		this.#events = value;
-		this.groupEvents = this.getGroupedEventsByDay(value);
+		//this.groupEvents = this.getGroupedEventsByDay(value);
 	}
 
 	public get events(): IEvent[] | null {
@@ -50,15 +50,20 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	}
 
 	public ngOnInit(): void {
-		this.groupEvents = this.getGroupedEventsByDay(this.events);
+		this.programService.days$
+			.pipe(takeUntil(this.#unsubscribe))
+			.subscribe(days => {
+				this.groupEvents = this.getGroupedEventsByDay(this.events, days);
+				console.log('group events', this.groupEvents);
+			});
 
-		this.programService.getPlaces()
+		this.programService.places$
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe(places => {
-			for(const place of places) {
-				this.placesById[place.id] = place;
-			}
-		});
+				for(const place of places) {
+					this.placesById[place.id] = place;
+				}
+			});
 	}
 
 	public ngOnDestroy(): void {
@@ -82,12 +87,12 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 		this.programService.updateEvent(event, 'favorite', event.favorite);
 	}
 
-	private getGroupedEventsByDay(events: IEvent[] | null): Record<number, IEvent[]> {
+	private getGroupedEventsByDay(events: IEvent[] | null, daysRecord: Record<number, number>): Record<number, IEvent[]> {
 		if(!events) {
 			return {};
 		}
 
-		const days = Object.values(this.programService.days);
+		const days = Object.values(daysRecord);
 		const result: Record<number, IEvent[]> = {};
 
 		for(const event of events) {

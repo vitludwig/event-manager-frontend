@@ -1,0 +1,13 @@
+{
+  "/signalr/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "ws": true,
+    "logLevel": "debug"
+  },
+  "/api/v1/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

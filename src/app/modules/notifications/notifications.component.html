@@ -1,1 +1,8 @@
-<p>notifications works!</p>
+<mat-list>
+	<mat-list-item *ngFor="let notification of notificationService.notifications()"
+
+	>
+		<span matListItemTitle>{{ (notification.type === 1 && notification.eventId) ? "Změna " + eventsById[notification.eventId].name : 'Nová zpráva' }}</span>
+		<span matListItemLine>{{ notification.changedProperties | json }}</span>
+	</mat-list-item>
+</mat-list>

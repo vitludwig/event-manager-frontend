@@ -6,7 +6,7 @@ import {IProgramDay} from '../../types/IProgramDay';
 @Component({
 	selector: 'app-list-day-select',
 	standalone: true,
-	imports: [CommonModule, MatButtonToggleModule,],
+	imports: [CommonModule, MatButtonToggleModule],
 	templateUrl: './list-day-select.component.html',
 	styleUrls: ['./list-day-select.component.scss']
 })

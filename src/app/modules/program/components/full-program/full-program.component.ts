@@ -75,7 +75,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	#firstEventAt: Dayjs;
-	#selectedDay: number = 1;
+	#selectedDay: number;
 	#unsubscribe: Subject<void> = new Subject<void>();
 
 	constructor(
@@ -88,8 +88,9 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 	public ngOnInit(): void {
 		this.loadPlaces();
-		this.loadDays();
 		this.loadEvents();
+
+		this.selectedDay = this.days[0].id;
 	}
 
 	public ngOnDestroy(): void {
@@ -131,7 +132,6 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		console.log('filter');
 		this.places = [];
 		this.eventsByPlaces = {};
 		this.programService.filterPlaces(options.placeId);
@@ -225,28 +225,38 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.programService.getEvents(day)
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((events) => {
-			console.log('events', events);
-			events = this.filterEventsByDay(events, this.selectedDay);
-			this.loadDayTimeSegments(events);
-			this.loadEventsByPlaces(events);
-		});
+				console.log('events', events);
+				events = this.filterEventsByDay(events, this.selectedDay);
+
+				this.loadDays();
+				this.loadDayTimeSegments(events);
+				this.loadEventsByPlaces(events);
+			});
 	}
 
 	private loadPlaces(): void {
-		this.programService.getPlaces()
+		this.programService.places$
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((places) => {
-			console.log('new places', places);
-			this.places = places;
-		});
+				console.log('new places', places);
+				this.places = places;
+			});
+	}
+
+	private loadDays(): void {
+		this.programService.days$
+			.pipe(takeUntil(this.#unsubscribe))
+			.subscribe((days) => {
+				this.days = this.getParsedDays(days);
+			});
 	}
 
 	/**
 	 * Loads days from program service and transforms them into array of objects with day name and id
 	 * @protected
 	 */
-	private loadDays(): void {
-		this.days = Object.entries(this.programService.days).map(([id, date]) => {
+	private getParsedDays(days: Record<number, number>): { id: number; name: string }[] {
+		return Object.entries(days).map(([id, date]) => {
 			return {
 				id: Number(id),
 				name: dayjs(date).format('dddd')
@@ -265,7 +275,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 	private filterEventsByDay(events: IEvent[], day: number): IEvent[] {
 		return events.filter((event) => {
-			return dayjs(event.start).isSame(this.programService.days[day], 'day');
+			return dayjs(event.start).isSame(day, 'day');
 		});
 	}
 }
