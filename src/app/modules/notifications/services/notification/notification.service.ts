@@ -2,16 +2,23 @@ import {Injectable, signal, WritableSignal} from '@angular/core';
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 import {INotification} from '../../types/INotification';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {INotificationSettings} from '../../types/INotificationSettings';
 
 
 @Injectable({
 	providedIn: 'root'
 })
 export class NotificationService {
-	#newNotification: BehaviorSubject<INotification | null> = new BehaviorSubject<INotification | null>(null);
-	public newNotification$: Observable<INotification | null> = this.#newNotification.asObservable();
-
 	public notifications: WritableSignal<INotification[]> = signal([]);
+
+
+	public get showNotifications(): boolean {
+		return localStorage.getItem('showNotifications') === 'true';
+	}
+
+	public set showNotifications(value: boolean) {
+		localStorage.setItem('showNotifications', value.toString());
+	}
 
 	#connection: HubConnection;
 

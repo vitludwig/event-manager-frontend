@@ -4,7 +4,7 @@ export interface INotification {
 	type: number;
 	target: unknown;
 	eventId?: string;
-	changedProperties?: INotificationProperty[];
+	changedProperties?: string;
 	created: string;
 }
 

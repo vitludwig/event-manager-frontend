@@ -1,19 +1,12 @@
-// style notifications-list as list of two-line notifications
+.notifications-toolbar {
+	justify-content: space-between;
+}
+
 .notifications-list {
 	&__item {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-
-		&__title {
-			display: flex;
-			flex-direction: column;
+		&:not(:last-child) {
+			border-bottom: 1px solid rgba(var(--cy__color--border), 0.25);
 		}
 
-		&__text {
-			display: flex;
-			flex-direction: column;
-		}
 	}
 }

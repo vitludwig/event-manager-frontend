@@ -1,8 +1,19 @@
-<mat-list>
-	<mat-list-item *ngFor="let notification of notificationService.notifications()"
+<mat-toolbar class="notifications-toolbar">
+	<span>Notifikace</span>
+	<div class="notifications-toolbar__actions">
+		<button mat-icon-button aria-label="Filter events" (click)="showSettings()">
+			<mat-icon>settings</mat-icon>
+		</button>
+	</div>
+</mat-toolbar>
 
+<mat-list class="notifications-list">
+	<mat-list-item *ngFor="let notification of notificationService.notifications()"
+		class="notifications-list__item"
 	>
-		<span matListItemTitle>{{ (notification.type === 1 && notification.eventId) ? "Změna " + eventsById[notification.eventId].name : 'Nová zpráva' }}</span>
-		<span matListItemLine>{{ notification.changedProperties | json }}</span>
+		<span matListItemTitle>{{ (notification.type === 1 && notification.eventId) ? "Změna " + eventsById[notification.eventId]?.name : 'Nová zpráva' }}</span>
+		<span matListItemLine *ngFor="let property of notification.changedProperties | stringToJson | keyvalue">
+			{{ property.key }}: {{ property.value }}
+		</span>
 	</mat-list-item>
 </mat-list>

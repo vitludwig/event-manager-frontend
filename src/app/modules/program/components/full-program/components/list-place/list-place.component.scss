@@ -1,6 +1,6 @@
 .place {
 	&__title {
-		padding: 10px 0;
+		padding: 10px;
 
 		&__text {
 			position: sticky;
@@ -8,6 +8,7 @@
 			border: 1px solid transparent;
 			border-radius: 13px;
 			padding: 5px 10px;
+			background-color: rgb(var(--cy__color--primary-500));
 		}
 	}
 

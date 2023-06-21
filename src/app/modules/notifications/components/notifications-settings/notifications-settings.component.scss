@@ -1,0 +1,7 @@
+:host {
+	.mat-mdc-dialog-title  {
+		&:before {
+			height: 0;
+		}
+	}
+}

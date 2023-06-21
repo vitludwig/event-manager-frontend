@@ -1,7 +1,11 @@
 @import '../variables';
 
 .mat-toolbar {
-	border-bottom: 2px solid rgba(var(--cy__color--border), .25);
+	&:not(.bottom-menu) {
+		border-bottom: 2px solid rgba(var(--cy__color--border));
+	}
+
+	background-color: #1e1e1e !important;
 
 	&.mat-primary {
 		//background: rgba(var(--cy__color--background), 0.5);

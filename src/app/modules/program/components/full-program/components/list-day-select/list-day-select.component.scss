@@ -5,10 +5,12 @@
 
 	&__item {
 		border-left: none !important;
-		border-bottom: 3px solid transparent;
+		border-bottom: 1px solid transparent;
+		font-weight: normal;
 
 		&.active {
-			border-color: rgb(var(--cy__color--primary-500));
+			background-color: rgb(var(--cy__color--primary-500), 0.25);
+			font-weight: bold;
 		}
 	}
 }

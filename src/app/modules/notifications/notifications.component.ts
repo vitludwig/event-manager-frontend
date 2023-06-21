@@ -8,6 +8,14 @@ import {NotificationService} from './services/notification/notification.service'
 import {ProgramService} from '../program/services/program/program.service';
 import {Subject, takeUntil} from 'rxjs';
 import {IEvent} from '../program/types/IEvent';
+import {StringToJsonPipe} from '../../common/pipes/string-to-json/string-to-json.pipe';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {
+	ProgramVerticalListDialogComponent
+} from '../program/components/program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {NotificationsSettingsComponent} from './components/notifications-settings/notifications-settings.component';
+import {INotificationSettings} from './types/INotificationSettings';
 
 @Component({
 	selector: 'app-notifications',
@@ -17,7 +25,10 @@ import {IEvent} from '../program/types/IEvent';
 		MatButtonModule,
 		MatIconModule,
 		MatListModule,
-		MatRippleModule
+		MatRippleModule,
+		MatToolbarModule,
+		MatDialogModule,
+		StringToJsonPipe,
 	],
 	templateUrl: './notifications.component.html',
 	styleUrls: ['./notifications.component.scss']
@@ -29,6 +40,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 	constructor(
 		public notificationService: NotificationService,
 		private programService: ProgramService,
+		private dialog: MatDialog,
 	) {
 
 	}
@@ -45,5 +57,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
 	public ngOnDestroy(): void {
 		this.#unsubscribe.next();
+	}
+
+	protected showSettings(): void {
+		const dialog = this.dialog.open(NotificationsSettingsComponent, {
+			data: {showNotifications: this.notificationService.showNotifications},
+			width: '250px',
+		});
+
+		dialog.afterClosed().subscribe((result: INotificationSettings) => {
+			if(result) {
+				console.log('result', result);
+				this.notificationService.showNotifications = result.showNotifications;
+				// TODO: unsubscribe from notifications
+			}
+		});
 	}
 }

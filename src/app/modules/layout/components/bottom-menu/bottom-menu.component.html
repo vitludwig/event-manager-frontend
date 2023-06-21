@@ -1,18 +1,32 @@
 <mat-toolbar class="bottom-menu">
 	<div class="bottom-menu__content">
-		<button mat-button class="bottom-menu__button" [routerLink]="ERoute.PROGRAM">
+		<button mat-button
+			class="bottom-menu__button"
+			routerLinkActive="bottom-menu__button--active"
+			[routerLink]="ERoute.PROGRAM"
+		>
 			<mat-icon>view_list</mat-icon>
 		</button>
 
-		<button mat-button class="bottom-menu__button">
+		<button mat-button
+			routerLinkActive="bottom-menu__button--active"
+			class="bottom-menu__button"
+		>
 			<mat-icon> place</mat-icon>
 		</button>
 
-		<button mat-button class="bottom-menu__button"  [routerLink]="ERoute.NOTIFICATIONS">
+		<button mat-button
+			routerLinkActive="bottom-menu__button--active"
+			class="bottom-menu__button"
+			[routerLink]="ERoute.NOTIFICATIONS"
+		>
 			<mat-icon>notifications</mat-icon>
 		</button>
 
-		<button mat-button class="bottom-menu__button">
+		<button mat-button
+			routerLinkActive="bottom-menu__button--active"
+			class="bottom-menu__button"
+		>
 			<mat-icon>help</mat-icon>
 		</button>
 	</div>

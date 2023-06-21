@@ -9,7 +9,6 @@ import {HttpClient} from '@angular/common/http';
 	styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-	public sidemenuOpened = false;
 	public operationName: string;
 	private _subscription: PushSubscription | null;
 	#publicKey = 'BM8bnspodQNmqUo03YgrvzhPiRZP5paOop_NK_SiRJfG8GW9DUw-H-FtXVQYtmLAMiakkFhc4KCdT6ep7InBbu0';
@@ -19,6 +18,7 @@ export class AppComponent {
 		private swPush: SwPush,
 		private httpClient: HttpClient,
 	) {
+		// TODO: do this on app load and reflect user notification settings
 		swPush.subscription.subscribe((subscription) => {
 			this._subscription = subscription;
 			this.operationName = (this._subscription === null) ? 'Subscribe' : 'Unsubscribe';

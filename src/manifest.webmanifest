@@ -1,7 +1,7 @@
 {
   "name": "event-program",
   "short_name": "event-program",
-  "theme_color": "#1976d2",
+  "theme_color": "#d2348a",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
