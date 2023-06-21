@@ -6,7 +6,8 @@
 		</div>
 
 		<div class="event-detail__content__info">
-			<h4>{{ data.event.name }}</h4>
+			<h3>{{ data.event.name }}</h3>
+			<h4>{{ fullProgramConfig.eventTypes[data.event.type].name }}</h4>
 			<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
 		</div>
 	</div>
@@ -15,6 +16,11 @@
 		<button mat-icon-button
 			(click)="toggleFavorite()">
 			<mat-icon>{{ data.event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+		</button>
+
+		<button mat-icon-button
+			(click)="openFullDetail()">
+			<mat-icon>arrow_forward</mat-icon>
 		</button>
 	</div>
 </div>

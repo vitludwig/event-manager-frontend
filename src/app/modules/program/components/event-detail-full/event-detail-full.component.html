@@ -14,13 +14,14 @@
 				<img [src]="'/assets/images/cybertown_logo_square.jpg'"
 					alt="Event image">
 
-<!--				<img src='/assets/images/cybertown_logo_square.jpg'-->
-<!--					alt="Event image">-->
+				<!--				<img src='/assets/images/cybertown_logo_square.jpg'-->
+				<!--					alt="Event image">-->
 			</div>
 
 			<div class="event-detail__content">
 				<div class="event-detail__content__title">
 					<h2>{{ event.name }}</h2>
+					<div>{{ fullProgramConfig.eventTypes[event.type].name }}</div>
 					<div>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</div>
 					<div>{{ place.name }}</div>
 				</div>

@@ -1,8 +1,8 @@
 import {EEventType} from '../../../types/EEventType';
 
 export interface IProgramFilterOptions {
-	eventType?: EEventType[] | null;
-	placeId?: string[] | null;
+	eventType?: EEventType[];
+	placeId?: string[];
 	onlyFavorite?: boolean;
 
 }

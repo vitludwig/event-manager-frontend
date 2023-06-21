@@ -11,6 +11,7 @@ import {Subject, takeUntil} from 'rxjs';
 import {MatRippleModule} from '@angular/material/core';
 import {EventDetailFullComponent} from '../event-detail-full/event-detail-full.component';
 import {MatDialog} from '@angular/material/dialog';
+import {FullProgramConfig} from '../full-program/FullProgramConfig';
 
 @Component({
 	selector: 'app-program-vertical-list',
@@ -38,6 +39,7 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 
 	protected placesById: Record<string, IProgramPlace> = {};
 	protected groupEvents: Record<number, IEvent[]> = {};
+	protected readonly fullProgramConfig = FullProgramConfig;
 
 	#events: IEvent[] | null = [];
 	#unsubscribe: Subject<void> = new Subject<void>();

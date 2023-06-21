@@ -15,6 +15,7 @@
 					(click)="openFullDetail(event)"
 					role="listitem"
 					class="list-vertical__event"
+					[style.border-left]="'8px solid ' + fullProgramConfig.eventTypes[event.type].color"
 					matRipple
 				>
 					<div class="list-vertical__event__content">
@@ -24,14 +25,15 @@
 								<div>{{ event.end | date: 'HH:mm' }}</div>
 							</small>
 						</span>
-						<div class="d-flex">
+						<div class="d-flex align-items-center">
 							<span class="list-vertical__event__content__image">
 								<img [src]="'/assets/images/cybertown_logo_square.jpg'"
 									alt="Event image">
 							</span>
 
 							<span class="list-vertical__event__content__title">
-								{{ event.name }}
+								<span style="margin-bottom: 15px">{{ event.name }}</span>
+								<small>{{fullProgramConfig.eventTypes[event.type].name }}</small>
 								<small>{{event.place.name }}</small>
 							</span>
 						</div>

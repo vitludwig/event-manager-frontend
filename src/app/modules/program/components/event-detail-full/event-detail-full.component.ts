@@ -9,6 +9,7 @@ import {ProgramService} from '../../services/program/program.service';
 import {firstValueFrom,} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {IEvent} from '../../types/IEvent';
+import {FullProgramConfig} from '../full-program/FullProgramConfig';
 
 @Component({
 	selector: 'app-event-detail-full',
@@ -21,6 +22,7 @@ export class EventDetailFullComponent implements OnInit {
 	protected place: IProgramPlace | undefined;
 	protected event: IEvent | undefined;
 	protected loading: boolean = false;
+	protected readonly fullProgramConfig = FullProgramConfig;
 
 	constructor(
 		protected programService: ProgramService,

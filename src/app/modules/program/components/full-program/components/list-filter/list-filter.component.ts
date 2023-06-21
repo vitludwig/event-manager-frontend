@@ -13,6 +13,8 @@ import {Observable} from 'rxjs';
 import {EEventType} from '../../../../types/EEventType';
 import {IProgramFilterOptions} from '../../types/IProgramFilterOptions';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {FullProgramConfig} from '../../FullProgramConfig';
+import {IEventType} from '../../../../types/IEventType';
 
 @Component({
 	selector: 'app-list-filter',
@@ -33,15 +35,17 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 })
 export class ListFilterComponent {
 	protected places$: Observable<IProgramPlace[]>;
-	protected eventTypes: Record<EEventType, string> = {
-		[EEventType.WORKSHOP]: 'Workshop',
-		[EEventType.LECTURE]: 'Lecture',
-		[EEventType.CONCERT]: 'Concert',
-		[EEventType.OTHER]: 'Other',
-	}
+	// protected eventTypes: Record<EEventType, string> = {
+	// 	[EEventType.WORKSHOP]: 'Workshop',
+	// 	[EEventType.LECTURE]: 'Lecture',
+	// 	[EEventType.CONCERT]: 'Concert',
+	// 	[EEventType.OTHER]: 'Other',
+	// }
 
-	protected placeId: string[] | null = null;
-	protected eventType: EEventType[] | null = null;
+	protected eventTypes: IEventType[] = Object.values(FullProgramConfig.eventTypes);
+
+	protected placeId: string[] | undefined;
+	protected eventType: EEventType[] | undefined;
 	protected onlyFavorite: boolean = false;
 
 	constructor(
@@ -50,14 +54,14 @@ export class ListFilterComponent {
 		private dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions>,
 	) {
 		this.places$ = this.programService.places$;
-		this.placeId = data.options.placeId ?? null;
-		this.eventType = data.options.eventType ?? null;
+		this.placeId = data.options.placeId ?? undefined;
+		this.eventType = data.options.eventType ?? undefined;
 		this.onlyFavorite = data.options.onlyFavorite ?? false;
 	}
 
 	protected applyFilters(): void {
-		this.eventType = this.eventType?.length ? this.eventType : null;
-		this.placeId = this.placeId?.length ? this.placeId : null;
+		this.eventType = this.eventType?.length ? this.eventType : undefined;
+		this.placeId = this.placeId?.length ? this.placeId : undefined;
 
 		this.dialogRef.close({
 			eventType: this.eventType,
@@ -67,8 +71,8 @@ export class ListFilterComponent {
 	}
 
 	protected resetFilters(): void {
-		this.eventType = null;
-		this.placeId = null;
+		this.eventType = undefined;
+		this.placeId = undefined;
 		this.onlyFavorite = false;
 		this.applyFilters();
 	}

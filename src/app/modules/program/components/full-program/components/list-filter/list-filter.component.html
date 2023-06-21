@@ -30,10 +30,10 @@
 			placeholder="Event type"
 			multiple
 		>
-			<mat-option *ngFor="let item of eventTypes | keyvalue"
-				[value]="item.key"
+			<mat-option *ngFor="let item of eventTypes"
+				[value]="item.id"
 			>
-				{{ item.value }}
+				{{ item.name }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>

@@ -1,6 +1,9 @@
 export enum EEventType {
-	LECTURE = 'lecture',
-	CONCERT = 'concert',
-	WORKSHOP = 'workshop',
-	OTHER = 'other',
+	COMPETITION,
+	LIVE_MUSIC,
+	ELECTRONIC_MUSIC,
+	MOVIE,
+	SHOW,
+	WORKSHOP,
+	LECTURE
 }

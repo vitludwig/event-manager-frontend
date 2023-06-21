@@ -147,11 +147,11 @@ export class ProgramService {
 			let include = true;
 
 			if(filterOptions.placeId !== undefined) {
-				include = !filterOptions.placeId?.includes(event.type) ?? true;
+				include = !filterOptions.placeId.includes(event.placeId);
 			}
 
 			if(filterOptions.eventType !== undefined) {
-				include = !filterOptions.eventType?.includes(event.type) ?? true;
+				include = filterOptions.eventType.includes(event.type);
 			}
 
 			if(filterOptions.onlyFavorite === true) {

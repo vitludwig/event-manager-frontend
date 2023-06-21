@@ -11,5 +11,5 @@ export interface IEvent {
 	placeId: string;
 	place: IProgramPlace;
 	favorite: boolean;
-	type: EEventType;
+	type: number;
 }

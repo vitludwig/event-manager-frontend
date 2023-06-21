@@ -20,7 +20,7 @@ export class ListEventComponent {
 	@Output()
 	public eventSelect: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
 
-	protected readonly FullProgramConfig = FullProgramConfig;
+	protected readonly fullProgramConfig = FullProgramConfig;
 
 	protected showDetail(event: IProgramEvent): void {
 		this.eventSelect.emit(event);

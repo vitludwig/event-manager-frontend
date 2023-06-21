@@ -9,6 +9,7 @@ import {MAT_BOTTOM_SHEET_DATA, MatBottomSheet} from '@angular/material/bottom-sh
 import {ProgramService} from '../../../../services/program/program.service';
 import {Router} from '@angular/router';
 import {ERoute} from '../../../../../../common/types/ERoute';
+import {FullProgramConfig} from '../../FullProgramConfig';
 
 @Component({
 	selector: 'app-event-detail-preview',
@@ -18,6 +19,7 @@ import {ERoute} from '../../../../../../common/types/ERoute';
 	styleUrls: ['./event-detail-preview.component.scss']
 })
 export class EventDetailPreviewComponent {
+	protected readonly fullProgramConfig = FullProgramConfig;
 
 	constructor(
 		private programService: ProgramService,
@@ -38,4 +40,6 @@ export class EventDetailPreviewComponent {
 		this.route.navigate(['/' + ERoute.EVENT_DETAIL, this.data.event.id]);
 		this.bottomSheet.dismiss();
 	}
+
+	protected readonly FullProgramConfig = FullProgramConfig;
 }
