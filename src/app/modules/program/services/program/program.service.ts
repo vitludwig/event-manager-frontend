@@ -11,6 +11,8 @@ import {EventService} from '../event/event.service';
 })
 export class ProgramService {
 	public userFilterOptions: IProgramFilterOptions = {};
+	public favorites: string[] = [];
+
 	public get allEvents(): IEvent[] {
 		return this.#allEvents;
 	}
@@ -40,7 +42,9 @@ export class ProgramService {
 
 	constructor(
 		private eventService: EventService,
-	) { }
+	) {
+		this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+	}
 
 	public async initWebsocket(): Promise<void> {
 		try {
@@ -48,14 +52,12 @@ export class ProgramService {
 			await this.loadProgramData();
 
 			this.eventService.on<IEvent>('newEvent', (data) => {
-				console.log('new event: ', data);
 				this.#allEvents = [...this.#allEvents, data];
 
 				this.propagateEventUpdate();
 			});
 
 			this.eventService.on<IEvent>('updateEvent', (data) => {
-				console.log('update event: ', data);
 				const index = this.#allEvents.findIndex((event) => event.id === data.id);
 				this.#allEvents[index] = data;
 
@@ -69,7 +71,11 @@ export class ProgramService {
 	public async loadProgramData(): Promise<void> {
 		this.#allPlaces = await this.eventService.getPlaces();
 		this.#allEvents = await this.eventService.getEvents();
-		console.log('allevents', this.#allEvents);
+
+		for(const event of this.#allEvents) {
+			event.favorite = this.favorites.includes(event.id);
+		}
+
 		this.loadDays();
 
 		// TODO: store them in local storage, so we can display basic data offline
@@ -127,6 +133,21 @@ export class ProgramService {
 			// TODO: resolve typing issue
 			// @ts-ignore
 			eventToUpdate[property] = value;
+		}
+		localStorage.setItem('favorites', JSON.stringify(this.getFavorites()));
+
+		this.propagateEventUpdate();
+	}
+
+	public getFavorites(): string[] {
+		return this.#allEvents.filter((event) => event.favorite).map((event) => event.id);
+	}
+
+	public loadFavorites(value: string[]): void {
+		this.favorites = value;
+		localStorage.setItem('favorites', JSON.stringify(this.favorites));
+		for(const event of this.#allEvents) {
+			event.favorite = this.favorites.includes(event.id);
 		}
 
 		this.propagateEventUpdate();

@@ -1,7 +1,7 @@
 {
-  "name": "event-program",
-  "short_name": "event-program",
-  "theme_color": "#d2348a",
+  "name": "Cybertown program",
+  "short_name": "Cybertown program",
+  "theme_color": "#125466",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

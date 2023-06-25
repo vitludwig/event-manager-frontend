@@ -1,7 +1,5 @@
-import {Component, inject, ViewChild} from '@angular/core';
-import {MatDrawer} from '@angular/material/sidenav';
+import {Component, inject} from '@angular/core';
 import {SwPush} from '@angular/service-worker';
-import {HttpClient} from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import {NotificationService} from './modules/notifications/services/notification/notification.service';
 
@@ -19,7 +17,6 @@ export class AppComponent {
 	constructor() {
 		this.handleLanguage();
 
-		// TODO: do this on app load and reflect user notification settings
 		this.#swPush.subscription.subscribe((subscription) => {
 			this.#notificationService.subscription = subscription
 			console.log('NEW ', subscription);
@@ -31,9 +28,6 @@ export class AppComponent {
 		});
 
 	}
-
-	@ViewChild('drawer')
-	public drawer: MatDrawer;
 
 	private handleLanguage(): void {
 		const language = localStorage.getItem('language');

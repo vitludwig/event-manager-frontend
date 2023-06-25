@@ -7,19 +7,30 @@
 			height: 100%;
 		}
 	}
-
 	.mat-mdc-tab {
 		background-color: rgb(var(--cy__color--background));
 
 		.mdc-tab__text-label {
-			color: #eee;
+			color: #eee !important;
 		}
 
 		&.mdc-tab--active {
 			background-color: rgb(var(--cy__color--primary-500));
 
 			.mdc-tab__text-label {
-				color: #eee;
+				color: #eee !important;
+			}
+
+			&:hover {
+				.mdc-tab__text-label {
+					color: black;
+				}
+			}
+		}
+
+		&:hover {
+			.mdc-tab__text-label {
+				color: rgb(var(--cy__color--primary-500));
 			}
 		}
 	}

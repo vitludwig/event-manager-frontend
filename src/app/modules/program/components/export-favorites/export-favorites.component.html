@@ -1,0 +1,24 @@
+<div mat-dialog-title>
+	<h2>{{'Oblíbené události' | translate}}</h2>
+</div>
+
+<div mat-dialog-content>
+	<mat-tab-group>
+		<mat-tab label="Uložit">
+			<h4>{{ 'Načtěte tento QR kód v mobilní aplikaci pro přenos oblíbených eventů.' | translate }}</h4>
+			<qrcode [qrdata]="favoritesData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+		</mat-tab>
+
+		<mat-tab label="Načíst">
+			<h4>{{ 'Načtěte QR kód z prohlížeče.' | translate }}</h4>
+			<zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+		</mat-tab>
+	</mat-tab-group>
+</div>
+
+<mat-dialog-actions align="end">
+	<button mat-raised-button
+		mat-dialog-close
+	>{{'Zrušit' | translate}}
+	</button>
+</mat-dialog-actions>

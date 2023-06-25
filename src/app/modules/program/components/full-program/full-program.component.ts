@@ -31,6 +31,7 @@ import {Subject, takeUntil} from 'rxjs';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatMenuModule} from '@angular/material/menu';
 import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
+import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
 
 
 @Component({
@@ -130,6 +131,13 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 				this.programService.userFilterOptions = result;
 				this.applyFilters(result);
 			}
+		});
+	}
+
+	protected exportFavorites(): void {
+		console.log(this.programService.getFavorites());
+		this.dialog.open(ExportFavoritesComponent, {
+			width: '500px',
 		});
 	}
 
