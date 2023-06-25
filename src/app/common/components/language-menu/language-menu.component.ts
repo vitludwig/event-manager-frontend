@@ -15,7 +15,13 @@ import {TranslateService} from '@ngx-translate/core';
 export class LanguageMenuComponent {
 	protected translate: TranslateService = inject(TranslateService);
 
+	constructor() {
+	}
+
 	protected setLanguage(language: 'cs' | 'en'): void {
 		this.translate.use(language);
+		localStorage.setItem('language', language);
+
+		window.location.reload();
 	}
 }

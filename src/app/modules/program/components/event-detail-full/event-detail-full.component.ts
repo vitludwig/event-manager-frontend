@@ -10,11 +10,22 @@ import {firstValueFrom,} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {IEvent} from '../../types/IEvent';
 import {FullProgramConfig} from '../full-program/FullProgramConfig';
+import {TranslateModule} from '@ngx-translate/core';
+import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
 
 @Component({
 	selector: 'app-event-detail-full',
 	standalone: true,
-	imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatDividerModule, NgOptimizedImage],
+	imports: [
+		CommonModule,
+		MatDialogModule,
+		MatButtonModule,
+		MatIconModule,
+		MatDividerModule,
+		NgOptimizedImage,
+		TranslateModule,
+		TranslateEventPropertyPipe,
+	],
 	templateUrl: './event-detail-full.component.html',
 	styleUrls: ['./event-detail-full.component.scss']
 })

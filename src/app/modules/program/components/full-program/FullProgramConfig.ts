@@ -10,15 +10,6 @@ export class FullProgramConfig {
 	 * Time duration of segment in minutes
 	 */
 	public static segmentDuration: number = 15;
-	public typeNames = [
-		'Soutěž/Turnaj/Larp',
-		'Živá hudba',
-		'Elektronická hudba (DJs)',
-		'Film',
-		'Show/Vystoupení',
-		'Workshop',
-		'Přednáška',
-	]
 
 	public static eventTypes: Record<number, IEventType> = {
 		0: {

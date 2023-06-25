@@ -44,7 +44,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 		BottomMenuComponent,
 		HttpClientModule,
 		TranslateModule.forRoot({
-			defaultLanguage: 'cs',
 			loader: {
 				provide: TranslateLoader,
 				useFactory: HttpLoaderFactory,

@@ -11,7 +11,14 @@
 	<mat-list-item *ngFor="let notification of notificationService.notifications()"
 		class="notifications-list__item"
 	>
-		<span matListItemTitle>{{ (notification.type === 1 && notification.eventId) ? "Změna " + eventsById[notification.eventId]?.name : 'Nová zpráva' }}</span>
+		<span matListItemTitle>
+			<ng-container *ngIf="notification.type === 1 && notification.eventId">
+				{{ 'Změna' | translate: {eventName: eventsById[notification.eventId]?.name} }}
+			</ng-container>
+			<ng-container *ngIf="notification.type !== 1 || notification.eventId === undefined">
+				{{ 'Nová zpráva' | translate }}
+			</ng-container>
+		</span>
 		<span matListItemLine *ngFor="let property of notification.changedProperties | stringToJson | keyvalue">
 			{{ property.key }}: {{ property.value }}
 		</span>

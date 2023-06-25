@@ -21,7 +21,8 @@ export class AppComponent {
 	#httpClient = inject(HttpClient);
 
 	constructor() {
-		this.#translate.setDefaultLang(this.#translate.getBrowserLang() ?? 'cs');
+		this.handleLanguage();
+
 		// TODO: do this on app load and reflect user notification settings
 		this.#swPush.subscription.subscribe((subscription) => {
 			this._subscription = subscription;
@@ -68,5 +69,12 @@ export class AppComponent {
 				error => console.error(error)
 			))
 			.catch(error => console.error(error));
+	}
+
+	private handleLanguage(): void {
+		const language = localStorage.getItem('language');
+
+		this.#translate.setDefaultLang(language ?? this.#translate.getBrowserLang() ?? 'cs');
+		this.#translate.use(language ?? this.#translate.defaultLang);
 	}
 }

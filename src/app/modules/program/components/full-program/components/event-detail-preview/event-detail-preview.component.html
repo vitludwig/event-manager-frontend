@@ -6,8 +6,8 @@
 		</div>
 
 		<div class="event-detail__content__info">
-			<h3>{{ data.event.name }}</h3>
-			<h4>{{ fullProgramConfig.eventTypes[data.event.type].name }}</h4>
+			<h3>{{ data.event | translateEventProperty: 'name' }}</h3>
+			<h4>{{ fullProgramConfig.eventTypes[data.event.type].name | translate }}</h4>
 			<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
 		</div>
 	</div>

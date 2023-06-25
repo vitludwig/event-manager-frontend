@@ -5,7 +5,7 @@
 		<ng-container *ngFor="let day of groupEvents | keyvalue">
 			<div role="listitem"
 				class="list-vertical__day">
-				{{ day.key | date: 'EEEE'}}
+				{{ ((day.key | date: 'EEEE') || '') | translate }}
 			</div>
 
 			<div *ngIf="day.value.length > 0"
@@ -13,10 +13,10 @@
 			>
 				<div *ngFor="let event of day.value"
 					(click)="openFullDetail(event)"
-					role="listitem"
-					class="list-vertical__event"
 					[style.border-left]="'8px solid ' + fullProgramConfig.eventTypes[event.type].color"
 					matRipple
+					role="listitem"
+					class="list-vertical__event"
 				>
 					<div class="list-vertical__event__content">
 						<span class="list-vertical__event__content__time">
@@ -32,8 +32,8 @@
 							</span>
 
 							<span class="list-vertical__event__content__title">
-								<span style="margin-bottom: 15px">{{ event.name }}</span>
-								<small>{{fullProgramConfig.eventTypes[event.type].name }}</small>
+								<span style="margin-bottom: 15px">{{ event | translateEventProperty: 'name' }}</span>
+								<small>{{fullProgramConfig.eventTypes[event.type].name | translate }}</small>
 								<small>{{event.place.name }}</small>
 							</span>
 						</div>

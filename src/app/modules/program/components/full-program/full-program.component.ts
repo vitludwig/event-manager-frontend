@@ -244,7 +244,6 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.programService.places$
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((places) => {
-				console.log('new places', places);
 				this.places = places;
 			});
 	}
@@ -262,7 +261,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	 * @protected
 	 */
 	private getParsedDays(days: Record<number, number>): { id: number; name: string }[] {
-		return Object.entries(days).map(([id, date]) => {
+		return Object.entries(days).sort().map(([id, date]) => {
 			return {
 				id: Number(id),
 				name: dayjs(date).format('dddd')

@@ -33,7 +33,7 @@ import {TranslateModule} from '@ngx-translate/core';
 	styleUrls: ['./notifications.component.scss']
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
-	protected eventsById: Record<string, IEvent> = {};
+	protected eventsById: Record<string, IEvent | null> = {};
 	#unsubscribe: Subject<void> = new Subject<void>();
 
 	constructor(

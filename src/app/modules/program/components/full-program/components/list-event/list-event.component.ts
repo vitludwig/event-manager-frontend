@@ -5,11 +5,12 @@ import {IProgramEvent} from '../../../../types/IProgramPlace';
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {TruncatePipe} from '../../../../../../common/pipes/truncate/truncate.pipe';
 import {MatIconModule} from '@angular/material/icon';
+import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
 
 @Component({
 	selector: 'app-list-event',
 	standalone: true,
-	imports: [CommonModule, MatButtonModule, TruncatePipe, MatIconModule],
+	imports: [CommonModule, MatButtonModule, TruncatePipe, MatIconModule, TranslateEventPropertyPipe],
 	templateUrl: './list-event.component.html',
 	styleUrls: ['./list-event.component.scss']
 })

@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, inject, Inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
@@ -30,16 +30,11 @@ export class ProgramVerticalListDialogComponent implements OnInit {
 	protected search: string = '';
 	protected filteredEvents: IProgramEvent[] = [];
 
-	constructor(
-		@Inject(MAT_DIALOG_DATA) public data: { events: IProgramEvent[] },
-	) {
-
-	}
+	protected data: { events: IProgramEvent[] } = inject(MAT_DIALOG_DATA);
 
 	public ngOnInit(): void {
 		this.filteredEvents = this.data.events;
 	}
-
 
 	@debounce()
 	protected searchEvents(search: string): void {

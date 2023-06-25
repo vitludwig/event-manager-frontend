@@ -17,7 +17,7 @@
 			placeholder="Place"
 			multiple
 		>
-			<mat-option *ngFor="let place of places$ | async"
+			<mat-option *ngFor="let place of programService.places$ | async"
 				[value]="place.id"
 			>
 				{{ place.name }}
@@ -34,7 +34,7 @@
 			<mat-option *ngFor="let item of eventTypes"
 				[value]="item.id"
 			>
-				{{ item.name }}
+				{{ item.name | translate }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>

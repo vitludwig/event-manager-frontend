@@ -10,11 +10,21 @@ import {ProgramService} from '../../../../services/program/program.service';
 import {Router} from '@angular/router';
 import {ERoute} from '../../../../../../common/types/ERoute';
 import {FullProgramConfig} from '../../FullProgramConfig';
+import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-event-detail-preview',
 	standalone: true,
-	imports: [CommonModule, MatButtonModule, MatIconModule, TruncatePipe, MatDialogModule],
+	imports: [
+		CommonModule,
+		MatButtonModule,
+		MatIconModule,
+		TruncatePipe,
+		MatDialogModule,
+		TranslateEventPropertyPipe,
+		TranslateModule
+	],
 	templateUrl: './event-detail-preview.component.html',
 	styleUrls: ['./event-detail-preview.component.scss']
 })
@@ -26,7 +36,7 @@ export class EventDetailPreviewComponent {
 		private dialog: MatDialog,
 		private bottomSheet: MatBottomSheet,
 		private route: Router,
-		@Inject(MAT_BOTTOM_SHEET_DATA) public data: {event: IProgramEvent},
+		@Inject(MAT_BOTTOM_SHEET_DATA) public data: { event: IProgramEvent },
 	) {
 	}
 

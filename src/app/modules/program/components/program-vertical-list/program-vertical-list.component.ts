@@ -12,6 +12,8 @@ import {MatRippleModule} from '@angular/material/core';
 import {EventDetailFullComponent} from '../event-detail-full/event-detail-full.component';
 import {MatDialog} from '@angular/material/dialog';
 import {FullProgramConfig} from '../full-program/FullProgramConfig';
+import {TranslateModule} from '@ngx-translate/core';
+import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
 
 @Component({
 	selector: 'app-program-vertical-list',
@@ -22,6 +24,8 @@ import {FullProgramConfig} from '../full-program/FullProgramConfig';
 		MatButtonModule,
 		MatIconModule,
 		MatRippleModule,
+		TranslateModule,
+		TranslateEventPropertyPipe,
 	],
 	templateUrl: './program-vertical-list.component.html',
 	styleUrls: ['./program-vertical-list.component.scss']
@@ -30,7 +34,9 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	@Input()
 	public set events(value: IEvent[] | null) {
 		this.#events = value;
-		//this.groupEvents = this.getGroupedEventsByDay(value);
+		if(this.#days) {
+			this.groupEvents = this.getGroupedEventsByDay(value, this.#days);
+		}
 	}
 
 	public get events(): IEvent[] | null {
@@ -43,6 +49,7 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 
 	#events: IEvent[] | null = [];
 	#unsubscribe: Subject<void> = new Subject<void>();
+	#days: Record<number, number> = {};
 
 	constructor(
 		private programService: ProgramService,
@@ -55,8 +62,8 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 		this.programService.days$
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe(days => {
+				this.#days = days;
 				this.groupEvents = this.getGroupedEventsByDay(this.events, days);
-				console.log('group events', this.groupEvents);
 			});
 
 		this.programService.places$

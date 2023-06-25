@@ -5,7 +5,7 @@
 	*ngIf="event"
 	(click)="showDetail(event)"
 >
-	{{ event.name }}
+	{{ event | translateEventProperty: 'name' }}
 	<div class="d-flex justify-content-between">
 		<small>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</small>
 		<mat-icon *ngIf="event.favorite"

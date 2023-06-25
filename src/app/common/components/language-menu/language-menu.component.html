@@ -1,7 +1,7 @@
 <button mat-icon-button
 	[matMenuTriggerFor]="menu"
 >
-	<img [src]="'assets/images/' + (translate.currentLang ?? translate.defaultLang) + '_flag.png'"
+	<img [src]="'assets/images/' + (translate.currentLang) + '_flag.png'"
 		class="flag">
 </button>
 <mat-menu #menu="matMenu"

@@ -10,6 +10,16 @@
   "Druh akce": "Event type",
   "Zobrazit oblíbené": "Show favorites",
   "Dnes tu není žádná akce": "There's no event today",
+  "Změna {{eventName}}": "Update {{eventName}}",
+
+  "Soutěž/Turnaj/Larp": "Competition/Tournament/Larp",
+  "Živá hudba": "Live music",
+  "Elektronická hudba (DJs)": "Electronic music (DJs)",
+  "Film": "Movie",
+  "Show/Vystoupení": "Show/Performance",
+  "Workshop": "Workshop",
+  "Přednáška": "Lecture",
+
   "Pondělí": "Monday",
   "Úterý": "Tuesday",
   "Středa": "Wednesday",

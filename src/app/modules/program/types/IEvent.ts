@@ -1,4 +1,3 @@
-import {EEventType} from './EEventType';
 import {IProgramPlace} from './IProgramPlace';
 
 export interface IEvent {
