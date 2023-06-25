@@ -7,6 +7,7 @@ import {MatOptionModule} from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {INotificationSettings} from '../../types/INotificationSettings';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-notifications-settings',
@@ -18,7 +19,8 @@ import {INotificationSettings} from '../../types/INotificationSettings';
 		MatFormFieldModule,
 		MatOptionModule,
 		MatSelectModule,
-		MatSlideToggleModule
+		MatSlideToggleModule,
+		TranslateModule,
 	],
 	templateUrl: './notifications-settings.component.html',
 	styleUrls: ['./notifications-settings.component.scss']

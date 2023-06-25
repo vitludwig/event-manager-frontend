@@ -28,6 +28,10 @@ import {
 	ProgramVerticalListDialogComponent
 } from '../program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
 import {Subject, takeUntil} from 'rxjs';
+import {TranslateModule} from '@ngx-translate/core';
+import {MatMenuModule} from '@angular/material/menu';
+import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
+
 
 @Component({
 	selector: 'app-full-program',
@@ -46,6 +50,8 @@ import {Subject, takeUntil} from 'rxjs';
 		MatButtonModule,
 		MatIconModule,
 		MatDialogModule,
+		TranslateModule,
+		LanguageMenuComponent,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']

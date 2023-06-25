@@ -1,6 +1,6 @@
 <div mat-dialog-title>
 	<div class="list-filter__title">
-		<h2>Nastavení</h2>
+		<h2>{{'Nastavení' | translate}}</h2>
 	</div>
 </div>
 
@@ -11,17 +11,20 @@
 		[checked]="data.showNotifications"
 		(change)="data.showNotifications = $event.checked"
 	>
-		Zobrazovat notifikace
+		{{'Zobrazovat notifikace' | translate}}
 	</mat-slide-toggle>
 
 </div>
 
 <mat-dialog-actions align="end">
 	<button mat-raised-button
-		mat-dialog-close>Zrušit
+		mat-dialog-close
+	>{{'Zrušit' | translate}}
 	</button>
+
 	<button mat-raised-button
 		color="primary"
-		[mat-dialog-close]="data">Potvrdit
+		[mat-dialog-close]="data"
+	>{{'Potvrdit' | translate}}
 	</button>
 </mat-dialog-actions>

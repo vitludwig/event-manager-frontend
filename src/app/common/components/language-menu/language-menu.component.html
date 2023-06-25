@@ -1,0 +1,22 @@
+<button mat-icon-button
+	[matMenuTriggerFor]="menu"
+>
+	<img [src]="'assets/images/' + (translate.currentLang ?? translate.defaultLang) + '_flag.png'"
+		class="flag">
+</button>
+<mat-menu #menu="matMenu"
+	class="language-menu"
+>
+	<button mat-menu-item
+		(click)="setLanguage('cs')"
+	>
+		<img src="assets/images/cs_flag.png"
+			class="flag">
+	</button>
+	<button mat-menu-item
+		(click)="setLanguage('en')"
+	>
+		<img src="assets/images/en_flag.png"
+			class="flag">
+	</button>
+</mat-menu>

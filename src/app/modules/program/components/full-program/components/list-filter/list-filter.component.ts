@@ -15,6 +15,7 @@ import {IProgramFilterOptions} from '../../types/IProgramFilterOptions';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {IEventType} from '../../../../types/IEventType';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-list-filter',
@@ -29,6 +30,7 @@ import {IEventType} from '../../../../types/IEventType';
 		MatFormFieldModule,
 		MatSelectModule,
 		MatSlideToggleModule,
+		TranslateModule,
 	],
 	templateUrl: './list-filter.component.html',
 	styleUrls: ['./list-filter.component.scss']

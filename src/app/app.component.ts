@@ -1,7 +1,8 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, inject, ViewChild} from '@angular/core';
 import {MatDrawer} from '@angular/material/sidenav';
 import {SwPush} from '@angular/service-worker';
 import {HttpClient} from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-root',
@@ -14,12 +15,15 @@ export class AppComponent {
 	#publicKey = 'BM8bnspodQNmqUo03YgrvzhPiRZP5paOop_NK_SiRJfG8GW9DUw-H-FtXVQYtmLAMiakkFhc4KCdT6ep7InBbu0';
 	#privateKey = 'oOxhtspU0M-4dvui_leF9Lh13o177XGqTl85wsCnr2U';
 
-	constructor(
-		private swPush: SwPush,
-		private httpClient: HttpClient,
-	) {
+
+	#translate = inject(TranslateService);
+	#swPush = inject(SwPush);
+	#httpClient = inject(HttpClient);
+
+	constructor() {
+		this.#translate.setDefaultLang(this.#translate.getBrowserLang() ?? 'cs');
 		// TODO: do this on app load and reflect user notification settings
-		swPush.subscription.subscribe((subscription) => {
+		this.#swPush.subscription.subscribe((subscription) => {
 			this._subscription = subscription;
 			this.operationName = (this._subscription === null) ? 'Subscribe' : 'Unsubscribe';
 		}, (err) => {
@@ -42,11 +46,11 @@ export class AppComponent {
 	private subscribe() {
 		// Retrieve public VAPID key from the server
 
-		this.swPush.requestSubscription({
+		this.#swPush.requestSubscription({
 			serverPublicKey: this.#publicKey
 		})
 			.then((subscription) => {
-				this.httpClient.post('/api/v1/notification/subscription', subscription).subscribe(
+				this.#httpClient.post('/api/v1/notification/subscription', subscription).subscribe(
 					() => console.log('Sent push subscription object to server.'),
 					(error) => console.log('Could not send subscription object to server, reason: ', error)
 				);
@@ -58,8 +62,8 @@ export class AppComponent {
 	}
 
 	private unsubscribe(endpoint: any) {
-		this.swPush.unsubscribe()
-			.then(() => this.httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
+		this.#swPush.unsubscribe()
+			.then(() => this.#httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
 				},
 				error => console.error(error)
 			))

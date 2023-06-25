@@ -1,11 +1,17 @@
 <div class="full-program">
 	<mat-toolbar class="full-program__toolbar">
-		<span>Program</span>
+		<span>{{'Program' | translate}}</span>
 		<div class="full-program__toolbar__actions">
-			<button mat-icon-button aria-label="Filter events" (click)="showFilters()">
+			<app-language-menu></app-language-menu>
+
+			<button mat-icon-button
+				aria-label="Filter events"
+				(click)="showFilters()">
 				<mat-icon>filter_list</mat-icon>
 			</button>
-			<button mat-icon-button aria-label="Search events" (click)="showEventList()">
+			<button mat-icon-button
+				aria-label="Search events"
+				(click)="showEventList()">
 				<mat-icon>search</mat-icon>
 			</button>
 		</div>
@@ -40,7 +46,7 @@
 
 	<ng-template #noEvents>
 		<div class="full-program__no-events">
-			<h2>No events for this day</h2>
+			<h2>{{'Dnes tu není žádná akce' | translate}}</h2>
 		</div>
 	</ng-template>
 </div>

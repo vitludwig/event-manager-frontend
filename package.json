@@ -23,6 +23,8 @@
     "@angular/router": "^16.0.5",
     "@angular/service-worker": "^16.0.5",
     "@microsoft/signalr": "^7.0.5",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "@types/signalr": "^2.4.0",
     "augmented-ui": "^2.0.0",
     "dayjs": "^1.11.7",

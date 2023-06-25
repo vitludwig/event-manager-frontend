@@ -10,12 +10,10 @@ import {Subject, takeUntil} from 'rxjs';
 import {IEvent} from '../program/types/IEvent';
 import {StringToJsonPipe} from '../../common/pipes/string-to-json/string-to-json.pipe';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import {
-	ProgramVerticalListDialogComponent
-} from '../program/components/program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {NotificationsSettingsComponent} from './components/notifications-settings/notifications-settings.component';
 import {INotificationSettings} from './types/INotificationSettings';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-notifications',
@@ -29,6 +27,7 @@ import {INotificationSettings} from './types/INotificationSettings';
 		MatToolbarModule,
 		MatDialogModule,
 		StringToJsonPipe,
+		TranslateModule
 	],
 	templateUrl: './notifications.component.html',
 	styleUrls: ['./notifications.component.scss']
