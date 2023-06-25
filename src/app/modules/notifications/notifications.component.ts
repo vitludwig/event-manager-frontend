@@ -14,6 +14,9 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {NotificationsSettingsComponent} from './components/notifications-settings/notifications-settings.component';
 import {INotificationSettings} from './types/INotificationSettings';
 import {TranslateModule} from '@ngx-translate/core';
+import {
+	TranslateNotificationPropertiesPipe
+} from './pipes/translate-notification-properties/translate-notification-properties.pipe';
 
 @Component({
 	selector: 'app-notifications',
@@ -27,7 +30,8 @@ import {TranslateModule} from '@ngx-translate/core';
 		MatToolbarModule,
 		MatDialogModule,
 		StringToJsonPipe,
-		TranslateModule
+		TranslateModule,
+		TranslateNotificationPropertiesPipe
 	],
 	templateUrl: './notifications.component.html',
 	styleUrls: ['./notifications.component.scss']
@@ -66,9 +70,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
 		dialog.afterClosed().subscribe((result: INotificationSettings) => {
 			if(result) {
-				console.log('result', result);
 				this.notificationService.showNotifications = result.showNotifications;
-				// TODO: unsubscribe from notifications
+
+				if(result.showNotifications) {
+					this.notificationService.subscribe();
+				} else {
+					this.notificationService.unsubscribe();
+				}
 			}
 		});
 	}
