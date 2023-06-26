@@ -3,6 +3,7 @@ import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr'
 import {INotification} from '../../types/INotification';
 import {SwPush} from '@angular/service-worker';
 import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../../../environments/environment';
 
 
 @Injectable({
@@ -69,7 +70,7 @@ export class NotificationService {
 	private async initWebsocket(): Promise<void> {
 		this.#connection = new HubConnectionBuilder()
 			.configureLogging(LogLevel.Critical)
-			.withUrl('signalr/notifications')
+			.withUrl(environment.apiBaseUrl + 'signalr/notifications')
 			.build();
 
 		try {
