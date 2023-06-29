@@ -5,13 +5,14 @@ import * as dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 import {EventService} from '../event/event.service';
+import {NotificationService} from '../../../notifications/services/notification/notification.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ProgramService {
 	public userFilterOptions: IProgramFilterOptions = {};
-	public favorites: string[] = [];
+	public favorites: IEvent[] = [];
 
 	public get allEvents(): IEvent[] {
 		return this.#allEvents;
@@ -42,6 +43,7 @@ export class ProgramService {
 
 	constructor(
 		private eventService: EventService,
+		private notificationService: NotificationService,
 	) {
 		this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 	}
@@ -53,14 +55,15 @@ export class ProgramService {
 
 			this.eventService.on<IEvent>('newEvent', (data) => {
 				this.#allEvents = [...this.#allEvents, data];
-
 				this.propagateEventUpdate();
 			});
 
 			this.eventService.on<IEvent>('updateEvent', (data) => {
 				const index = this.#allEvents.findIndex((event) => event.id === data.id);
 				this.#allEvents[index] = data;
+				this.notificationService.showLocalNotification('update event', data.name);
 
+				this.updateFavorites();
 				this.propagateEventUpdate();
 			});
 		} catch(e) {
@@ -73,7 +76,7 @@ export class ProgramService {
 		this.#allEvents = await this.eventService.getEvents();
 
 		for(const event of this.#allEvents) {
-			event.favorite = this.favorites.includes(event.id);
+			event.favorite = this.favorites.map((obj) => obj.id).includes(event.id);
 		}
 
 		this.loadDays();
@@ -82,7 +85,6 @@ export class ProgramService {
 	}
 
 	public getEvents(day?: number): Observable<IEvent[]> {
-		// TODO: implement websocket
 		let result = this.#allEvents;
 
 		if(day) {
@@ -134,21 +136,29 @@ export class ProgramService {
 			// @ts-ignore
 			eventToUpdate[property] = value;
 		}
-		localStorage.setItem('favorites', JSON.stringify(this.getFavorites()));
-
+		if(property === 'favorite') {
+			this.updateFavorites();
+		}
 		this.propagateEventUpdate();
 	}
 
-	public getFavorites(): string[] {
-		return this.#allEvents.filter((event) => event.favorite).map((event) => event.id);
+	public getFavorites(): IEvent[] {
+		return this.#allEvents.filter((event) => event.favorite);
+	}
+
+	private updateFavorites(): void {
+		this.favorites = this.getFavorites();
+		console.log('new favorites', this.favorites);
+		localStorage.setItem('favorites', JSON.stringify(this.favorites.map((obj) => obj.id)));
 	}
 
 	public loadFavorites(value: string[]): void {
-		this.favorites = value;
-		localStorage.setItem('favorites', JSON.stringify(this.favorites));
 		for(const event of this.#allEvents) {
-			event.favorite = this.favorites.includes(event.id);
+			event.favorite = value.includes(event.id);
 		}
+
+		this.favorites = this.getFavorites();
+		localStorage.setItem('favorites', JSON.stringify(this.favorites.map((obj) => obj.id)));
 
 		this.propagateEventUpdate();
 	}

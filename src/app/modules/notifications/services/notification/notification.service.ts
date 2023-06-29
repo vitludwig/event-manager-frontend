@@ -11,6 +11,7 @@ import {HttpClient} from '@angular/common/http';
 export class NotificationService {
 	public notifications: WritableSignal<INotification[]> = signal([]);
 	public subscription: PushSubscription | null;
+	public notificationRegistration: ServiceWorkerRegistration;
 
 	public get showNotifications(): boolean {
 		return localStorage.getItem('showNotifications') === 'true';
@@ -64,6 +65,10 @@ export class NotificationService {
 				error => console.error(error)
 			))
 			.catch(error => console.error(error));
+	}
+
+	public showLocalNotification(title: string, body: string = ''): Promise<void> {
+		return this.notificationRegistration.showNotification('[LOCAL] ' + title, {body: body});
 	}
 
 	private async initWebsocket(): Promise<void> {

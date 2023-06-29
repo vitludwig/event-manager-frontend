@@ -32,7 +32,8 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/notification.worker.js"
             ],
             "styles": [
               "node_modules/augmented-ui/augmented-ui.min.css",

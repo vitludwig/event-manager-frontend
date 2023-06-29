@@ -33,7 +33,7 @@ export class ExportFavoritesComponent implements OnInit {
 	#dialogRef: MatDialogRef<void> = inject(MatDialogRef<void>);
 
 	public ngOnInit(): void {
-		this.favoritesData = JSON.stringify(this.#programService.getFavorites());
+		this.favoritesData = JSON.stringify(this.#programService.getFavorites().map((event) => event.id));
 	}
 
 	protected onCodeResult(resultString: string): void {
