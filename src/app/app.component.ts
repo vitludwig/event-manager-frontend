@@ -36,19 +36,22 @@ export class AppComponent {
 		// }, (err) => {
 		// 	console.error('Notification subscription error: ', err);
 		// });
-		// this.oneSignal.init({
-		// 	appId: "31a5956f-5e42-4af4-a178-6da520ecac86",
-		// 	promptOptions: {
-		// 		slidedown: {
-		// 			enabled: true,
-		// 			autoPrompt: true,
-		// 			timeDelay: 5,
-		// 		}
-		// 	}
-		// }).then(() => {
-		// 	// this.oneSignal.showNativePrompt();
-		// 	console.log('OneSignal initialized');
-		// });
+		this.oneSignal.init({
+			appId: "31a5956f-5e42-4af4-a178-6da520ecac86",
+			promptOptions: {
+				slidedown: {
+					enabled: true,
+					autoPrompt: true,
+					timeDelay: 5,
+				}
+			},
+			serviceWorkerParam: {
+				scope: '/src/app/'
+			}
+		}).then(() => {
+			// this.oneSignal.showNativePrompt();
+			console.log('OneSignal initialized');
+		});
 	}
 
 	private handleLanguage(): void {
