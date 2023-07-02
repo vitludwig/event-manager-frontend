@@ -71,7 +71,6 @@ export class NotificationService {
 		return this.notificationRegistration.showNotification('[LOCAL] ' + title, {
 			body: body,
 			icon: '/assets/icons/icon-72x72.png',
-			image: '/assets/icons/icon-72x72.png',
 		});
 	}
 
