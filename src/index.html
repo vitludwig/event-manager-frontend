@@ -10,6 +10,15 @@
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link rel="manifest" href="manifest.webmanifest">
+	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" defer></script>
+	<script>
+		window.OneSignal = window.OneSignal || [];
+		OneSignal.push(function() {
+			OneSignal.init({
+				appId: "31a5956f-5e42-4af4-a178-6da520ecac86",
+			});
+		});
+	</script>
 </head>
 <body class="mat-typography">
 	<app-root></app-root>

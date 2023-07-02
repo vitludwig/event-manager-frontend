@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {IEvent} from '../../types/IEvent';
 import * as dayjs from 'dayjs';
@@ -6,6 +6,7 @@ import {IProgramPlace} from '../../types/IProgramPlace';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 import {EventService} from '../event/event.service';
 import {NotificationService} from '../../../notifications/services/notification/notification.service';
+import { AngularDeviceInformationService } from 'angular-device-information';
 
 @Injectable({
 	providedIn: 'root'
@@ -41,6 +42,8 @@ export class ProgramService {
 	public places$: Observable<IProgramPlace[]> = this.#places.asObservable();
 	public days$ = this.#days.asObservable();
 
+	private readonly deviceInformationService: AngularDeviceInformationService = inject(AngularDeviceInformationService);
+
 	constructor(
 		private eventService: EventService,
 		private notificationService: NotificationService,
@@ -61,7 +64,9 @@ export class ProgramService {
 			this.eventService.on<IEvent>('updateEvent', (data) => {
 				const index = this.#allEvents.findIndex((event) => event.id === data.id);
 				this.#allEvents[index] = data;
-				this.notificationService.showLocalNotification('update event', data.name);
+				if(this.deviceInformationService.getDeviceInfo().os === 'iOS') {
+					this.notificationService.showLocalNotification('update event', data.name);
+				}
 
 				this.updateFavorites();
 				this.propagateEventUpdate();

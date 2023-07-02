@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "Cybertown program",
   "short_name": "Cybertown program",
   "theme_color": "#125466",

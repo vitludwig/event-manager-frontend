@@ -3,6 +3,7 @@ import {SwPush} from '@angular/service-worker';
 import { TranslateService } from '@ngx-translate/core';
 import {NotificationService} from './modules/notifications/services/notification/notification.service';
 import {ProgramService} from './modules/program/services/program/program.service';
+import { AngularDeviceInformationService } from 'angular-device-information';
 import * as dayjs from 'dayjs';
 
 @Component({
@@ -16,7 +17,7 @@ export class AppComponent {
 	private readonly swPush = inject(SwPush);
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
-	
+	private readonly deviceInformationService: AngularDeviceInformationService = inject(AngularDeviceInformationService);
 	#alreadyNotified: string[] = [];
 
 	constructor() {
@@ -33,7 +34,6 @@ export class AppComponent {
 		}, (err) => {
 			console.error('Notification subscription error: ', err);
 		});
-
 	}
 
 	private handleLanguage(): void {
