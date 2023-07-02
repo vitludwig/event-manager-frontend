@@ -32,7 +32,6 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest",
               "src/push/onesignal/OneSignalSDKWorker.js"
             ],
             "styles": [
@@ -44,9 +43,7 @@
                 "src/styles"
               ]
             },
-            "scripts": [],
-            "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json"
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -62,9 +59,7 @@
                   "maximumError": "2mb"
                 }
               ],
-              "outputHashing": "all",
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              "outputHashing": "all"
             },
             "development": {
               "buildOptimizer": false,
@@ -73,8 +68,7 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              "serviceWorker": true
             }
           },
           "defaultConfiguration": "production"
