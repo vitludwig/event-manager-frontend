@@ -69,7 +69,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
 		dialog.afterClosed().subscribe(async (result: INotificationSettings) => {
 			if(result) {
-				this.oneSignal.showNativePrompt();
+				this.oneSignal.showSlidedownPrompt();
 				this.notificationService.showNotifications = result.showNotifications;
 				// if(result.showNotifications) {
 				// 	const permission = await Notification.requestPermission();
