@@ -14,7 +14,7 @@ import * as dayjs from 'dayjs';
 export class AppComponent {
 
 	private readonly translate = inject(TranslateService);
-	private readonly swPush = inject(SwPush);
+	// private readonly swPush = inject(SwPush);
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly deviceInformationService: AngularDeviceInformationService = inject(AngularDeviceInformationService);
@@ -22,18 +22,18 @@ export class AppComponent {
 
 	constructor() {
 		this.handleLanguage();
-		this.handleLocalNotifications();
-		this.handlePermissions();
+		// this.handleLocalNotifications();
+		// this.handlePermissions();
 
-		this.swPush.subscription.subscribe((subscription) => {
-			this.notificationService.subscription = subscription
-			console.log('NEW ', subscription);
-			if(!subscription && this.notificationService.showNotifications) {
-				this.notificationService.subscribe();
-			}
-		}, (err) => {
-			console.error('Notification subscription error: ', err);
-		});
+		// this.swPush.subscription.subscribe((subscription) => {
+		// 	this.notificationService.subscription = subscription
+		// 	console.log('NEW ', subscription);
+		// 	if(!subscription && this.notificationService.showNotifications) {
+		// 		this.notificationService.subscribe();
+		// 	}
+		// }, (err) => {
+		// 	console.error('Notification subscription error: ', err);
+		// });
 	}
 
 	private handleLanguage(): void {

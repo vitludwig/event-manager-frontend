@@ -24,7 +24,7 @@ export class NotificationService {
 	#connection: HubConnection;
 	#publicKey = 'BM8bnspodQNmqUo03YgrvzhPiRZP5paOop_NK_SiRJfG8GW9DUw-H-FtXVQYtmLAMiakkFhc4KCdT6ep7InBbu0';
 
-	private readonly swPush: SwPush = inject(SwPush);
+	// private readonly swPush: SwPush = inject(SwPush);
 	private readonly httpClient = inject(HttpClient);
 
 
@@ -38,18 +38,18 @@ export class NotificationService {
 	public subscribe() {
 		// Retrieve public VAPID key from the server
 
-		this.swPush.requestSubscription({
-			serverPublicKey: this.#publicKey
-		})
-			.then((subscription) => {
-				this.httpClient.post('/api/v1/notification/subscription', subscription).subscribe(
-					() => console.log('Sent push subscription object to server.'),
-					(error) => console.log('Could not send subscription object to server, reason: ', error)
-				);
-			})
-			.catch(error => {
-				console.error(error);
-			});
+		// this.swPush.requestSubscription({
+		// 	serverPublicKey: this.#publicKey
+		// })
+		// 	.then((subscription) => {
+		// 		this.httpClient.post('/api/v1/notification/subscription', subscription).subscribe(
+		// 			() => console.log('Sent push subscription object to server.'),
+		// 			(error) => console.log('Could not send subscription object to server, reason: ', error)
+		// 		);
+		// 	})
+		// 	.catch(error => {
+		// 		console.error(error);
+		// 	});
 	}
 
 	public unsubscribe() {
@@ -59,12 +59,12 @@ export class NotificationService {
 		}
 
 		const endpoint = this.subscription.endpoint;
-		this.swPush.unsubscribe()
-			.then(() => this.httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
-				},
-				error => console.error(error)
-			))
-			.catch(error => console.error(error));
+		// this.swPush.unsubscribe()
+		// 	.then(() => this.httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
+		// 		},
+		// 		error => console.error(error)
+		// 	))
+		// 	.catch(error => console.error(error));
 	}
 
 	public showLocalNotification(title: string, body: string = ''): Promise<void> {
