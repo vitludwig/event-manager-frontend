@@ -45,7 +45,7 @@ export class ProgramService {
 		private eventService: EventService,
 		private notificationService: NotificationService,
 	) {
-		this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
 	}
 
 	public async initWebsocket(): Promise<void> {
@@ -80,7 +80,7 @@ export class ProgramService {
 		}
 
 		this.loadDays();
-
+		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
 		// TODO: store them in local storage, so we can display basic data offline
 	}
 

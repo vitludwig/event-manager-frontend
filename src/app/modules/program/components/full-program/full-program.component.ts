@@ -1,5 +1,5 @@
 import {
-	Component, OnDestroy,
+	Component, inject, OnDestroy,
 	OnInit
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -8,7 +8,6 @@ import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
 import * as dayjs from 'dayjs';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
-import {PersonalProgramComponent} from '../personal-program/personal-program.component';
 import {Dayjs} from 'dayjs';
 import {IProgramSegment} from './types/IProgramSegment';
 import {FullProgramConfig} from './FullProgramConfig';
@@ -29,9 +28,9 @@ import {
 } from '../program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
 import {Subject, takeUntil} from 'rxjs';
 import {TranslateModule} from '@ngx-translate/core';
-import {MatMenuModule} from '@angular/material/menu';
 import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
+import {NotificationService} from '../../../notifications/services/notification/notification.service';
 
 
 @Component({
@@ -40,7 +39,6 @@ import {ExportFavoritesComponent} from '../export-favorites/export-favorites.com
 	imports: [
 		CommonModule,
 		MatTabsModule,
-		PersonalProgramComponent,
 		ListEventComponent,
 		EventDetailPreviewComponent,
 		ListTimelineComponent,
@@ -76,7 +74,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 	protected set selectedDay(value: number) {
 		this.#selectedDay = value;
-		this.applyFilters(this.programService.userFilterOptions);
+		this.applyFilters(this.#programService.userFilterOptions);
 	}
 
 	protected readonly FullProgramConfig = FullProgramConfig;
@@ -85,13 +83,10 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	#selectedDay: number;
 	#unsubscribe: Subject<void> = new Subject<void>();
 
-	constructor(
-		private programService: ProgramService,
-		private bottomSheet: MatBottomSheet,
-		private dialog: MatDialog,
-	) {
-
-	}
+	#programService: ProgramService = inject(ProgramService);
+	#bottomSheet: MatBottomSheet = inject(MatBottomSheet);
+	#dialog: MatDialog = inject(MatDialog);
+	#notificationService: NotificationService = inject(NotificationService);
 
 	public ngOnInit(): void {
 		this.loadPlaces();
@@ -105,7 +100,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	}
 
 	protected showEventDetail(event: IProgramEvent): void {
-		this.bottomSheet.open(EventDetailPreviewComponent, {
+		this.#bottomSheet.open(EventDetailPreviewComponent, {
 			data: {event: event},
 			panelClass: 'mat-bottom-sheet-fullwidth',
 		});
@@ -113,32 +108,35 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	}
 
 	protected showEventList(): void {
-		this.dialog.open(ProgramVerticalListDialogComponent, {
-			data: {events: this.programService.allEvents},
+		this.#dialog.open(ProgramVerticalListDialogComponent, {
+			data: {events: this.#programService.allEvents},
 			panelClass: 'full-overlay',
 		});
 	}
 
 
 	protected showFilters(): void {
-		const dialog = this.dialog.open(ListFilterComponent, {
-			data: {options: this.programService.userFilterOptions},
+		const dialog = this.#dialog.open(ListFilterComponent, {
+			data: {options: this.#programService.userFilterOptions},
 		});
 
 		dialog.afterClosed().subscribe((result) => {
 			console.log('result:', result);
 			if(result) {
-				this.programService.userFilterOptions = result;
+				this.#programService.userFilterOptions = result;
 				this.applyFilters(result);
 			}
 		});
 	}
 
 	protected exportFavorites(): void {
-		console.log(this.programService.getFavorites());
-		this.dialog.open(ExportFavoritesComponent, {
+		this.#dialog.open(ExportFavoritesComponent, {
 			width: '500px',
 		});
+	}
+
+	protected testLocalNotification(): void {
+		this.#notificationService.showLocalNotification('Test', 'Test notification');
 	}
 
 	private applyFilters(options?: IProgramFilterOptions): void {
@@ -148,8 +146,8 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 		this.places = [];
 		this.eventsByPlaces = {};
-		this.programService.filterPlaces(options.placeId);
-		this.programService.filterEvents({
+		this.#programService.filterPlaces(options.placeId);
+		this.#programService.filterEvents({
 			eventType: options.eventType,
 			onlyFavorite: options.onlyFavorite,
 		});
@@ -168,8 +166,8 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		}
 
 		// Filter events by place if place filter is set, so we don't display empty start/end segments
-		if(Array.isArray(this.programService.userFilterOptions.placeId) && this.programService.userFilterOptions.placeId.length > 0) {
-			events = events.filter((event) => this.programService.userFilterOptions.placeId?.includes(event.placeId));
+		if(Array.isArray(this.#programService.userFilterOptions.placeId) && this.#programService.userFilterOptions.placeId.length > 0) {
+			events = events.filter((event) => this.#programService.userFilterOptions.placeId?.includes(event.placeId));
 		}
 
 		// TODO: find a way how to optimize this - store days and compute this only if they differ
@@ -236,7 +234,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	 * @protected
 	 */
 	private loadEvents(day: number = this.selectedDay): void {
-		this.programService.getEvents(day)
+		this.#programService.getEvents(day)
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((events) => {
 				console.log('events', events);
@@ -249,7 +247,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	}
 
 	private loadPlaces(): void {
-		this.programService.places$
+		this.#programService.places$
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((places) => {
 				this.places = places;
@@ -257,7 +255,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	}
 
 	private loadDays(): void {
-		this.programService.days$
+		this.#programService.days$
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((days) => {
 				this.days = this.getParsedDays(days);

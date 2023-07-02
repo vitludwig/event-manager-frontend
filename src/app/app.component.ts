@@ -56,11 +56,11 @@ export class AppComponent {
 
 			setInterval(() => {
 				// TODO: filter only events after now
-				console.log('checking');
+				// console.log('checking');
 				for(const favorite of this.#programService.favorites) {
-					console.log('now ', dayjs());
-					console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
-					console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
+					// console.log('now ', dayjs());
+					// console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
+					// console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
 					if(!this.#alreadyNotified.includes(favorite.id) && dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes'))) {
 						console.log('coming');
 						this.#notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
@@ -68,10 +68,6 @@ export class AppComponent {
 					}
 				}
 			}, 5000);
-			// registration.initNotification();
-			// registration?.showNotification('test', {
-			// 	body: 'test body',
-			// });
 
 		} catch(err) {
 			console.error('SW registration error: ', err);

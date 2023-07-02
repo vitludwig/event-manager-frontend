@@ -17,6 +17,12 @@
 			</button>
 
 			<button mat-icon-button
+				aria-label="Filter events"
+				(click)="testLocalNotification()">
+				<mat-icon>notifications_active</mat-icon>
+			</button>
+
+			<button mat-icon-button
 				aria-label="Search events"
 				(click)="showEventList()">
 				<mat-icon>search</mat-icon>
