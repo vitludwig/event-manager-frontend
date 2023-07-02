@@ -44,7 +44,7 @@ export class AppComponent {
 					autoPrompt: true,
 					timeDelay: 5,
 				}
-			}
+			},
 		}).then(() => {
 			// this.oneSignal.showNativePrompt();
 			console.log('OneSignal initialized');
