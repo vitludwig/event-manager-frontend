@@ -21,10 +21,8 @@ export class AppComponent {
 	constructor() {
 		this.handleLanguage();
 		this.handleLocalNotifications();
-		// const worker = new Worker('notification.worker.js');
-		// setTimeout(() => {
-		// 	worker.postMessage('test notification');
-		// }, 5000);
+		this.handlePermissions();
+
 
 		this.#swPush.subscription.subscribe((subscription) => {
 			this.#notificationService.subscription = subscription
@@ -71,6 +69,15 @@ export class AppComponent {
 
 		} catch(err) {
 			console.error('SW registration error: ', err);
+		}
+	}
+
+	private async handlePermissions(): Promise<void> {
+		const permission = await Notification.requestPermission();
+		this.#notificationService.showNotifications = permission === 'granted';
+
+		if(localStorage.getItem('showNotifications') === null) {
+			this.#notificationService.showNotifications = true;
 		}
 	}
 }
