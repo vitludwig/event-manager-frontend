@@ -47,7 +47,8 @@ export class AppComponent {
 			},
 			serviceWorkerParam: {
 				scope: '/push/onesignal/'
-			}
+			},
+			serviceWorkerPath: '/push/onesignal/OneSignalSDKWorker.js',
 		}).then(() => {
 			// this.oneSignal.showNativePrompt();
 			console.log('OneSignal initialized');
