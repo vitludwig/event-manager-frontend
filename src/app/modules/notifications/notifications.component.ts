@@ -17,6 +17,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {
 	TranslateNotificationPropertiesPipe
 } from './pipes/translate-notification-properties/translate-notification-properties.pipe';
+import { OneSignal } from 'onesignal-ngx';
 
 @Component({
 	selector: 'app-notifications',
@@ -42,6 +43,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 	protected readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly dialog: MatDialog = inject(MatDialog);
+	private readonly oneSignal: OneSignal = inject(OneSignal);
 
 	#unsubscribe: Subject<void> = new Subject<void>();
 
@@ -67,20 +69,22 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
 		dialog.afterClosed().subscribe(async (result: INotificationSettings) => {
 			if(result) {
-				if(result.showNotifications) {
-					const permission = await Notification.requestPermission();
-					if(permission === 'granted') {
-						if(result.showNotifications) {
-							this.notificationService.subscribe();
-						}
-					} else {
-						this.notificationService.unsubscribe();
-					}
-
-					this.notificationService.showNotifications = permission === 'granted';
-				} else {
-					this.notificationService.showNotifications = false;
-				}
+				this.oneSignal.showNativePrompt();
+				this.notificationService.showNotifications = result.showNotifications;
+				// if(result.showNotifications) {
+				// 	const permission = await Notification.requestPermission();
+				// 	if(permission === 'granted') {
+				// 		if(result.showNotifications) {
+				// 			this.notificationService.subscribe();
+				// 		}
+				// 	} else {
+				// 		this.notificationService.unsubscribe();
+				// 	}
+				//
+				// 	this.notificationService.showNotifications = permission === 'granted';
+				// } else {
+				// 	this.notificationService.showNotifications = false;
+				// }
 			}
 		});
 	}
