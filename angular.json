@@ -33,7 +33,6 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/notification.worker.js",
               "src/OneSignalSDKWorker.js"
             ],
             "styles": [
