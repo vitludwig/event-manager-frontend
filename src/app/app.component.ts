@@ -46,7 +46,7 @@ export class AppComponent {
 				}
 			},
 			serviceWorkerParam: {
-				scope: '/src/app/'
+				scope: '/push/onesignal/'
 			}
 		}).then(() => {
 			// this.oneSignal.showNativePrompt();
