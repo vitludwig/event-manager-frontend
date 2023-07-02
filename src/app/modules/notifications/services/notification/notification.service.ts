@@ -24,8 +24,8 @@ export class NotificationService {
 	#connection: HubConnection;
 	#publicKey = 'BM8bnspodQNmqUo03YgrvzhPiRZP5paOop_NK_SiRJfG8GW9DUw-H-FtXVQYtmLAMiakkFhc4KCdT6ep7InBbu0';
 
-	#swPush: SwPush = inject(SwPush);
-	#httpClient = inject(HttpClient);
+	private readonly swPush: SwPush = inject(SwPush);
+	private readonly httpClient = inject(HttpClient);
 
 
 	constructor() {
@@ -38,11 +38,11 @@ export class NotificationService {
 	public subscribe() {
 		// Retrieve public VAPID key from the server
 
-		this.#swPush.requestSubscription({
+		this.swPush.requestSubscription({
 			serverPublicKey: this.#publicKey
 		})
 			.then((subscription) => {
-				this.#httpClient.post('/api/v1/notification/subscription', subscription).subscribe(
+				this.httpClient.post('/api/v1/notification/subscription', subscription).subscribe(
 					() => console.log('Sent push subscription object to server.'),
 					(error) => console.log('Could not send subscription object to server, reason: ', error)
 				);
@@ -59,8 +59,8 @@ export class NotificationService {
 		}
 
 		const endpoint = this.subscription.endpoint;
-		this.#swPush.unsubscribe()
-			.then(() => this.#httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
+		this.swPush.unsubscribe()
+			.then(() => this.httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
 				},
 				error => console.error(error)
 			))
@@ -68,7 +68,11 @@ export class NotificationService {
 	}
 
 	public showLocalNotification(title: string, body: string = ''): Promise<void> {
-		return this.notificationRegistration.showNotification('[LOCAL] ' + title, {body: body});
+		return this.notificationRegistration.showNotification('[LOCAL] ' + title, {
+			body: body,
+			icon: '/assets/icons/icon-72x72.png',
+			image: '/assets/icons/icon-72x72.png',
+		});
 	}
 
 	private async initWebsocket(): Promise<void> {

@@ -12,10 +12,11 @@ import * as dayjs from 'dayjs';
 })
 export class AppComponent {
 
-	#translate = inject(TranslateService);
-	#swPush = inject(SwPush);
-	#notificationService: NotificationService = inject(NotificationService);
-	#programService: ProgramService = inject(ProgramService);
+	private readonly translate = inject(TranslateService);
+	private readonly swPush = inject(SwPush);
+	private readonly notificationService: NotificationService = inject(NotificationService);
+	private readonly programService: ProgramService = inject(ProgramService);
+	
 	#alreadyNotified: string[] = [];
 
 	constructor() {
@@ -23,12 +24,11 @@ export class AppComponent {
 		this.handleLocalNotifications();
 		this.handlePermissions();
 
-
-		this.#swPush.subscription.subscribe((subscription) => {
-			this.#notificationService.subscription = subscription
+		this.swPush.subscription.subscribe((subscription) => {
+			this.notificationService.subscription = subscription
 			console.log('NEW ', subscription);
-			if(!subscription && this.#notificationService.showNotifications) {
-				this.#notificationService.subscribe();
+			if(!subscription && this.notificationService.showNotifications) {
+				this.notificationService.subscribe();
 			}
 		}, (err) => {
 			console.error('Notification subscription error: ', err);
@@ -39,8 +39,8 @@ export class AppComponent {
 	private handleLanguage(): void {
 		const language = localStorage.getItem('language');
 
-		this.#translate.setDefaultLang(language ?? this.#translate.getBrowserLang() ?? 'cs');
-		this.#translate.use(language ?? this.#translate.defaultLang);
+		this.translate.setDefaultLang(language ?? this.translate.getBrowserLang() ?? 'cs');
+		this.translate.use(language ?? this.translate.defaultLang);
 	}
 
 
@@ -49,19 +49,19 @@ export class AppComponent {
 			const registration = await navigator.serviceWorker.getRegistration('notification.worker.js')
 			console.log('SW registrations: ', registration);
 			if(registration) {
-				this.#notificationService.notificationRegistration = registration;
+				this.notificationService.notificationRegistration = registration;
 			}
 
 			setInterval(() => {
 				// TODO: filter only events after now
 				// console.log('checking');
-				for(const favorite of this.#programService.favorites) {
+				for(const favorite of this.programService.favorites) {
 					// console.log('now ', dayjs());
 					// console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
 					// console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
 					if(!this.#alreadyNotified.includes(favorite.id) && dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes'))) {
 						console.log('coming');
-						this.#notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
+						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
 						this.#alreadyNotified.push(favorite.id);
 					}
 				}
@@ -74,10 +74,10 @@ export class AppComponent {
 
 	private async handlePermissions(): Promise<void> {
 		const permission = await Notification.requestPermission();
-		this.#notificationService.showNotifications = permission === 'granted';
+		this.notificationService.showNotifications = permission === 'granted';
 
 		if(localStorage.getItem('showNotifications') === null) {
-			this.#notificationService.showNotifications = true;
+			this.notificationService.showNotifications = true;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -38,15 +38,12 @@ import {
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
 	protected eventsById: Record<string, IEvent | null> = {};
+
+	protected readonly notificationService: NotificationService = inject(NotificationService);
+	private readonly programService: ProgramService = inject(ProgramService);
+	private readonly dialog: MatDialog = inject(MatDialog);
+
 	#unsubscribe: Subject<void> = new Subject<void>();
-
-	constructor(
-		public notificationService: NotificationService,
-		private programService: ProgramService,
-		private dialog: MatDialog,
-	) {
-
-	}
 
 	public ngOnInit(): void {
 		this.programService.getEvents()
@@ -68,14 +65,21 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 			width: '250px',
 		});
 
-		dialog.afterClosed().subscribe((result: INotificationSettings) => {
+		dialog.afterClosed().subscribe(async (result: INotificationSettings) => {
 			if(result) {
-				this.notificationService.showNotifications = result.showNotifications;
-
 				if(result.showNotifications) {
-					this.notificationService.subscribe();
+					const permission = await Notification.requestPermission();
+					if(permission === 'granted') {
+						if(result.showNotifications) {
+							this.notificationService.subscribe();
+						}
+					} else {
+						this.notificationService.unsubscribe();
+					}
+
+					this.notificationService.showNotifications = permission === 'granted';
 				} else {
-					this.notificationService.unsubscribe();
+					this.notificationService.showNotifications = false;
 				}
 			}
 		});

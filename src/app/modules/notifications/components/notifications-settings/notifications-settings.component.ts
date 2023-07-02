@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
@@ -26,7 +26,6 @@ import {TranslateModule} from '@ngx-translate/core';
 	styleUrls: ['./notifications-settings.component.scss']
 })
 export class NotificationsSettingsComponent {
+	protected readonly data: INotificationSettings = inject(MAT_DIALOG_DATA);
 
-	constructor(@Inject(MAT_DIALOG_DATA) public data: INotificationSettings) {
-	}
 }
