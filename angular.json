@@ -34,7 +34,7 @@
               "src/assets",
               "src/manifest.webmanifest",
               "src/notification.worker.js",
-              "src/push/onesignal/OneSignalSDKWorker.js"
+              "src/OneSignalSDKWorker.js"
             ],
             "styles": [
               "node_modules/augmented-ui/augmented-ui.min.css",
