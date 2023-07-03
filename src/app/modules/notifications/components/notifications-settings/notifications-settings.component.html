@@ -5,15 +5,7 @@
 </div>
 
 <div mat-dialog-content>
-
-	<mat-slide-toggle
-		class="example-margin w-100"
-		[checked]="data.showNotifications"
-		(change)="data.showNotifications = $event.checked"
-	>
-		{{'Zobrazovat notifikace' | translate}}
-	</mat-slide-toggle>
-
+	<div class="onesignal-customlink-container"></div>
 </div>
 
 <mat-dialog-actions align="end">
@@ -24,7 +16,6 @@
 
 	<button mat-raised-button
 		color="primary"
-		[mat-dialog-close]="data"
 	>{{'Potvrdit' | translate}}
 	</button>
 </mat-dialog-actions>

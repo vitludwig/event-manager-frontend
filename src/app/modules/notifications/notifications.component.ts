@@ -63,30 +63,30 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 	}
 
 	protected showSettings(): void {
-		const dialog = this.dialog.open(NotificationsSettingsComponent, {
+		this.dialog.open(NotificationsSettingsComponent, {
 			data: {showNotifications: this.notificationService.showNotifications},
 			width: '250px',
 		});
 
-		dialog.afterClosed().subscribe(async (result: INotificationSettings) => {
-			if(result) {
-				this.oneSignal.showSlidedownPrompt();
-				this.notificationService.showNotifications = result.showNotifications;
-				// if(result.showNotifications) {
-				// 	const permission = await Notification.requestPermission();
-				// 	if(permission === 'granted') {
-				// 		if(result.showNotifications) {
-				// 			this.notificationService.subscribe();
-				// 		}
-				// 	} else {
-				// 		this.notificationService.unsubscribe();
-				// 	}
-				//
-				// 	this.notificationService.showNotifications = permission === 'granted';
-				// } else {
-				// 	this.notificationService.showNotifications = false;
-				// }
-			}
-		});
+		// dialog.afterClosed().subscribe(async (result: INotificationSettings) => {
+		// 	if(result) {
+		// 		this.oneSignal.showSlidedownPrompt();
+		// 		this.notificationService.showNotifications = result.showNotifications;
+		// 		// if(result.showNotifications) {
+		// 		// 	const permission = await Notification.requestPermission();
+		// 		// 	if(permission === 'granted') {
+		// 		// 		if(result.showNotifications) {
+		// 		// 			this.notificationService.subscribe();
+		// 		// 		}
+		// 		// 	} else {
+		// 		// 		this.notificationService.unsubscribe();
+		// 		// 	}
+		// 		//
+		// 		// 	this.notificationService.showNotifications = permission === 'granted';
+		// 		// } else {
+		// 		// 	this.notificationService.showNotifications = false;
+		// 		// }
+		// 	}
+		// });
 	}
 }
