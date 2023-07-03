@@ -24,8 +24,8 @@ export class AppComponent {
 
 	constructor() {
 		this.handleLanguage();
-		// this.handleLocalNotifications();
-		// this.handlePermissions();
+		this.handleLocalNotifications();
+		this.handlePermissions();
 
 		// this.swPush.subscription.subscribe((subscription) => {
 		// 	this.notificationService.subscription = subscription
@@ -60,31 +60,31 @@ export class AppComponent {
 
 
 	private async handleLocalNotifications(): Promise<void> {
-		// try {
-		// 	const registration = await navigator.serviceWorker.getRegistration('notification.worker.js')
-		// 	console.log('SW registrations: ', registration);
-		// 	if(registration) {
-		// 		this.notificationService.notificationRegistration = registration;
-		// 	}
-		//
-		// 	setInterval(() => {
-		// 		// TODO: filter only events after now
-		// 		// console.log('checking');
-		// 		for(const favorite of this.programService.favorites) {
-		// 			// console.log('now ', dayjs());
-		// 			// console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
-		// 			// console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
-		// 			if(!this.#alreadyNotified.includes(favorite.id) && dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes'))) {
-		// 				console.log('coming');
-		// 				this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
-		// 				this.#alreadyNotified.push(favorite.id);
-		// 			}
-		// 		}
-		// 	}, 5000);
-		//
-		// } catch(err) {
-		// 	console.error('SW registration error: ', err);
-		// }
+		try {
+			const registration = await navigator.serviceWorker.getRegistration('notification.worker.js')
+			console.log('SW registrations: ', registration);
+			if(registration) {
+				this.notificationService.notificationRegistration = registration;
+			}
+
+			setInterval(() => {
+				// TODO: filter only events after now
+				// console.log('checking');
+				for(const favorite of this.programService.favorites) {
+					// console.log('now ', dayjs());
+					// console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
+					// console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
+					if(!this.#alreadyNotified.includes(favorite.id) && dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes'))) {
+						console.log('coming');
+						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
+						this.#alreadyNotified.push(favorite.id);
+					}
+				}
+			}, 5000);
+
+		} catch(err) {
+			console.error('SW registration error: ', err);
+		}
 	}
 
 	private async handlePermissions(): Promise<void> {

@@ -13,7 +13,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {NotificationsSettingsComponent} from './components/notifications-settings/notifications-settings.component';
 import {INotificationSettings} from './types/INotificationSettings';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {
 	TranslateNotificationPropertiesPipe
 } from './pipes/translate-notification-properties/translate-notification-properties.pipe';
@@ -41,6 +41,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 	protected eventsById: Record<string, IEvent | null> = {};
 
 	protected readonly notificationService: NotificationService = inject(NotificationService);
+	protected readonly translate = inject(TranslateService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly oneSignal: OneSignal = inject(OneSignal);

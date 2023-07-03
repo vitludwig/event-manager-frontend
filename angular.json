@@ -33,7 +33,8 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.webmanifest",
-              "src/OneSignalSDKWorker.js"
+              "src/notification.worker.js",
+              "src/push/onesignal/OneSignalSDKWorker.js"
             ],
             "styles": [
               "node_modules/augmented-ui/augmented-ui.min.css",

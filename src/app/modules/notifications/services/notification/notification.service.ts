@@ -1,15 +1,17 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 import {INotification} from '../../types/INotification';
-import {SwPush} from '@angular/service-worker';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {environment} from '../../../../../environments/environment';
+import {firstValueFrom} from 'rxjs';
+import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';
 
 
 @Injectable({
 	providedIn: 'root'
 })
 export class NotificationService {
-	public notifications: WritableSignal<INotification[]> = signal([]);
+	public notifications: WritableSignal<IOneSignalNotification[]> = signal([]);
 	public subscription: PushSubscription | null;
 	public notificationRegistration: ServiceWorkerRegistration;
 
@@ -25,7 +27,7 @@ export class NotificationService {
 	#publicKey = 'BM8bnspodQNmqUo03YgrvzhPiRZP5paOop_NK_SiRJfG8GW9DUw-H-FtXVQYtmLAMiakkFhc4KCdT6ep7InBbu0';
 
 	// private readonly swPush: SwPush = inject(SwPush);
-	private readonly httpClient = inject(HttpClient);
+	private readonly http = inject(HttpClient);
 
 
 	constructor() {
@@ -58,7 +60,7 @@ export class NotificationService {
 			return;
 		}
 
-		const endpoint = this.subscription.endpoint;
+		// const endpoint = this.subscription.endpoint;
 		// this.swPush.unsubscribe()
 		// 	.then(() => this.httpClient.delete('/api/v1/notification/subscription/' + encodeURIComponent(endpoint)).subscribe(() => {
 		// 		},
@@ -90,13 +92,30 @@ export class NotificationService {
 
 	private async loadNotifications(): Promise<void> {
 		try {
-			const result = (
-				await this.#connection.invoke<INotification[]>('getNotifications', {})
-			);
+			// TODO: add this to interceptor
+			const headers = new HttpHeaders({
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'Authorization': 'Basic ' + environment.oneSignalApiKey,
+			});
 
-			this.notifications.set(result);
+			const notifications = await firstValueFrom(
+				this.http.get<IOneSignalNotificationsResponse>(`https://onesignal.com/api/v1/notifications?app_id=${environment.oneSignalAppId}`,
+				{headers})
+			);
+			console.log('Notifications: ', notifications);
+			this.notifications.set(notifications.notifications);
 		} catch(e) {
 			console.error('Cannot load notifications: ', e);
 		}
+		// try {
+		// 	const result = (
+		// 		await this.#connection.invoke<INotification[]>('getNotifications', {})
+		// 	);
+		//
+		// 	this.notifications.set(result);
+		// } catch(e) {
+		// 	console.error('Cannot load notifications: ', e);
+		// }
 	}
 }

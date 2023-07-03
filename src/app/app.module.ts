@@ -57,8 +57,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 		// 	// or after 30 seconds (whichever comes first).
 		// 	registrationStrategy: 'registerWhenStable:30000'
 		// }),
-		// ServiceWorkerModule.register('notification.worker.js', { enabled: true, registrationStrategy: 'registerWhenStable:30000' }),
-		ServiceWorkerModule.register('OneSignalSDKWorker.js', { enabled: true }),
+		ServiceWorkerModule.register('notification.worker.js', { enabled: true, registrationStrategy: 'registerWhenStable:30000' }),
+		ServiceWorkerModule.register('/push/onesignal/OneSignalSDKWorker.js', { enabled: true }),
 	],
 	providers: [
 		{provide: APP_INITIALIZER, useFactory: appInitializerFactory, deps: [ProgramService], multi: true},
