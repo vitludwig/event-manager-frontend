@@ -5,6 +5,7 @@ import {ProgramService} from './modules/program/services/program/program.service
 import { AngularDeviceInformationService } from 'angular-device-information';
 import { OneSignal } from 'onesignal-ngx';
 import * as dayjs from 'dayjs';
+import {environment} from '../environments/environment';
 
 @Component({
 	selector: 'app-root',
@@ -36,19 +37,35 @@ export class AppComponent {
 		// }, (err) => {
 		// 	console.error('Notification subscription error: ', err);
 		// });
-		// this.oneSignal.init({
-		// 	appId: "31a5956f-5e42-4af4-a178-6da520ecac86",
-		// 	promptOptions: {
-		// 		slidedown: {
-		// 			enabled: true,
-		// 			autoPrompt: true,
-		// 			timeDelay: 5,
-		// 		}
-		// 	},
-		// }).then(() => {
-		// 	// this.oneSignal.showNativePrompt();
-		// 	console.log('OneSignal initialized');
-		// });
+		this.oneSignal.init({
+			appId: environment.oneSignalAppId,
+			promptOptions: {
+				slidedown: {
+					enabled: true,
+					autoPrompt: true,
+					timeDelay: 10,
+					pageViews: 1,
+				},
+				customlink: {
+					enabled: true, /* Required to use the Custom Link */
+					style: "button", /* Has value of 'button' or 'link' */
+					size: "medium", /* One of 'small', 'medium', or 'large' */
+					color: {
+						button: '#E12D30', /* Color of the button background if style = "button" */
+						text: '#FFFFFF', /* Color of the prompt's text */
+					},
+					text: {
+						subscribe: "Subscribe to push notifications", /* Prompt's text when not subscribed */
+						unsubscribe: "Unsubscribe from push notifications", /* Prompt's text when subscribed */
+						explanation: "Get updates from all sorts of things that matter to you", /* Optional text appearing before the prompt button */
+					},
+					unsubscribeEnabled: true, /* Controls whether the prompt is visible after subscription */
+				}
+			},
+		}).then(() => {
+			// this.oneSignal.showNativePrompt();
+			console.log('OneSignal initialized');
+		});
 	}
 
 	private handleLanguage(): void {
