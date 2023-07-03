@@ -37,34 +37,40 @@ export class AppComponent {
 		// }, (err) => {
 		// 	console.error('Notification subscription error: ', err);
 		// });
+
 		this.oneSignal.init({
 			appId: environment.oneSignalAppId,
 			promptOptions: {
 				slidedown: {
 					enabled: true,
 					autoPrompt: true,
-					timeDelay: 10,
+					timeDelay: 5,
 					pageViews: 1,
+					text: this.translate.currentLang === 'en' ? 'We would like to send you notifications about upcoming events and program updates.' : 'Rádi bychom vám posílali notifikace o nadcházejících akcích a aktualizacích programu.',
 				},
 				customlink: {
 					enabled: true, /* Required to use the Custom Link */
 					style: "button", /* Has value of 'button' or 'link' */
 					size: "medium", /* One of 'small', 'medium', or 'large' */
 					color: {
-						button: '#E12D30', /* Color of the button background if style = "button" */
+						button: '#7859a0', /* Color of the button background if style = "button" */
 						text: '#FFFFFF', /* Color of the prompt's text */
 					},
 					text: {
-						subscribe: "Subscribe to push notifications", /* Prompt's text when not subscribed */
-						unsubscribe: "Unsubscribe from push notifications", /* Prompt's text when subscribed */
-						explanation: "Get updates from all sorts of things that matter to you", /* Optional text appearing before the prompt button */
+						subscribe: this.translate.currentLang === 'en' ? 'Enable notifications' : 'Povolit notifikace',
+						unsubscribe: this.translate.currentLang === 'en' ? "Disable notifications" : 'Zakázat notifikace',
 					},
 					unsubscribeEnabled: true, /* Controls whether the prompt is visible after subscription */
 				}
 			},
 		}).then(() => {
-			// this.oneSignal.showNativePrompt();
 			console.log('OneSignal initialized');
+			this.oneSignal.on('subscriptionChange', (isSubscribed) => {
+				console.log("The user's subscription state is now:", isSubscribed);
+				this.notificationService.showNotifications = isSubscribed;
+			});
+		}).catch((err) => {
+			console.error("OneSignal initialization failed: ", err);
 		});
 	}
 
@@ -92,7 +98,6 @@ export class AppComponent {
 					// console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
 					// console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
 					if(!this.#alreadyNotified.includes(favorite.id) && dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes'))) {
-						console.log('coming');
 						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
 						this.#alreadyNotified.push(favorite.id);
 					}
