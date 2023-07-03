@@ -1,7 +1,7 @@
 <mat-toolbar class="notifications-toolbar">
 	<span>{{'Notifikace' | translate}}</span>
 	<div class="notifications-toolbar__actions">
-		<div class="onesignal-customlink-container"></div>
+
 	</div>
 </mat-toolbar>
 
@@ -12,8 +12,6 @@
 		<span matListItemTitle class="notifications-list__item__title">
 			{{ notification.headings[translate.currentLang] }}
 		</span>
-		<p class="notifications-list__item__detail">
-			{{ notification.contents[translate.currentLang] }}
-		</p>
+		<p class="notifications-list__item__detail" [innerText]="notification.contents[translate.currentLang]"></p>
 	</mat-list-item>
 </mat-list>

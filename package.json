@@ -27,7 +27,6 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "@types/signalr": "^2.4.0",
     "@zxing/ngx-scanner": "^16.0.1",
-    "angular-device-information": "^4.0.0",
     "angularx-qrcode": "^16.0.0",
     "augmented-ui": "^2.0.0",
     "dayjs": "^1.11.7",

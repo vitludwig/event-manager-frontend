@@ -1,10 +1,11 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
-import {INotification} from '../../types/INotification';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';
+import {OneSignal} from 'onesignal-ngx';
+import {TranslateService} from '@ngx-translate/core';
 
 
 @Injectable({
@@ -28,6 +29,8 @@ export class NotificationService {
 
 	// private readonly swPush: SwPush = inject(SwPush);
 	private readonly http = inject(HttpClient);
+	private readonly oneSignal: OneSignal = inject(OneSignal);
+	private readonly translate = inject(TranslateService);
 
 
 	constructor() {
@@ -76,21 +79,52 @@ export class NotificationService {
 		});
 	}
 
-	private async initWebsocket(): Promise<void> {
-		this.#connection = new HubConnectionBuilder()
-			.configureLogging(LogLevel.Critical)
-			.withUrl('signalr/notifications')
-			.build();
-
+	public async initOneSignal(): Promise<void> {
 		try {
-			await this.#connection.start();
-			this.loadNotifications();
+			const oneSignal = this.oneSignal.init({
+				appId: environment.oneSignalAppId,
+				// allowLocalhostAsSecureOrigin: true,
+				safari_web_id: "web.onesignal.auto.45e32f52-047f-48ea-8b6f-5a9d2fcde2db",
+				promptOptions: {
+					slidedown: {
+						enabled: true,
+						autoPrompt: true,
+						timeDelay: 5,
+						pageViews: 1,
+						text: this.translate.currentLang === 'en' ? 'We would like to send you notifications about upcoming events and program updates.' : 'Rádi bychom vám posílali notifikace o nadcházejících akcích a aktualizacích programu.',
+					},
+
+					customlink: {
+						enabled: true, /* Required to use the Custom Link */
+						style: "button", /* Has value of 'button' or 'link' */
+						size: "medium", /* One of 'small', 'medium', or 'large' */
+						color: {
+							button: '#7859a0', /* Color of the button background if style = "button" */
+							text: '#FFFFFF', /* Color of the prompt's text */
+						},
+						text: {
+							subscribe: this.translate.currentLang === 'en' ? 'Enable notifications' : 'Povolit notifikace',
+							unsubscribe: this.translate.currentLang === 'en' ? "Disable notifications" : 'Zakázat notifikace',
+						},
+						unsubscribeEnabled: true, /* Controls whether the prompt is visible after subscription */
+					},
+				},
+			});
+			await oneSignal;
+
+			console.log('OneSignal initialized');
+			this.oneSignal.on('subscriptionChange', (isSubscribed) => {
+				console.log("The user's subscription state is now:", isSubscribed);
+				this.showNotifications = isSubscribed;
+			});
+
+			return oneSignal;
 		} catch(e) {
-			console.log('Notifications connection error: ', e);
+			console.error('OneSignal initialization failed: ', e);
 		}
 	}
 
-	private async loadNotifications(): Promise<void> {
+	public async loadNotifications(): Promise<void> {
 		try {
 			// TODO: add this to interceptor
 			const headers = new HttpHeaders({
@@ -101,8 +135,9 @@ export class NotificationService {
 
 			const notifications = await firstValueFrom(
 				this.http.get<IOneSignalNotificationsResponse>(`https://onesignal.com/api/v1/notifications?app_id=${environment.oneSignalAppId}`,
-				{headers})
+					{headers})
 			);
+			notifications.notifications = notifications.notifications.filter(obj => Object.keys(obj.headings).length > 0);
 			console.log('Notifications: ', notifications);
 			this.notifications.set(notifications.notifications);
 		} catch(e) {
@@ -117,5 +152,19 @@ export class NotificationService {
 		// } catch(e) {
 		// 	console.error('Cannot load notifications: ', e);
 		// }
+	}
+
+	private async initWebsocket(): Promise<void> {
+		this.#connection = new HubConnectionBuilder()
+			.configureLogging(LogLevel.Critical)
+			.withUrl('signalr/notifications')
+			.build();
+
+		try {
+			await this.#connection.start();
+			this.loadNotifications();
+		} catch(e) {
+			console.log('Notifications connection error: ', e);
+		}
 	}
 }

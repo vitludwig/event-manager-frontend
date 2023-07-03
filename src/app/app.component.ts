@@ -1,77 +1,63 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {NotificationService} from './modules/notifications/services/notification/notification.service';
 import {ProgramService} from './modules/program/services/program/program.service';
-import { AngularDeviceInformationService } from 'angular-device-information';
-import { OneSignal } from 'onesignal-ngx';
 import * as dayjs from 'dayjs';
-import {environment} from '../environments/environment';
+import {NavigationEnd, Router} from '@angular/router';
+import {ERoute} from './common/types/ERoute';
 
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
 	private readonly translate = inject(TranslateService);
 	// private readonly swPush = inject(SwPush);
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
-	private readonly deviceInformationService: AngularDeviceInformationService = inject(AngularDeviceInformationService);
-	private readonly oneSignal: OneSignal = inject(OneSignal);
+	private readonly router: Router = inject(Router);
 
 	#alreadyNotified: string[] = [];
 
-	constructor() {
+	public async ngOnInit(): Promise<void> {
 		this.handleLanguage();
-		this.handleLocalNotifications();
-		this.handlePermissions();
+		await this.handleLocalNotifications();
+		await this.handlePermissions();
 
-		// this.swPush.subscription.subscribe((subscription) => {
-		// 	this.notificationService.subscription = subscription
-		// 	console.log('NEW ', subscription);
-		// 	if(!subscription && this.notificationService.showNotifications) {
-		// 		this.notificationService.subscribe();
-		// 	}
-		// }, (err) => {
-		// 	console.error('Notification subscription error: ', err);
-		// });
+		await this.notificationService.initOneSignal();
 
-		this.oneSignal.init({
-			appId: environment.oneSignalAppId,
-			promptOptions: {
-				slidedown: {
-					enabled: true,
-					autoPrompt: true,
-					timeDelay: 5,
-					pageViews: 1,
-					text: this.translate.currentLang === 'en' ? 'We would like to send you notifications about upcoming events and program updates.' : 'Rádi bychom vám posílali notifikace o nadcházejících akcích a aktualizacích programu.',
-				},
-				customlink: {
-					enabled: true, /* Required to use the Custom Link */
-					style: "button", /* Has value of 'button' or 'link' */
-					size: "medium", /* One of 'small', 'medium', or 'large' */
-					color: {
-						button: '#7859a0', /* Color of the button background if style = "button" */
-						text: '#FFFFFF', /* Color of the prompt's text */
-					},
-					text: {
-						subscribe: this.translate.currentLang === 'en' ? 'Enable notifications' : 'Povolit notifikace',
-						unsubscribe: this.translate.currentLang === 'en' ? "Disable notifications" : 'Zakázat notifikace',
-					},
-					unsubscribeEnabled: true, /* Controls whether the prompt is visible after subscription */
+		this.handleSubscriptionBtn();
+	}
+
+	private handleSubscriptionBtn(): void {
+		if(this.router.url !== `/${ERoute.NOTIFICATIONS}`)  {
+			this.toggleSubscriptionBtn(false);
+		}
+
+		this.router.events.subscribe((event) => {
+			if(event instanceof NavigationEnd) {
+				console.log('event', event);
+
+				if(event.url === `/${ERoute.NOTIFICATIONS}`) {
+					this.toggleSubscriptionBtn(true);
+				} else {
+					this.toggleSubscriptionBtn(false);
 				}
-			},
-		}).then(() => {
-			console.log('OneSignal initialized');
-			this.oneSignal.on('subscriptionChange', (isSubscribed) => {
-				console.log("The user's subscription state is now:", isSubscribed);
-				this.notificationService.showNotifications = isSubscribed;
-			});
-		}).catch((err) => {
-			console.error("OneSignal initialization failed: ", err);
+			}
 		});
+	}
+
+	private toggleSubscriptionBtn(value: boolean): void {
+		const bell = document.getElementsByClassName('onesignal-customlink-container')[0];
+		if(bell) {
+			if(value) {
+				bell.removeAttribute('hidden');
+			} else {
+				bell.setAttribute('hidden', 'true');
+			}
+		}
 	}
 
 	private handleLanguage(): void {
