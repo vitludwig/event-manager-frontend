@@ -10,13 +10,10 @@ import {TranslateService} from '@ngx-translate/core';
 	standalone: true,
 	imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
 	templateUrl: './language-menu.component.html',
-	styleUrls: ['./language-menu.component.scss']
+	styleUrls: ['./language-menu.component.scss'],
 })
 export class LanguageMenuComponent {
 	protected translate: TranslateService = inject(TranslateService);
-
-	constructor() {
-	}
 
 	protected setLanguage(language: 'cs' | 'en'): void {
 		this.translate.use(language);

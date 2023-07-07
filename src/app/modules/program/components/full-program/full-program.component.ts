@@ -1,6 +1,6 @@
 import {
-	Component, inject, OnDestroy,
-	OnInit
+	Component, ElementRef, inject, OnDestroy,
+	OnInit, Renderer2, ViewChild
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IEvent} from '../../types/IEvent';
@@ -17,7 +17,7 @@ import {ListTimelineComponent} from './components/list-timeline/list-timeline.co
 import {ListPlaceComponent} from './components/list-place/list-place.component';
 import {ListDaySelectComponent} from './components/list-day-select/list-day-select.component';
 import {MatBottomSheet, MatBottomSheetModule} from '@angular/material/bottom-sheet';
-import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatToolbar, MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
@@ -31,6 +31,8 @@ import {TranslateModule} from '@ngx-translate/core';
 import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
 import {NotificationService} from '../../../notifications/services/notification/notification.service';
+import {MatMenuModule} from '@angular/material/menu';
+import {IProgramDay} from './types/IProgramDay';
 
 
 @Component({
@@ -51,14 +53,18 @@ import {NotificationService} from '../../../notifications/services/notification/
 		MatDialogModule,
 		TranslateModule,
 		LanguageMenuComponent,
+		MatMenuModule,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
 })
 export class FullProgramComponent implements OnInit, OnDestroy {
+	@ViewChild('secondaryToolbar')
+	public secondaryToolbar: ElementRef;
+
 	// n-minute segments for day
 	protected allSegments: IProgramSegment[] = [];
-	protected days: { id: number; name: string }[] = [];
+	protected days: IProgramDay[] = [];
 	protected places: IProgramPlace[] = [];
 	/**
 	 * Events grouped by place and start date
@@ -87,12 +93,13 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly notificationService: NotificationService = inject(NotificationService);
+	private readonly renderer: Renderer2 = inject(Renderer2);
 
 	public ngOnInit(): void {
 		this.loadPlaces();
 		this.loadEvents();
 
-		this.selectedDay = this.days[0].id;
+		this.selectedDay = this.findToday(this.days)?.id ?? 0;
 	}
 
 	public ngOnDestroy(): void {
@@ -121,7 +128,6 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		});
 
 		dialog.afterClosed().subscribe((result) => {
-			console.log('result:', result);
 			if(result) {
 				this.programService.userFilterOptions = result;
 				this.applyFilters(result);
@@ -135,8 +141,12 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	protected testLocalNotification(): void {
-		this.notificationService.showLocalNotification('Test', 'Test notification');
+	protected toggleSecondaryToolbar(): void {
+		if(this.secondaryToolbar.nativeElement.classList.contains('opened')) {
+			this.renderer.removeClass(this.secondaryToolbar.nativeElement, 'opened');
+		} else {
+			this.renderer.addClass(this.secondaryToolbar.nativeElement, 'opened');
+		}
 	}
 
 	private applyFilters(options?: IProgramFilterOptions): void {
@@ -237,7 +247,6 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.programService.getEvents(day)
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((events) => {
-				console.log('events', events);
 				events = this.filterEventsByDay(events, this.selectedDay);
 
 				this.loadDays();
@@ -266,13 +275,19 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	 * Loads days from program service and transforms them into array of objects with day name and id
 	 * @protected
 	 */
-	private getParsedDays(days: Record<number, number>): { id: number; name: string }[] {
+	private getParsedDays(days: Record<number, number>): IProgramDay[] {
 		return Object.entries(days).sort().map(([id, date]) => {
 			return {
 				id: Number(id),
-				name: dayjs(date).format('dddd')
+				name: dayjs(date).format('dddd'),
+				date: date,
 			};
 		});
+	}
+
+	private findToday(days: IProgramDay[]): IProgramDay | undefined {
+		const today = dayjs();
+		return days.find((day) => dayjs(day.date).isSame(today, 'day'));
 	}
 
 	/**

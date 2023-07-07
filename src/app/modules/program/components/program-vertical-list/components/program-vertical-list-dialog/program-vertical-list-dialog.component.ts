@@ -9,6 +9,7 @@ import {IProgramEvent} from '../../../../types/IProgramPlace';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
 import {debounce} from '../../../../../../common/decorators/debounce';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-program-vertical-list-dialog',
@@ -21,7 +22,8 @@ import {debounce} from '../../../../../../common/decorators/debounce';
 		MatDividerModule,
 		MatIconModule,
 		MatInputModule,
-		ProgramVerticalListComponent
+		ProgramVerticalListComponent,
+		TranslateModule
 	],
 	templateUrl: './program-vertical-list-dialog.component.html',
 	styleUrls: ['./program-vertical-list-dialog.component.scss']

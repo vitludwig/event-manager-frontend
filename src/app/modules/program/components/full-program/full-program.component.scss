@@ -11,6 +11,26 @@
 		}
 	}
 
+	&__secondary-toolbar {
+		mat-toolbar {
+			background-color: #151515 !important;
+			height: 0;
+			overflow: hidden;
+			transition: all 0.3s ease-in-out;
+		}
+
+		&.opened {
+			mat-toolbar {
+				height: 60px;
+				overflow: visible;
+			}
+		}
+
+		&__actions {
+			margin-left: auto;
+		}
+	}
+
 	&__list {
 		width: 100%;
 		overflow: auto;

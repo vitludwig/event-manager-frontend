@@ -1,4 +1,4 @@
 export const environment = {
-	oneSignalApiKey: "OTc1MTgwMWMtNDY5Yy00ZjM2LWI5YjEtNWYyZGE5ZDA4MzNh",
-	oneSignalAppId: "31a5956f-5e42-4af4-a178-6da520ecac86",
+	oneSignalApiKey: "ZjZjMjBkOGYtZDliYi00NGY1LTgxMGItMjk2MzM0MzNkMjg5",
+	oneSignalAppId: "260dd1c8-ce92-4821-a870-1c5f88439bf5",
 };

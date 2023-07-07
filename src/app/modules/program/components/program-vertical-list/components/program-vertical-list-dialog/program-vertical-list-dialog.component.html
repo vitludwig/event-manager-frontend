@@ -13,7 +13,7 @@
 		<mat-form-field appearance="outline"
 			class="event-list-dialog__header__search-input">
 			<input matInput
-				placeholder="Search"
+				[placeholder]="'Vyhledat' | translate"
 				#searchInput
 				[(ngModel)]="search"
 				(ngModelChange)="searchEvents(searchInput.value)"

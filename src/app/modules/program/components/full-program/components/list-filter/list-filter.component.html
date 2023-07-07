@@ -14,10 +14,9 @@
 	<mat-form-field class="w-100">
 		<mat-label>{{'Místo' | translate}}</mat-label>
 		<mat-select [(ngModel)]="placeId"
-			placeholder="Place"
 			multiple
 		>
-			<mat-option *ngFor="let place of programService.places$ | async"
+			<mat-option *ngFor="let place of programService.allPlaces"
 				[value]="place.id"
 			>
 				{{ place.name }}
@@ -28,7 +27,6 @@
 	<mat-form-field class="w-100">
 		<mat-label>{{'Druh akce' | translate}}</mat-label>
 		<mat-select [(ngModel)]="eventType"
-			placeholder="Event type"
 			multiple
 		>
 			<mat-option *ngFor="let item of eventTypes"

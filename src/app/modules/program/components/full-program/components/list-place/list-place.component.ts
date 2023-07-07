@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {ListEventComponent} from '../list-event/list-event.component';
@@ -12,7 +12,7 @@ import {IProgramSegment} from '../../types/IProgramSegment';
 	templateUrl: './list-place.component.html',
 	styleUrls: ['./list-place.component.scss']
 })
-export class ListPlaceComponent {
+export class ListPlaceComponent implements OnInit {
 	@Input()
 	public place: IProgramPlace;
 
@@ -29,5 +29,9 @@ export class ListPlaceComponent {
 
 	protected showEventDetail(event: IProgramEvent): void {
 		this.placeSelect.emit(event);
+	}
+
+	public ngOnInit() {
+		console.log('segments', this.segments);
 	}
 }

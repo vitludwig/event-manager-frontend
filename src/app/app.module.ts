@@ -1,4 +1,4 @@
-import {NgModule, APP_INITIALIZER} from '@angular/core';
+import {NgModule, APP_INITIALIZER, isDevMode} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -58,7 +58,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 		// 	registrationStrategy: 'registerWhenStable:30000'
 		// }),
 		// ServiceWorkerModule.register('notification.worker.js', { enabled: true, registrationStrategy: 'registerWhenStable:30000' }),
-		ServiceWorkerModule.register('OneSignalSDKWorker.js', { enabled: true }),
+		ServiceWorkerModule.register('OneSignalSDKWorker.js', { enabled: !isDevMode() }),
 	],
 	providers: [
 		{provide: APP_INITIALIZER, useFactory: appInitializerFactory, deps: [ProgramService], multi: true},

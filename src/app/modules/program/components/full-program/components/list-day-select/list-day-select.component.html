@@ -5,6 +5,9 @@
 		[class.active]="day.id === selectedDay"
 		class="day-toggle__item flex-grow-1"
 	>
-		{{ day.name | translate }}
+		<div class="day-toggle__item__wrapper">
+			{{ day.name | translate }}
+			<small class="day-toggle__item__date">{{ day.date | date: 'dd.MM' }}</small>
+		</div>
 	</mat-button-toggle>
 </mat-button-toggle-group>

@@ -41,6 +41,10 @@ export class ProgramService {
 	public places$: Observable<IProgramPlace[]> = this.#places.asObservable();
 	public days$ = this.#days.asObservable();
 
+	public get allPlaces(): IProgramPlace[] {
+		return this.#allPlaces;
+	}
+
 	private readonly eventService: EventService = inject(EventService);
 
 	public async initWebsocket(): Promise<void> {
@@ -90,6 +94,10 @@ export class ProgramService {
 		this.#events.next(result);
 
 		return this.#events;
+	}
+
+	public getEvent(id: string): IEvent | undefined {
+		return this.#allEvents.find((event) => event.id === id);
 	}
 
 	/**

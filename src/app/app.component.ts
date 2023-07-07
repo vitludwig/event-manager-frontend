@@ -61,9 +61,12 @@ export class AppComponent implements OnInit {
 	}
 
 	private handleLanguage(): void {
-		const language = localStorage.getItem('language');
+		let language = localStorage.getItem('language') ?? this.translate.getBrowserLang() ?? 'cs';
+		if(!['cs', 'en'].includes(language)) {
+			language = 'cs';
+		}
 
-		this.translate.setDefaultLang(language ?? this.translate.getBrowserLang() ?? 'cs');
+		this.translate.setDefaultLang(language);
 		this.translate.use(language ?? this.translate.defaultLang);
 	}
 
@@ -78,12 +81,17 @@ export class AppComponent implements OnInit {
 
 			setInterval(() => {
 				// TODO: filter only events after now
-				// console.log('checking');
+				const now = dayjs();
 				for(const favorite of this.programService.favorites) {
-					// console.log('now ', dayjs());
-					// console.log('event', dayjs(favorite.start).subtract(10, 'minutes'));
-					// console.log('INCOMING', dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes')));
-					if(!this.#alreadyNotified.includes(favorite.id) && dayjs().isBefore(dayjs(favorite.start).subtract(10, 'minutes'))) {
+					const event = this.programService.getEvent(favorite.id);
+					if(!event) {
+						continue;
+					}
+					console.log(now.diff(dayjs(event.start), 'minutes'));
+					const diff = Math.abs(now.diff(dayjs(event.start), 'minutes'));
+					const isInRange = diff >= 9 && diff <= 11;
+					if(!this.#alreadyNotified.includes(favorite.id) && isInRange) {
+						console.log('incomingg');
 						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
 						this.#alreadyNotified.push(favorite.id);
 					}
