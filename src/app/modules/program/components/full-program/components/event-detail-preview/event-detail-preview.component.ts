@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IProgramEvent} from '../../../../types/IProgramPlace';
 import {MatButtonModule} from '@angular/material/button';
@@ -31,14 +31,11 @@ import {TranslateModule} from '@ngx-translate/core';
 export class EventDetailPreviewComponent {
 	protected readonly fullProgramConfig = FullProgramConfig;
 
-	constructor(
-		private programService: ProgramService,
-		private dialog: MatDialog,
-		private bottomSheet: MatBottomSheet,
-		private route: Router,
-		@Inject(MAT_BOTTOM_SHEET_DATA) public data: { event: IProgramEvent },
-	) {
-	}
+	private readonly programService: ProgramService = inject(ProgramService);
+	private readonly dialog: MatDialog = inject(MatDialog);
+	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
+	private readonly router: Router = inject(Router);
+	protected readonly data: { event: IProgramEvent } = inject(MAT_BOTTOM_SHEET_DATA);
 
 	protected toggleFavorite(): void {
 		this.data.event.favorite = !this.data.event.favorite;
@@ -47,7 +44,7 @@ export class EventDetailPreviewComponent {
 	}
 
 	protected openFullDetail(): void {
-		this.route.navigate(['/' + ERoute.EVENT_DETAIL, this.data.event.id]);
+		this.router.navigate(['/' + ERoute.EVENT_DETAIL, this.data.event.id]);
 		this.bottomSheet.dismiss();
 	}
 

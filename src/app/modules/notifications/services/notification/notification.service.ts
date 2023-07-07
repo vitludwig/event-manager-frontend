@@ -105,7 +105,7 @@ export class NotificationService {
 					{headers})
 			);
 			notifications.notifications = notifications.notifications.filter(obj => Object.keys(obj.headings).length > 0);
-			console.log('Notifications: ', notifications);
+
 			this.notifications.set(notifications.notifications);
 		} catch(e) {
 			console.error('Cannot load notifications: ', e);

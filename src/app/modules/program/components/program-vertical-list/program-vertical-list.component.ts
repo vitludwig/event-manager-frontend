@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
@@ -47,16 +47,12 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	protected groupEvents: Record<number, IEvent[]> = {};
 	protected readonly fullProgramConfig = FullProgramConfig;
 
+	private readonly programService: ProgramService = inject(ProgramService);
+	private readonly dialog: MatDialog = inject(MatDialog);
+
 	#events: IEvent[] | null = [];
 	#unsubscribe: Subject<void> = new Subject<void>();
 	#days: Record<number, number> = {};
-
-	constructor(
-		private programService: ProgramService,
-		private dialog: MatDialog,
-	) {
-
-	}
 
 	public ngOnInit(): void {
 		this.programService.days$

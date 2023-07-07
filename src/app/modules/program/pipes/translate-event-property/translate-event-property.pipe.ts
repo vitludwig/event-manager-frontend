@@ -8,8 +8,14 @@ import {IProgramPlace} from '../../types/IProgramPlace';
 	standalone: true,
 })
 export class TranslateEventPropertyPipe implements PipeTransform {
-	#translate = inject(TranslateService);
+	#translate: TranslateService = inject(TranslateService);
 
+	/**
+	 * Due to property language suffix, we use property name based on chosen language
+	 *
+	 * @param event
+	 * @param propertyName
+	 */
 	public transform(event: IEvent, propertyName: keyof IEvent): string | number | boolean | IProgramPlace {
 		const accessEvent = event as unknown as Record<string, string | number | boolean | IProgramPlace>;
 

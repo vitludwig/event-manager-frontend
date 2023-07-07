@@ -44,9 +44,6 @@ export class ListFilterComponent implements OnInit {
 	#data: { options: IProgramFilterOptions } = inject(MAT_DIALOG_DATA);
 	#dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions> = inject(MatDialogRef<ListFilterComponent, IProgramFilterOptions>);
 
-	constructor() {
-
-	}
 
 	public ngOnInit(): void {
 		this.placeId = this.#data.options.placeId ?? undefined;

@@ -5,7 +5,6 @@ import * as dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 import {EventService} from '../event/event.service';
-import {NotificationService} from '../../../notifications/services/notification/notification.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -79,7 +78,6 @@ export class ProgramService {
 
 		this.loadDays();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
-		// TODO: store them in local storage, so we can display basic data offline
 	}
 
 	public getEvents(day?: number): Observable<IEvent[]> {

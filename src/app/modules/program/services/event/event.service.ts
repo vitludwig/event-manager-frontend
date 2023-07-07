@@ -1,6 +1,6 @@
-import {Injectable, signal, WritableSignal} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
-import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
+import {IProgramPlace} from '../../types/IProgramPlace';
 import {TEventMethodName} from './types/TEventMethodName';
 import {IEvent} from '../../types/IEvent';
 
@@ -9,10 +9,6 @@ import {IEvent} from '../../types/IEvent';
 })
 export class EventService {
 	private connection: HubConnection;
-
-	constructor() {
-		// this.initWebsocket();
-	}
 
 	public on<T>(name: TEventMethodName, callback: (args: T) => void): void {
 		this.connection.on(name, (data) => {
@@ -33,11 +29,11 @@ export class EventService {
 		}
 	}
 
-	public async getEvents(): Promise<IEvent[]> {
+	public getEvents(): Promise<IEvent[]> {
 		return this.connection.invoke('getEvents');
 	}
 
-	public async getPlaces(): Promise<IProgramPlace[]> {
+	public getPlaces(): Promise<IProgramPlace[]> {
 		return this.connection.invoke('getPlaces');
 	}
 }

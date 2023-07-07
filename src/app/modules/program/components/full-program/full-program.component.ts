@@ -17,7 +17,7 @@ import {ListTimelineComponent} from './components/list-timeline/list-timeline.co
 import {ListPlaceComponent} from './components/list-place/list-place.component';
 import {ListDaySelectComponent} from './components/list-day-select/list-day-select.component';
 import {MatBottomSheet, MatBottomSheetModule} from '@angular/material/bottom-sheet';
-import {MatToolbar, MatToolbarModule} from '@angular/material/toolbar';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';

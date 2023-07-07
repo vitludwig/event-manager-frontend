@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {IProgramDay} from '../../types/IProgramDay';
 import {TranslateModule} from '@ngx-translate/core';
+
 @Component({
 	selector: 'app-list-day-select',
 	standalone: true,
@@ -19,10 +20,6 @@ export class ListDaySelectComponent {
 
 	@Output()
 	public selectedDayChange: EventEmitter<number> = new EventEmitter<number>();
-
-	constructor() {
-
-	}
 
 	protected setDay(day: number): void {
 		this.selectedDayChange.emit(day);

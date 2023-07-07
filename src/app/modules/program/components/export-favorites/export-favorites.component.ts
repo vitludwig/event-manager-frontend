@@ -37,7 +37,6 @@ export class ExportFavoritesComponent implements OnInit {
 	}
 
 	protected onCodeResult(resultString: string): void {
-		console.log('code', resultString);
 		this.code = resultString;
 		this.#programService.loadFavorites(JSON.parse(resultString));
 		this.#dialogRef.close();

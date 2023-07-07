@@ -25,6 +25,5 @@ export class ListEventComponent {
 
 	protected showDetail(event: IProgramEvent): void {
 		this.eventSelect.emit(event);
-		console.log('showEventDetail', event);
 	}
 }

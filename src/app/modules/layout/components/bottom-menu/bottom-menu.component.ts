@@ -22,5 +22,5 @@ import {ERoute} from '../../../../common/types/ERoute';
 	]
 })
 export class BottomMenuComponent {
-	public readonly ERoute = ERoute;
+	protected readonly ERoute = ERoute;
 }

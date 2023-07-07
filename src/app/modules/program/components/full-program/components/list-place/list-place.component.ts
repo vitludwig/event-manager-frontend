@@ -12,7 +12,7 @@ import {IProgramSegment} from '../../types/IProgramSegment';
 	templateUrl: './list-place.component.html',
 	styleUrls: ['./list-place.component.scss']
 })
-export class ListPlaceComponent implements OnInit {
+export class ListPlaceComponent {
 	@Input()
 	public place: IProgramPlace;
 
@@ -29,9 +29,5 @@ export class ListPlaceComponent implements OnInit {
 
 	protected showEventDetail(event: IProgramEvent): void {
 		this.placeSelect.emit(event);
-	}
-
-	public ngOnInit() {
-		console.log('segments', this.segments);
 	}
 }

@@ -50,6 +50,11 @@ export class AppComponent implements OnInit {
 		});
 	}
 
+	/**
+	 * Show or hide OneSignal's subscription button
+	 * @param value
+	 * @private
+	 */
 	private toggleSubscriptionBtn(value: boolean): void {
 		const bell = document.getElementsByClassName('onesignal-customlink-container')[0];
 		if(bell) {
@@ -72,6 +77,12 @@ export class AppComponent implements OnInit {
 	}
 
 
+	/**
+	 * Loads registration from notification worker to show "local" notifications (instead of push by OneSignal)
+	 * Periodically checks if there are any events incoming and show notification
+	 *
+	 * @private
+	 */
 	private async handleLocalNotifications(): Promise<void> {
 		try {
 			const registration = await navigator.serviceWorker.getRegistration('notification.worker.js');
@@ -103,6 +114,12 @@ export class AppComponent implements OnInit {
 		}
 	}
 
+	/**
+	 * Separate check for notification permissions used by local notifications
+	 * TODO: app should use only OneSignal's permission popup
+	 *
+	 * @private
+	 */
 	private async handlePermissions(): Promise<void> {
 		const permission = await Notification.requestPermission();
 		this.notificationService.showNotifications = permission === 'granted';

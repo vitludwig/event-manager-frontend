@@ -34,7 +34,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 	protected eventsById: Record<string, IEvent | null> = {};
 
 	protected readonly notificationService: NotificationService = inject(NotificationService);
-	protected readonly translate = inject(TranslateService);
+	protected readonly translate: TranslateService = inject(TranslateService);
 	private readonly programService: ProgramService = inject(ProgramService);
 
 	#unsubscribe: Subject<void> = new Subject<void>();
