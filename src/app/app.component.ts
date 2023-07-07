@@ -14,8 +14,8 @@ import {SwUpdate} from '@angular/service-worker';
 })
 export class AppComponent implements OnInit {
 
-	private readonly translate = inject(TranslateService);
-	private readonly swUpdate = inject(SwUpdate);
+	private readonly translate: TranslateService = inject(TranslateService);
+	private readonly swUpdate: SwUpdate = inject(SwUpdate);
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
