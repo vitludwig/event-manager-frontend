@@ -35,7 +35,7 @@
 
 		&__search-input {
 			width: 100%;
-			margin-left: 15px;
+			margin: auto 15px;
 		}
 	}
 
@@ -44,5 +44,13 @@
 		flex-direction: column;
 		height: 100%;
 		min-height: 100%;
+
+		&__no-events {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			height: 100%;
+		}
 	}
 }

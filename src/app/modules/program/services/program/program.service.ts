@@ -10,8 +10,23 @@ import {EventService} from '../event/event.service';
 	providedIn: 'root'
 })
 export class ProgramService {
-	public userFilterOptions: IProgramFilterOptions = {};
+
+	public get userFilterOptions(): IProgramFilterOptions {
+		const savedOptions = JSON.parse(localStorage.getItem('userFilterOptions') || '{}');
+		if(Object.keys(savedOptions).length > 0) {
+			this.#userFilterOptions = savedOptions;
+		}
+
+		return this.#userFilterOptions;
+	}
+
+	public set userFilterOptions(value: IProgramFilterOptions) {
+		this.#userFilterOptions = value;
+		localStorage.setItem('userFilterOptions', JSON.stringify(value));
+	}
+
 	public favorites: IEvent[] = [];
+	public selectedDay: number; // used to persist the selected day between routes
 
 	public get allEvents(): IEvent[] {
 		return this.#allEvents;
@@ -22,7 +37,6 @@ export class ProgramService {
 	 * @private
 	 */
 	#allEvents: IEvent[] = [];
-
 	#allPlaces: IProgramPlace[] = [];
 
 	/**
@@ -36,6 +50,7 @@ export class ProgramService {
 	#events: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
 	#places: BehaviorSubject<IProgramPlace[]> = new BehaviorSubject(this.#allPlaces);
 	#days: BehaviorSubject<Record<number, number>> = new BehaviorSubject<Record<number, number>>({});
+	#userFilterOptions: IProgramFilterOptions = {};
 
 	public places$: Observable<IProgramPlace[]> = this.#places.asObservable();
 	public days$ = this.#days.asObservable();

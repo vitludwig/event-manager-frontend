@@ -14,6 +14,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {FullProgramConfig} from '../full-program/FullProgramConfig';
 import {TranslateModule} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
+import {ERoute} from '../../../../common/types/ERoute';
+import {Router} from '@angular/router';
 
 @Component({
 	selector: 'app-program-vertical-list',
@@ -45,9 +47,11 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 
 	protected placesById: Record<string, IProgramPlace> = {};
 	protected groupEvents: Record<number, IEvent[]> = {};
+
 	protected readonly fullProgramConfig = FullProgramConfig;
 
 	private readonly programService: ProgramService = inject(ProgramService);
+	private readonly router: Router = inject(Router);
 	private readonly dialog: MatDialog = inject(MatDialog);
 
 	#events: IEvent[] | null = [];
@@ -76,15 +80,8 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	}
 
 	protected openFullDetail(event: IEvent): void {
-		this.dialog.open(EventDetailFullComponent, {
-			data: {
-				event: event,
-			},
-			width: '100%',
-			height: '100%',
-			panelClass: 'full-overlay',
-			closeOnNavigation: true,
-		});
+		this.router.navigate(['/' + ERoute.EVENT_DETAIL, event.id]);
+		this.dialog.closeAll();
 	}
 
 	protected toggleFavorite(event: IEvent): void {

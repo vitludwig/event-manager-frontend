@@ -32,7 +32,6 @@ export class EventDetailPreviewComponent {
 	protected readonly fullProgramConfig = FullProgramConfig;
 
 	private readonly programService: ProgramService = inject(ProgramService);
-	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly router: Router = inject(Router);
 	protected readonly data: { event: IProgramEvent } = inject(MAT_BOTTOM_SHEET_DATA);

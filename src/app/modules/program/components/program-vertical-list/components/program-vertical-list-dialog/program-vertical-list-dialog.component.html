@@ -23,10 +23,21 @@
 				class="my-icon">search
 			</mat-icon>
 		</mat-form-field>
+
+		<button mat-icon-button
+			(click)="toggleFavorite()">
+			<mat-icon>{{ onlyFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+		</button>
+
 	</div>
 
 	<div class="event-list-dialog__content">
 		<app-program-vertical-list [events]="filteredEvents"></app-program-vertical-list>
+
+		<div class="event-list-dialog__content__no-events" *ngIf="filteredEvents.length === 0">
+			<h2>{{'Dnes tu není žádná akce' | translate}}</h2>
+			<h4>{{'Zkontrolujte nastavení filtrů' | translate}}</h4>
+		</div>
 	</div>
 </div>
 

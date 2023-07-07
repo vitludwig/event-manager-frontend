@@ -80,6 +80,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 	protected set selectedDay(value: number) {
 		this.#selectedDay = value;
+		this.programService.selectedDay = value;
 		this.applyFilters(this.programService.userFilterOptions);
 	}
 
@@ -92,14 +93,13 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
-	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly renderer: Renderer2 = inject(Renderer2);
 
 	public ngOnInit(): void {
 		this.loadPlaces();
 		this.loadEvents();
 
-		this.selectedDay = this.findToday(this.days)?.id ?? 0;
+		this.selectedDay = this.programService.selectedDay ?? this.findToday(this.days)?.id ?? 0;
 	}
 
 	public ngOnDestroy(): void {
