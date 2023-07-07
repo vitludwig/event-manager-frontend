@@ -1,0 +1,10 @@
+.img-wrapper {
+	width: 100%;
+	height: calc(100% - 64px);
+	overflow: auto;
+
+	img {
+		width: auto;
+		height: auto;
+	}
+}

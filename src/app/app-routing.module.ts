@@ -21,6 +21,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./modules/notifications/notifications.component').then((c) => c.NotificationsComponent),
 	},
 	{
+		path: ERoute.MAP,
+		loadComponent: () => import('./modules/map/map.component').then((c) => c.MapComponent),
+	},
+	{
 		path: '**',
 		redirectTo: ERoute.PROGRAM,
 	},

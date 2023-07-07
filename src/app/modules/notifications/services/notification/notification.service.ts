@@ -1,4 +1,4 @@
-import {inject, Injectable, signal, WritableSignal} from '@angular/core';
+import {inject, Injectable, isDevMode, signal, WritableSignal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
@@ -47,6 +47,9 @@ export class NotificationService {
 	}
 
 	public async initOneSignal(): Promise<void> {
+		if(isDevMode()) {
+			return;
+		}
 		try {
 			const oneSignal = this.oneSignal.init({
 				appId: environment.oneSignalAppId,
