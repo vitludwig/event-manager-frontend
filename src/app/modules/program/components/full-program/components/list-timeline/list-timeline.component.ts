@@ -36,8 +36,10 @@ export class ListTimelineComponent implements AfterViewInit {
 	}
 
 	public ngAfterViewInit(): void {
-		this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
-		this.scrollToNowSegment();
+		if(this.segmentNow) {
+			this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
+			this.scrollToNowSegment();
+		}
 	}
 
 	public scrollToNowSegment(): void {

@@ -32,6 +32,8 @@ import {LanguageMenuComponent} from '../../../../common/components/language-menu
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
+import {UserService} from '../../../../common/services/user/user.service';
+import {UserInfoComponent} from '../../../../common/components/user-info/user-info.component';
 
 
 @Component({
@@ -53,6 +55,7 @@ import {IProgramDay} from './types/IProgramDay';
 		TranslateModule,
 		LanguageMenuComponent,
 		MatMenuModule,
+		UserInfoComponent,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
@@ -102,6 +105,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
+	private readonly userService: UserService = inject(UserService);
 
 	public ngOnInit(): void {
 		this.loadPlaces();

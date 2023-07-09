@@ -27,7 +27,7 @@ export class FullProgramConfig {
 		2: {
 			id: 2,
 			name: 'Elektronická hudba (DJs)',
-			color: '#6f777e',
+			color: '#318C9F',
 			abbr: 'E',
 		},
 		3: {

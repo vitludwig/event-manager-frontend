@@ -1,0 +1,11 @@
+.user-info {
+	&__money {
+		display: flex;
+		align-items: center;
+		font-size: 16px;
+
+		mat-icon {
+			margin-right: 10px;
+		}
+	}
+}

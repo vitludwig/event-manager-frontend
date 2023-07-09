@@ -1,0 +1,18 @@
+<div class="user-info">
+	<ng-container *ngIf="userInfo">
+		<button mat-stroked-button class="user-info__money"
+			(click)="showDetail()"
+		>
+			<mat-icon>account_balance_wallet</mat-icon>
+			{{ userInfo.user.TotalSum }}&nbsp;Kč
+		</button>
+	</ng-container>
+
+	<ng-container *ngIf="!userInfo">
+		<button mat-icon-button
+			(click)="openScanner()"
+		>
+			<mat-icon>qr_code_scanner</mat-icon>
+		</button>
+	</ng-container>
+</div>

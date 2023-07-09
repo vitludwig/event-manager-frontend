@@ -1,0 +1,41 @@
+<div class="user-info-title"
+	mat-dialog-title
+>
+	<div class="user-info-title__content">
+		<h2>{{ 'Peněženka' | translate }}</h2>
+		<small>{{ 'Aktualizováno' }}: ertret</small>
+	</div>
+</div>
+
+<div mat-dialog-content>
+	<div class="detail-item">
+		<label>{{ 'Vklad celkem' | translate}}: </label>
+		<strong>{{ data.user.DepositSum }}&nbsp;Kč</strong>
+	</div>
+
+	<div class="detail-item">
+		<label>{{ 'Utraceno' | translate}}: </label>
+		<strong>{{ data.user.BuySum }}&nbsp;Kč</strong>
+	</div>
+
+	<div class="detail-item">
+		<label>{{ 'Zbývá' | translate}}: </label>
+		<strong>{{ data.user.TotalSum }}&nbsp;Kč</strong>
+	</div>
+
+	<h3 class="transactions-title">{{ 'Poslední transakce' | translate}}</h3>
+	<mat-list role="list">
+		<mat-list-item role="listitem"
+			*ngFor="let transaction of data.transactions">
+			<span matListItemTitle>{{transaction.Name}}</span>
+			<span matListItemLine>{{ transaction.AmountSum }} Kč</span>
+			<span matListItemLine>{{ transaction.Created | date: 'dd.MM.yyyy HH:mm' }}</span>
+		</mat-list-item>
+	</mat-list>
+</div>
+
+<mat-dialog-actions align="end">
+	<button mat-raised-button
+		mat-dialog-close>{{ 'Zavřít' | translate }}
+	</button>
+</mat-dialog-actions>
