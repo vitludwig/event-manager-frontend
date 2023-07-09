@@ -15,37 +15,44 @@ export class FullProgramConfig {
 		0: {
 			id: 0,
 			name: 'Soutěž/Turnaj/Larp',
-			color: '#C5C7C6'
+			color: '#C5C7C6',
+			abbr: 'S',
 		},
 		1: {
 			id: 1,
 			name: 'Živá hudba',
-			color: '#e7503d'
+			color: '#e7503d',
+			abbr: 'H',
 		},
 		2: {
 			id: 2,
 			name: 'Elektronická hudba (DJs)',
-			color: '#6f777e'
+			color: '#6f777e',
+			abbr: 'E',
 		},
 		3: {
 			id: 3,
 			name: 'Film',
-			color: '#afcb1f'
+			color: '#afcb1f',
+			abbr: 'F',
 		},
 		4: {
 			id: 4,
 			name: 'Show/Vystoupení',
-			color: '#7d71b1'
+			color: '#7d71b1',
+			abbr: 'V',
 		},
 		5: {
 			id: 5,
 			name: 'Workshop',
-			color: '#ffcc01'
+			color: '#ffcc01',
+			abbr: 'WS',
 		},
 		6: {
 			id: 6,
 			name: 'Přednáška',
-			color: '#ef7f1b'
+			color: '#ef7f1b',
+			abbr: 'P',
 		},
 	}
 }

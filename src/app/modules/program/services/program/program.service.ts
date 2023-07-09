@@ -27,6 +27,17 @@ export class ProgramService {
 
 	public favorites: IEvent[] = [];
 	public selectedDay: number; // used to persist the selected day between routes
+	#showEventDetails: boolean = false; // show detailed information of event in program (i.e. abbreviation of event type)
+
+
+	public get showEventDetails(): boolean {
+		return localStorage.getItem('showEventDetails') === 'true' ?? this.#showEventDetails;
+	}
+
+	public set showEventDetails(value: boolean) {
+		this.#showEventDetails = value;
+		localStorage.setItem('showEventDetails', JSON.stringify(value));
+	}
 
 	public get allEvents(): IEvent[] {
 		return this.#allEvents;
@@ -146,7 +157,7 @@ export class ProgramService {
 
 	public updateEvent(event: IEvent, property: keyof IEvent, value: string | number | boolean): void {
 		const eventToUpdate: IEvent | undefined = this.#allEvents.find((e) => e.id === event.id);
-		if(eventToUpdate && Object.prototype.hasOwnProperty.call(eventToUpdate, property)) {
+		if(eventToUpdate) {
 			// TODO: resolve typing issue
 			// @ts-ignore
 			eventToUpdate[property] = value;

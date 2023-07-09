@@ -40,7 +40,7 @@ export class NotificationService {
 	}
 
 	public showLocalNotification(title: string, body: string = ''): Promise<void> {
-		return this.notificationRegistration.showNotification('[LOCAL] ' + title, {
+		return this.notificationRegistration.showNotification(title, {
 			body: body,
 			icon: '/assets/icons/icon-72x72.png',
 		});

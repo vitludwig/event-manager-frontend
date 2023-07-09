@@ -5,8 +5,11 @@
 	*ngIf="event"
 	(click)="showDetail(event)"
 >
-	{{ event | translateEventProperty: 'name' }}
-	<div class="d-flex justify-content-between">
+	<div class="place__segment__event__name">
+		<small *ngIf="programService.showEventDetails">({{ fullProgramConfig.eventTypes[event.type].abbr }}) </small>
+		<span>{{ event | translateEventProperty: 'name' }}</span>
+	</div>
+	<div class="place__segment__event__info">
 		<small>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</small>
 		<mat-icon *ngIf="event.favorite"
 			class="favorite-icon">favorite

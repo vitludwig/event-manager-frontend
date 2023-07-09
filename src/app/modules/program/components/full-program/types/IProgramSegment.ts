@@ -1,4 +1,5 @@
 export interface IProgramSegment {
-	time: string | null,
+	time: string,
 	index: number,
+	isWholeHour: boolean,
 }

@@ -3,9 +3,16 @@
 		[style.min-width]="FullProgramConfig.segmentWidth + 'px'"
 		*ngFor="let segment of segments; let isFirst = first"
 	>
-		<div class="list-timeline__segment__border"
-			*ngIf="segment.time && !isFirst">
+		<div class="list-timeline__segment__border--now"
+			#segmentNow
+			*ngIf="segment.time === timeNow">
 		</div>
-		<span class="list-timeline__segment__time">{{ segment.time }}</span>
+
+		<ng-container *ngIf="segment.isWholeHour">
+			<div class="list-timeline__segment__border"
+				*ngIf="!isFirst">
+			</div>
+			<span class="list-timeline__segment__time">{{ segment.time }}</span>
+		</ng-container>
 	</div>
 </div>

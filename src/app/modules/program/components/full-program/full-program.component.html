@@ -1,6 +1,13 @@
 <div class="full-program">
 	<mat-toolbar class="full-program__toolbar">
 		<span>{{'Program' | translate}}</span>
+
+		<button mat-icon-button
+			aria-label="Filter events"
+			(click)="scrollToNow()">
+			<mat-icon>gps_fixed</mat-icon>
+		</button>
+
 		<div class="full-program__toolbar__actions">
 
 			<button mat-icon-button
@@ -33,6 +40,13 @@
 					(click)="exportFavorites()">
 					<mat-icon>import_export</mat-icon>
 				</button>
+
+				<button mat-icon-button
+					aria-label="Filter events"
+					(click)="toggleEventDetails()">
+					<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>
+				</button>
+
 			</div>
 		</mat-toolbar>
 	</div>
@@ -42,12 +56,15 @@
 		(selectedDayChange)="selectedDay = $event">
 	</app-list-day-select>
 
-	<div class="full-program__list">
+	<div class="full-program__list" #programList>
 		<div class="list-horizontal"
 			*ngIf="allSegments.length > 0; else noEvents"
 			[style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"
 		>
-			<app-list-timeline [segments]="allSegments"></app-list-timeline>
+			<app-list-timeline
+				[segments]="allSegments"
+				[parentContainer]="programList"
+			></app-list-timeline>
 
 			<div class="list-events">
 				<div class="list-events__place"

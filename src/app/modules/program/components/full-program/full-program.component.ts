@@ -30,7 +30,6 @@ import {Subject, takeUntil} from 'rxjs';
 import {TranslateModule} from '@ngx-translate/core';
 import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
-import {NotificationService} from '../../../notifications/services/notification/notification.service';
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
 
@@ -62,6 +61,9 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	@ViewChild('secondaryToolbar')
 	public secondaryToolbar: ElementRef;
 
+	@ViewChild(ListTimelineComponent)
+	public timeline: ListTimelineComponent;
+
 	// n-minute segments for day
 	protected allSegments: IProgramSegment[] = [];
 	protected days: IProgramDay[] = [];
@@ -82,6 +84,12 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.#selectedDay = value;
 		this.programService.selectedDay = value;
 		this.applyFilters(this.programService.userFilterOptions);
+
+		if(this.timeline) {
+			setTimeout(() => {
+				this.timeline.scrollToNowSegment();
+			}, 0);
+		}
 	}
 
 	protected readonly FullProgramConfig = FullProgramConfig;
@@ -90,7 +98,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	#selectedDay: number;
 	#unsubscribe: Subject<void> = new Subject<void>();
 
-	private readonly programService: ProgramService = inject(ProgramService);
+	protected readonly programService: ProgramService = inject(ProgramService);
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
@@ -149,6 +157,15 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	protected scrollToNow(): void {
+		this.selectedDay = this.findToday(this.days)?.id ?? 0;
+		this.timeline.scrollToNowSegment();
+	}
+
+	protected toggleEventDetails(): void {
+		this.programService.showEventDetails = !this.programService.showEventDetails;
+	}
+
 	private applyFilters(options?: IProgramFilterOptions): void {
 		if(!options) {
 			return;
@@ -196,12 +213,16 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 			// Increment time by 15 minutes on every segment and display it only on full hours
 			const incIndex = index * FullProgramConfig.segmentDuration;
+			time = startingTime.add(incIndex, 'minutes').format('HH:mm');
+			let isWholeHour = false;
 			if(incIndex % (60 / FullProgramConfig.segmentDuration) === 0) {
-				time = startingTime.add(incIndex, 'minutes').format('HH:mm');
+				isWholeHour = true;
 			}
+
 			return {
-				time: time,
-				index: index
+				time,
+				isWholeHour,
+				index
 			};
 		});
 	}
