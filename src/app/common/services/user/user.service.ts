@@ -49,6 +49,6 @@ export class UserService {
 	#lastChecked: string;
 
 	public getUserInfo(userId: number, token: string): Promise<IUserInfo> {
-		return firstValueFrom(this.http.get<IUserInfo>(`https://cybertown-kredsys.eu:8888/userInfo/${userId}/${token}`));
+		return firstValueFrom(this.http.get<IUserInfo>(`https://cybertown-kredsys.eu/kredsys-api/userInfo/${userId}/${token}`));
 	}
 }
