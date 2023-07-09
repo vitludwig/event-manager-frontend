@@ -32,3 +32,9 @@ mat-list-item {
 		border-bottom: 1px solid rgba(var(--cy__color--border), 0.25);
 	}
 }
+
+.actions {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}

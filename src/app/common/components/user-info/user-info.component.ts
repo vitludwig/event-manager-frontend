@@ -24,13 +24,20 @@ export class UserInfoComponent implements OnInit {
 
 	public ngOnInit(): void {
 		if(this.userService.userId && this.userService.token) {
-			this.loadData(this.userService.userId, this.userService.token);
+			this.loadData();
+
+			setInterval(() => {
+				this.loadData();
+			}, 600000);
 		}
 	}
 
 	protected showDetail(): void {
 		this.dialog.open(UserInfoDetailComponent, {
-			data: this.userInfo,
+			data: {
+				data: this.userInfo,
+				refreshFn: this.loadData
+			},
 			width: '500px',
 		});
 	}
@@ -40,15 +47,19 @@ export class UserInfoComponent implements OnInit {
 			data: this.userInfo,
 			width: '500px',
 		});
+
 		dialog.afterClosed().subscribe((result: IUserInfoTerminal) => {
 			this.userService.userId = result.userId;
 			this.userService.token = result.token;
 
-			this.loadData(this.userService.userId, this.userService.token);
+			this.loadData();
 		});
 	}
 
-	private async loadData(userId: number, token: string): Promise<void> {
-		this.userInfo = await this.userService.getUserInfo(userId, token);
+	private loadData = async (): Promise<void> => {
+		if(this.userService.userId && this.userService.token) {
+			this.userInfo = await this.userService.getUserInfo(this.userService.userId, this.userService.token);
+			this.userService.lastChecked = new Date().toString();
+		}
 	}
 }
