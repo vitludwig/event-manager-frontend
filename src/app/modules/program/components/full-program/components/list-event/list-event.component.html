@@ -1,6 +1,7 @@
 <button class="place__segment__event text-overflow-ellipsis"
 	mat-button
 	[style.right]="-(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + 'px'"
+	[style.width]="(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + fullProgramConfig.segmentWidth + 'px'"
 	[style.background-color]="fullProgramConfig.eventTypes[event.type].color + ' !important'"
 	*ngIf="event"
 	(click)="showDetail(event)"
