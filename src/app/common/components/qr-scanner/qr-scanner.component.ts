@@ -72,7 +72,8 @@ export class QrScannerComponent implements OnInit, OnDestroy {
 	public camerasFoundHandler($event: any[]) {
 		const defaultCamera = $event.find((device) => device.deviceId === localStorage.getItem('cameraId'));
 		this.cameras = $event;
-		this.currentDevice = defaultCamera ?? $event[0];
+		const backCamera = $event.find((obj) => obj.label.includes('back')) ?? $event[0]
+		this.currentDevice = defaultCamera ?? backCamera;
 	}
 
 	public async handleQrCodeResult(resultString: string): Promise<void> {
