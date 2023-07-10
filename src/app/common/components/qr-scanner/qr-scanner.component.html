@@ -1,0 +1,25 @@
+<zxing-scanner
+	#scanner
+	[enable]="!!currentDevice"
+	(scanSuccess)="handleQrCodeResult($event)"
+	(camerasFound)="camerasFoundHandler($event)"
+	(camerasNotFound)="camerasNotFoundHandler($event)"
+	[device]="currentDevice"
+	class="mb-1"
+></zxing-scanner>
+
+<h4 *ngIf="cameraNotFound">{{ 'Nejde načíst kameru' | translate }}</h4>
+
+<mat-form-field class="w-100">
+	<mat-label>{{'Kamera' | translate}}</mat-label>
+	<mat-select *ngIf="!cameraNotFound"
+		class="form-control"
+		[(ngModel)]="currentDeviceId"
+	>
+		<mat-option *ngFor="let device of cameras"
+			[value]="device.deviceId"
+		>
+			{{device.label}}
+		</mat-option>
+	</mat-select>
+</mat-form-field>

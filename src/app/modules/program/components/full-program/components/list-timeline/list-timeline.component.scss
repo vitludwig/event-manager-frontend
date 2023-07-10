@@ -1,5 +1,9 @@
 .list-timeline {
 	display: flex;
+	position: sticky;
+	top: 0;
+	background-color: #0f0f0f;
+	z-index: 100;
 
 	&__segment {
 		position: relative;

@@ -28,6 +28,8 @@
   "Propojit peněženku": "Connect wallet",
   "Načtěte QR kód z terminálu na infostánku.": "Load this QR code from terminal on info stand.",
   "Aktualizovat": "Update",
+  "Nejde načíst kameru": "Can't load camera",
+  "Kamera": "Camera",
 
   "Soutěž/Turnaj/Larp": "Competition/Tournament/Larp",
   "Živá hudba": "Live music",

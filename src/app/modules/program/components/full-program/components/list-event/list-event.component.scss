@@ -20,7 +20,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 5px;
+
+		span {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 	}
 
 	&__info {
@@ -34,6 +39,13 @@
 	font-size: 18px;
 	position: absolute;
 	left: 0;
+	top: 0;
+	opacity: 0.8;
+}
+
+.event-type {
+	position: absolute;
+	right: 0;
 	top: 0;
 	opacity: 0.8;
 }

@@ -11,7 +11,7 @@
 
 		<mat-tab label="Načíst">
 			<h4>{{ 'Načtěte QR kód z prohlížeče.' | translate }}</h4>
-			<zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+			<app-qr-scanner (scanned)="onCodeResult($event)"></app-qr-scanner>
 		</mat-tab>
 	</mat-tab-group>
 </div>

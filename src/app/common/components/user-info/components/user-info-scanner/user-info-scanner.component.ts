@@ -1,16 +1,24 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
 import {QRCodeModule} from 'angularx-qrcode';
 import {TranslateModule} from '@ngx-translate/core';
-import {ZXingScannerModule} from '@zxing/ngx-scanner';
+import {QrScannerComponent} from '../../../qr-scanner/qr-scanner.component';
 
 @Component({
 	selector: 'app-user-info-scanner',
 	standalone: true,
-	imports: [CommonModule, MatButtonModule, MatDialogModule, MatTabsModule, QRCodeModule, TranslateModule, ZXingScannerModule],
+	imports: [
+		CommonModule,
+		MatButtonModule,
+		MatDialogModule,
+		MatTabsModule,
+		QRCodeModule,
+		TranslateModule,
+		QrScannerComponent,
+	],
 	templateUrl: './user-info-scanner.component.html',
 	styleUrls: ['./user-info-scanner.component.scss']
 })

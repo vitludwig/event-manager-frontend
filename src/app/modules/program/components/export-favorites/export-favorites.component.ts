@@ -8,6 +8,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatTabsModule} from '@angular/material/tabs';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
+import {QrScannerComponent} from '../../../../common/components/qr-scanner/qr-scanner.component';
 
 @Component({
 	selector: 'app-export-favorites',
@@ -21,6 +22,7 @@ import {ZXingScannerModule} from '@zxing/ngx-scanner';
 		TranslateModule,
 		MatTabsModule,
 		ZXingScannerModule,
+		QrScannerComponent,
 	],
 	templateUrl: './export-favorites.component.html',
 	styleUrls: ['./export-favorites.component.scss']

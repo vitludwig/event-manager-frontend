@@ -4,7 +4,7 @@
 
 <div mat-dialog-content>
 	<h4>{{ 'Načtěte QR kód z terminálu na infostánku.' | translate }}</h4>
-	<zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+	<app-qr-scanner (scanned)="onCodeResult($event)"></app-qr-scanner>
 </div>
 
 <mat-dialog-actions align="end">

@@ -6,8 +6,10 @@
 	(click)="showDetail(event)"
 >
 	<div class="place__segment__event__name">
-		<small *ngIf="programService.showEventDetails">({{ fullProgramConfig.eventTypes[event.type].abbr }}) </small>
-		<span>{{ event | translateEventProperty: 'name' | eventEllipsis: event }}</span>
+		<span>
+			<small *ngIf="programService.showEventDetails">({{ fullProgramConfig.eventTypes[event.type].abbr }}) </small>
+			{{ event | translateEventProperty: 'name' | eventEllipsis: event }}
+		</span>
 	</div>
 
 	<mat-icon *ngIf="event.favorite"
