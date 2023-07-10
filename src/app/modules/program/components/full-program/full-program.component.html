@@ -2,12 +2,6 @@
 	<mat-toolbar class="full-program__toolbar">
 		<span>{{'Program' | translate}}</span>
 
-		<button mat-icon-button
-			aria-label="Filter events"
-			(click)="scrollToNow()">
-			<mat-icon>gps_fixed</mat-icon>
-		</button>
-
 		<div class="full-program__toolbar__actions">
 			<app-user-info></app-user-info>
 
@@ -79,6 +73,14 @@
 					</app-list-place>
 				</div>
 			</div>
+
+			<button mat-mini-fab
+				color="primary"
+				class="full-program__list__scroll-to-now"
+				(click)="scrollToNow()"
+			>
+				<mat-icon>gps_fixed</mat-icon>
+			</button>
 		</div>
 	</div>
 

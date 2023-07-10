@@ -1,18 +1,20 @@
 .place__segment__event {
-	height: 50px;
+	height: 65px;
 	position: absolute;
 	left: 0;
 	background-color: var(--mdc-theme-surface);
 	z-index: 1;
-	padding: 10px;
+	padding: 8px 4px;
 	border: 1px solid transparent;
 	border-radius: 5px;
 	text-align: center;
-	font-weight: bold;
-	font-size: 16px;
+	font-size: 15px;
 	color: #1e1e1e;
 	opacity: 0.8;
-	line-height: 16px !important;
+	line-height: 15px !important;
+	font-family: Roboto, monospace;
+	font-weight: 500;
+	margin: 0 1px;
 
 	&__name {
 		display: flex;
@@ -23,14 +25,15 @@
 
 	&__info {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
 	}
 }
 
 .favorite-icon {
 	font-size: 18px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.8;
 }

@@ -7,11 +7,12 @@ import {TruncatePipe} from '../../../../../../common/pipes/truncate/truncate.pip
 import {MatIconModule} from '@angular/material/icon';
 import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
 import {ProgramService} from '../../../../services/program/program.service';
+import {EventEllipsisPipe} from './pipes/event-ellipsis.pipe';
 
 @Component({
 	selector: 'app-list-event',
 	standalone: true,
-	imports: [CommonModule, MatButtonModule, TruncatePipe, MatIconModule, TranslateEventPropertyPipe],
+	imports: [CommonModule, MatButtonModule, TruncatePipe, MatIconModule, TranslateEventPropertyPipe, EventEllipsisPipe],
 	templateUrl: './list-event.component.html',
 	styleUrls: ['./list-event.component.scss']
 })

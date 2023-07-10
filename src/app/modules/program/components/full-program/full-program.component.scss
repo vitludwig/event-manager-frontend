@@ -39,6 +39,12 @@
 		width: 100%;
 		overflow: auto;
 		flex-grow: 1;
+
+		&__scroll-to-now {
+			position: absolute;
+			right: 15px;
+			bottom: 15px;
+		}
 	}
 
 	&__no-events {

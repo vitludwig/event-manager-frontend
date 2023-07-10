@@ -12,6 +12,7 @@ import {ERoute} from '../../../../../../common/types/ERoute';
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
 import {TranslateModule} from '@ngx-translate/core';
+import {EllipsisPipe} from '../../../../../../common/pipes/ellipsis/ellipsis.pipe';
 
 @Component({
 	selector: 'app-event-detail-preview',
@@ -23,7 +24,8 @@ import {TranslateModule} from '@ngx-translate/core';
 		TruncatePipe,
 		MatDialogModule,
 		TranslateEventPropertyPipe,
-		TranslateModule
+		TranslateModule,
+		EllipsisPipe
 	],
 	templateUrl: './event-detail-preview.component.html',
 	styleUrls: ['./event-detail-preview.component.scss']

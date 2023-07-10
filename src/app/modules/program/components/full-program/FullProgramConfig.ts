@@ -4,7 +4,7 @@ export class FullProgramConfig {
 	/**
 	 * Width of program n-minutes segment in px
 	 */
-	public static segmentWidth: number = 40;
+	public static segmentWidth: number = 45;
 
 	/**
 	 * Time duration of segment in minutes
