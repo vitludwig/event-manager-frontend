@@ -21,8 +21,8 @@
   "Zkontrolujte nastavení filtrů": "Check filter settings",
   "Peněženka": "Wallet",
   "Aktualizováno": "Updated",
-  "Vklad celkem": "Total deposit",
-  "Utraceno": "Total spent",
+  "Vloženo": "Deposit",
+  "Utraceno": "Spent",
   "Zbývá": "Remaining",
   "Poslední transakce": "Last transactions",
   "Propojit peněženku": "Connect wallet",
@@ -30,6 +30,7 @@
   "Aktualizovat": "Update",
   "Nejde načíst kameru": "Can't load camera",
   "Kamera": "Camera",
+  "Nelze načíst peněženku": "Can't load wallet",
 
   "Soutěž/Turnaj/Larp": "Competition/Tournament/Larp",
   "Živá hudba": "Live music",

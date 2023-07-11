@@ -7,10 +7,10 @@ export interface IUserInfoUser {
 	Name: string;
 	MemberId: string;
 	Email: string;
-	DepositSum: string;
-	BuySum: string;
-	WithdrawSum: string;
-	TotalSum: string;
+	DepositSum: number | null;
+	BuySum: number | null;
+	WithdrawSum: number | null;
+	TotalSum: number;
 }
 
 export interface IUserInfoTransaction {

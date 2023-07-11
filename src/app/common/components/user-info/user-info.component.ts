@@ -58,8 +58,12 @@ export class UserInfoComponent implements OnInit {
 
 	private loadData = async (): Promise<void> => {
 		if(this.userService.userId && this.userService.token) {
-			this.userInfo = await this.userService.getUserInfo(this.userService.userId, this.userService.token);
-			this.userService.lastChecked = new Date().toString();
+			try {
+				this.userInfo = await this.userService.getUserInfo(this.userService.userId, this.userService.token);
+				this.userService.lastChecked = new Date().toString();
+			} catch(e) {
+				console.error(e);
+			}
 		}
 	}
 }

@@ -3,19 +3,19 @@
 >
 	<div class="user-info-title__content">
 		<h2>{{ 'Peněženka' | translate }}</h2>
-		<small>{{ 'Aktualizováno' }}: {{ userService.lastChecked | date: 'dd.MM.yyyy HH:mm' }}</small>
+		<small>{{ 'Aktualizováno' | translate }}: {{ userService.lastChecked | date: 'dd.MM.yyyy HH:mm' }}</small>
 	</div>
 </div>
 
 <div mat-dialog-content>
 	<div class="detail-item">
-		<label>{{ 'Vklad celkem' | translate}}: </label>
-		<strong>{{ dialogData.data.user.DepositSum }}&nbsp;Kč</strong>
+		<label>{{ 'Vloženo' | translate}}: </label>
+		<strong>{{ dialogData.data.user.DepositSum ?? 0 }}&nbsp;Kč</strong>
 	</div>
 
 	<div class="detail-item">
 		<label>{{ 'Utraceno' | translate}}: </label>
-		<strong>{{ dialogData.data.user.BuySum }}&nbsp;Kč</strong>
+		<strong>{{ dialogData.data.user.BuySum ?? 0 }}&nbsp;Kč</strong>
 	</div>
 
 	<div class="detail-item">
