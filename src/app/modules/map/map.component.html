@@ -9,9 +9,21 @@
 
 	<mat-tab [label]="'Atrakce' | translate">
 		<ng-template matTabContent>
-			<div class="img-wrapper">
-				<img src="assets/map/attractions2.jpg">
-			</div>
+			<mat-tab-group class="sub-tabs">
+				<mat-tab [label]="'Mapa' | translate">
+					<ng-template matTabContent>
+						<div class="img-wrapper">
+							<img src="assets/map/attractions2.jpg">
+						</div>
+					</ng-template>
+				</mat-tab>
+
+				<mat-tab [label]="'Otevírací doba' | translate">
+					<ng-template matTabContent>
+						<app-opening-hours></app-opening-hours>
+					</ng-template>
+				</mat-tab>
+			</mat-tab-group>
 		</ng-template>
 	</mat-tab>
 
