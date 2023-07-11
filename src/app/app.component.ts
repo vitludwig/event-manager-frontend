@@ -23,6 +23,9 @@ export class AppComponent implements OnInit {
 	#alreadyNotified: string[] = [];
 
 	public async ngOnInit(): Promise<void> {
+		setInterval(() => {
+			this.checkForUpdates();
+		}, 1000 * 60 * 30); // 0.5 hour
 		this.checkForUpdates();
 
 		this.handleLanguage();
