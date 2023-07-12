@@ -27,6 +27,9 @@
 
 	<div #secondaryToolbar class="full-program__secondary-toolbar">
 		<mat-toolbar>
+			<button mat-icon-button (click)="refreshApp()">
+				<mat-icon>refresh</mat-icon>
+			</button>
 			<div class="full-program__secondary-toolbar__actions">
 				<app-language-menu></app-language-menu>
 

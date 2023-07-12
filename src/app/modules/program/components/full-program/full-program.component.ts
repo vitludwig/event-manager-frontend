@@ -170,6 +170,10 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.programService.showEventDetails = !this.programService.showEventDetails;
 	}
 
+	protected refreshApp(): void {
+		window.location.reload();
+	}
+
 	private applyFilters(options?: IProgramFilterOptions): void {
 		if(!options) {
 			return;

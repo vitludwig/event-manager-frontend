@@ -74,29 +74,39 @@ export class ProgramService {
 
 	public async initWebsocket(): Promise<void> {
 		try {
-			await this.eventService.initWebsocket()
-			await this.loadProgramData();
+			const localPlaces = localStorage.getItem('places');
+			const localEvents = localStorage.getItem('events');
+			if(localPlaces && localEvents) {
+				await this.loadProgramData(JSON.parse(localPlaces), JSON.parse(localEvents));
+			}
 
-			this.eventService.on<IEvent>('newEvent', (data) => {
-				this.#allEvents = [...this.#allEvents, data];
-				this.propagateEventUpdate();
-			});
+			if(window.navigator.onLine) {
+				await this.eventService.initWebsocket();
+				await this.loadProgramData();
 
-			this.eventService.on<IEvent>('updateEvent', (data) => {
-				const index = this.#allEvents.findIndex((event) => event.id === data.id);
-				this.#allEvents[index] = data;
+				this.eventService.on<IEvent>('newEvent', (data) => {
+					this.#allEvents = [...this.#allEvents, data];
+					this.propagateEventUpdate();
+				});
 
-				this.updateFavorites();
-				this.propagateEventUpdate();
-			});
+				this.eventService.on<IEvent>('updateEvent', (data) => {
+					const index = this.#allEvents.findIndex((event) => event.id === data.id);
+					this.#allEvents[index] = data;
+
+					this.updateFavorites();
+					this.propagateEventUpdate();
+				});
+			}
 		} catch(e) {
 			console.error('Error while initializing websocket communication: ', e);
 		}
 	}
 
-	public async loadProgramData(): Promise<void> {
-		this.#allPlaces = await this.eventService.getPlaces();
-		this.#allEvents = await this.eventService.getEvents();
+	public async loadProgramData(places?: IProgramPlace[], events?: IEvent[]): Promise<void> {
+		this.#allPlaces = places ?? (await this.eventService.getPlaces());
+		this.#allEvents = events ?? (await this.eventService.getEvents());
+		localStorage.setItem('places', JSON.stringify(this.#allPlaces));
+		localStorage.setItem('events', JSON.stringify(this.#allEvents));
 
 		for(const event of this.#allEvents) {
 			event.favorite = this.favorites.map((obj) => obj.id).includes(event.id);
