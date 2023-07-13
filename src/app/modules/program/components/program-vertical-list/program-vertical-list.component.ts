@@ -9,7 +9,6 @@ import {IEvent} from '../../types/IEvent';
 import {MatIconModule} from '@angular/material/icon';
 import {Subject, takeUntil} from 'rxjs';
 import {MatRippleModule} from '@angular/material/core';
-import {EventDetailFullComponent} from '../event-detail-full/event-detail-full.component';
 import {MatDialog} from '@angular/material/dialog';
 import {FullProgramConfig} from '../full-program/FullProgramConfig';
 import {TranslateModule} from '@ngx-translate/core';
@@ -107,6 +106,11 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 				}
 				result[day].push(event);
 			}
+		}
+
+		for(const [day, events] of Object.entries(result)) {
+			// @ts-ignore
+			result[day] = events.sort((prev, next) =>  new Date(prev.start).valueOf() - new Date(next.start).valueOf());
 		}
 
 		return result;
