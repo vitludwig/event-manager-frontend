@@ -39,6 +39,10 @@
 		width: 100%;
 		overflow: auto;
 		flex-grow: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
 
 		&__scroll-to-now {
 			position: absolute;
@@ -66,3 +70,12 @@
 		flex-direction: column;
 	}
 }
+
+
+.feedback-btn {
+	width: 100%;
+	padding: 80px 20px;
+	font-size: 20px;
+	margin: 0 20px;
+}
+
