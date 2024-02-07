@@ -89,10 +89,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "event-program:build:production"
+              "buildTarget": "event-program:build:production"
             },
             "development": {
-              "browserTarget": "event-program:build:development"
+              "buildTarget": "event-program:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -100,7 +100,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "event-program:build"
+            "buildTarget": "event-program:build"
           }
         },
         "test": {
