@@ -55,44 +55,44 @@
 	</app-list-day-select>
 
 	<div class="full-program__list" #programList>
-		<a mat-raised-button
-			color="primary"
-			class="feedback-btn"
-			href="https://forms.gle/LCFgm8QFFCEh4X2r9"
-			target="_blank"
-		>
-			Ohodnoť aplikaci!
-		</a>
-<!--		<div class="list-horizontal"-->
-<!--			*ngIf="allSegments.length > 0; else noEvents"-->
-<!--			[style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"-->
+<!--		<a mat-raised-button-->
+<!--			color="primary"-->
+<!--			class="feedback-btn"-->
+<!--			href="https://forms.gle/LCFgm8QFFCEh4X2r9"-->
+<!--			target="_blank"-->
 <!--		>-->
-<!--			<app-list-timeline-->
-<!--				[segments]="allSegments"-->
-<!--				[parentContainer]="programList"-->
-<!--			></app-list-timeline>-->
+<!--			Ohodnoť aplikaci!-->
+<!--		</a>-->
+		<div class="list-horizontal"
+			*ngIf="allSegments.length > 0; else noEvents"
+			[style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"
+		>
+			<app-list-timeline
+				[segments]="allSegments"
+				[parentContainer]="programList"
+			></app-list-timeline>
 
-<!--			<div class="list-events">-->
-<!--				<div class="list-events__place"-->
-<!--					*ngFor="let place of places"-->
-<!--				>-->
-<!--					<app-list-place [place]="place"-->
-<!--						[events]="eventsByPlaces[place.id]"-->
-<!--						[segments]="allSegments"-->
-<!--						(placeSelect)="showEventDetail($event)"-->
-<!--					>-->
-<!--					</app-list-place>-->
-<!--				</div>-->
-<!--			</div>-->
+			<div class="list-events">
+				<div class="list-events__place"
+					*ngFor="let place of places"
+				>
+					<app-list-place [place]="place"
+						[events]="eventsByPlaces[place.id]"
+						[segments]="allSegments"
+						(placeSelect)="showEventDetail($event)"
+					>
+					</app-list-place>
+				</div>
+			</div>
 
-<!--			<button mat-mini-fab-->
-<!--				color="primary"-->
-<!--				class="full-program__list__scroll-to-now"-->
-<!--				(click)="scrollToNow()"-->
-<!--			>-->
-<!--				<mat-icon>gps_fixed</mat-icon>-->
-<!--			</button>-->
-<!--		</div>-->
+			<button mat-mini-fab
+				color="primary"
+				class="full-program__list__scroll-to-now"
+				(click)="scrollToNow()"
+			>
+				<mat-icon>gps_fixed</mat-icon>
+			</button>
+		</div>
 	</div>
 
 	<ng-template #noEvents>
