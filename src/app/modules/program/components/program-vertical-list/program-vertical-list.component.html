@@ -24,13 +24,8 @@
 							</small>
 						</span>
 						<div class="d-flex align-items-center">
-							<span class="list-vertical__event__content__image">
-								<img [src]="'/assets/images/cybertown_logo_square.jpg'"
-									alt="Event image">
-							</span>
-
 							<span class="list-vertical__event__content__title">
-								<span style="margin-bottom: 15px">{{ event | translateEventProperty: 'name' }}</span>
+								<span class="event-title">{{ event | translateEventProperty: 'name' }}</span>
 								<small>{{fullProgramConfig.eventTypes[event.type].name | translate }}</small>
 								<small>{{event.place.name }}</small>
 							</span>
@@ -39,7 +34,7 @@
 					<div class="list-vertical__event__actions">
 						<button mat-icon-button
 							class="list-vertical__event__actions__favorite"
-							(click)="toggleFavorite(event)">
+							(click)="toggleFavorite(event, $event)">
 							<mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
 						</button>
 					</div>

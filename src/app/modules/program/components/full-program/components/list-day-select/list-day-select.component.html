@@ -1,4 +1,6 @@
-<mat-button-toggle-group class="day-toggle w-100">
+<mat-button-toggle-group class="day-toggle w-100"
+	hideSingleSelectionIndicator
+>
 	<mat-button-toggle *ngFor="let day of days"
 		[value]="day.id"
 		(click)="setDay(day.id)"

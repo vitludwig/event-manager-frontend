@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
-import {QRCodeModule} from 'angularx-qrcode';
 import {TranslateModule} from '@ngx-translate/core';
 import {QrScannerComponent} from '../../../qr-scanner/qr-scanner.component';
 
@@ -15,7 +14,6 @@ import {QrScannerComponent} from '../../../qr-scanner/qr-scanner.component';
 		MatButtonModule,
 		MatDialogModule,
 		MatTabsModule,
-		QRCodeModule,
 		TranslateModule,
 		QrScannerComponent,
 	],

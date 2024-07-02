@@ -212,7 +212,10 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		const lastEventAt = allEnds.reduce((prev, curr) => prev > curr ? prev : curr);
 		// round it to whole hour, so we don't display thresholds like 9:15
 		this.#firstEventAt = dayjs(firstEventAt).set('minutes', 0);
-
+		const llastEventAt = dayjs(lastEventAt);
+		console.log('firstEventAt', this.#firstEventAt);
+		console.log('lastEventAt', llastEventAt);
+		console.log('diff', this.#firstEventAt.diff(dayjs(lastEventAt)));
 		const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(this.#firstEventAt.diff(dayjs(lastEventAt))));
 		const startingTime = this.#firstEventAt;
 

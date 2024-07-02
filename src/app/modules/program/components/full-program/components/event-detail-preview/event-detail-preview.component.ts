@@ -13,6 +13,7 @@ import {FullProgramConfig} from '../../FullProgramConfig';
 import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
 import {TranslateModule} from '@ngx-translate/core';
 import {EllipsisPipe} from '../../../../../../common/pipes/ellipsis/ellipsis.pipe';
+import {MatDivider} from '@angular/material/divider';
 
 @Component({
 	selector: 'app-event-detail-preview',
@@ -25,7 +26,8 @@ import {EllipsisPipe} from '../../../../../../common/pipes/ellipsis/ellipsis.pip
 		MatDialogModule,
 		TranslateEventPropertyPipe,
 		TranslateModule,
-		EllipsisPipe
+		EllipsisPipe,
+		MatDivider
 	],
 	templateUrl: './event-detail-preview.component.html',
 	styleUrls: ['./event-detail-preview.component.scss']

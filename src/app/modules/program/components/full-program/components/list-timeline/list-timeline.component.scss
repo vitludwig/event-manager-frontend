@@ -4,6 +4,7 @@
 	top: 0;
 	background-color: #0f0f0f;
 	z-index: 100;
+	padding: 0.3rem 0;
 
 	&__segment {
 		position: relative;
@@ -12,13 +13,13 @@
 			position: absolute;
 			width: 1px;
 			height: 100vh;
-			background-color: rgb(var(--cy__color--border), 0.3);
+			background-color: #fecc0030;
 
 			&--now {
 				position: absolute;
 				width: 1px;
 				height: 100vh;
-				background-color: rgb(var(--cy__color--border), 1);
+				background-color: #fecc00;
 			}
 		}
 

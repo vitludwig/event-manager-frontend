@@ -1,6 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {QRCodeModule} from 'angularx-qrcode';
 import {ProgramService} from '../../services/program/program.service';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -9,13 +8,14 @@ import {TranslateModule} from '@ngx-translate/core';
 import {MatTabsModule} from '@angular/material/tabs';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {QrScannerComponent} from '../../../../common/components/qr-scanner/qr-scanner.component';
+import { QrCodeModule } from 'ng-qrcode';
 
 @Component({
 	selector: 'app-export-favorites',
 	standalone: true,
 	imports: [
 		CommonModule,
-		QRCodeModule,
+		QrCodeModule,
 		MatButtonModule,
 		MatDialogModule,
 		MatSlideToggleModule,

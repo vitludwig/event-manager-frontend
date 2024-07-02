@@ -8,7 +8,7 @@
 >
 	<div class="place__segment__event__name">
 		<span>
-			<small *ngIf="programService.showEventDetails">({{ fullProgramConfig.eventTypes[event.type].abbr }}) </small>
+			<small *ngIf="programService.showEventDetails">({{ fullProgramConfig.eventTypes[event.type].abbr }})&nbsp;</small>
 			{{ event | translateEventProperty: 'name' | eventEllipsis: event }}
 		</span>
 	</div>

@@ -1,27 +1,25 @@
 .day-toggle {
 	border: none;
-	border-bottom: 1px solid rgba(var(--cy__color--border), 0.25);
 	border-radius: 0;
 	overflow-x: auto;
-
 
 	&__item {
 		border-left: none !important;
 		border-bottom: 1px solid transparent;
 		font-weight: normal;
+		padding: 0.5rem 0.8rem;
 
 		&.active {
-			background-color: rgb(var(--cy__color--primary-500), 0.25);
 			font-weight: bold;
 		}
+
 		&__wrapper {
 			display: flex;
 			align-items: baseline;
-
+			font-size: 1rem;
 		}
 
 		&__date {
-			color: #777;
 			margin-left: 5px;
 		}
 	}

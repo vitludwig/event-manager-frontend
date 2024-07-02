@@ -1,9 +1,9 @@
 <div mat-dialog-title>
-	<h2>{{'Propojit peněženku' | translate}}</h2>
+	<h3>{{'Propojit peněženku' | translate}}</h3>
 </div>
 
 <div mat-dialog-content>
-	<h4>{{ 'Načtěte QR kód z terminálu na infostánku.' | translate }}</h4>
+	<h5>{{ 'Načtěte QR kód z terminálu na infostánku.' | translate }}</h5>
 	<app-qr-scanner (scanned)="onCodeResult($event)"></app-qr-scanner>
 </div>
 

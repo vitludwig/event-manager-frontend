@@ -11,19 +11,21 @@
 
 			<div class="event-detail__image">
 				<div class="image-overlay"></div>
-				<img [src]="'/assets/images/cybertown_logo_square.jpg'"
+				<img [src]="'/assets/images/logo-transparent.png'"
 					alt="Event image"
 				>
 			</div>
 
 			<div class="event-detail__content">
 				<div class="event-detail__content__title">
-					<h2>{{ event | translateEventProperty: 'name' }}</h2>
+					<h3>{{ event | translateEventProperty: 'name' }}</h3>
 					<div>{{ fullProgramConfig.eventTypes[event.type].name | translate }}</div>
 					<div>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</div>
 					<div>{{ place.name }}</div>
 				</div>
+
 				<mat-divider></mat-divider>
+
 				<div class="event-detail__content__description">
 					<p>{{ event | translateEventProperty: 'description' }}</p>
 				</div>

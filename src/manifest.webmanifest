@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "Cybertown program",
-  "short_name": "Cybertown program",
+  "name": "Rusthaven program",
+  "short_name": "Rusthaven program",
   "theme_color": "#125466",
   "background_color": "#fafafa",
   "display": "standalone",

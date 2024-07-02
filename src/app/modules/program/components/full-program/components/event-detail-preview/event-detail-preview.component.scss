@@ -11,33 +11,25 @@
 			display: flex;
 			flex-grow: 1;
 
-			&__image {
-				img {
-					width: 130px;
-					height: 130px;
-				}
-			}
-
 			&__info {
 				display: flex;
 				flex-direction: column;
 				flex-grow: 1;
 				word-break: break-all;
-				padding: 0 8px 0 16px;
-
-				h3 {
-					word-break: break-word;
-				}
 
 				h4 {
+					word-break: break-word;
+					color: #f0c100;
+				}
+
+				h5 {
 					margin-bottom: 0;
 				}
 			}
 		}
 
 		&__description {
-			border-top: 1px solid rgba(var(--cy__color--border), 0.5);
-			padding-top: 5px;
+			word-break: break-word;
 
 			p {
 				margin: 0;

@@ -1,6 +1,6 @@
 <div mat-dialog-title>
 	<div class="list-filter__title">
-		<h2>{{'Filtrovat' | translate}}</h2>
+		<h3>{{'Filtrovat' | translate}}</h3>
 		<button mat-stroked-button
 			color="warn"
 			(click)="resetFilters()"
@@ -10,7 +10,8 @@
 </div>
 
 <div mat-dialog-content
-	class="list-filter__content">
+	class="list-filter__content"
+>
 	<mat-form-field class="w-100">
 		<mat-label>{{'Místo' | translate}}</mat-label>
 		<mat-select [(ngModel)]="placeId"
@@ -49,7 +50,9 @@
 
 <mat-dialog-actions align="end">
 	<button mat-raised-button
-		mat-dialog-close>Cancel
+		mat-dialog-close
+	>
+		{{'Zrušit' | translate}}
 	</button>
 	<button mat-raised-button
 		color="primary"

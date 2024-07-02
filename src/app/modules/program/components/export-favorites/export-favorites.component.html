@@ -1,16 +1,16 @@
 <div mat-dialog-title>
-	<h2>{{'Oblíbené události' | translate}}</h2>
+	<h3>{{'Oblíbené události' | translate}}</h3>
 </div>
 
 <div mat-dialog-content>
 	<mat-tab-group>
 		<mat-tab label="Uložit">
-			<h4>{{ 'Načtěte tento QR kód v mobilní aplikaci pro přenos oblíbených eventů.' | translate }}</h4>
-			<qrcode [qrdata]="favoritesData" [width]="256" [errorCorrectionLevel]="'L'"></qrcode>
+			<h6>{{ 'Načtěte tento QR kód v mobilní aplikaci pro přenos oblíbených eventů.' | translate }}</h6>
+			<qr-code [value]="favoritesData" [size]="256" [errorCorrectionLevel]="'L'"></qr-code>
 		</mat-tab>
 
 		<mat-tab label="Načíst">
-			<h4>{{ 'Načtěte QR kód z prohlížeče.' | translate }}</h4>
+			<h6>{{ 'Načtěte QR kód z prohlížeče.' | translate }}</h6>
 			<app-qr-scanner (scanned)="onCodeResult($event)"></app-qr-scanner>
 		</mat-tab>
 	</mat-tab-group>

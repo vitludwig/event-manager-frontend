@@ -1,58 +1,62 @@
-<div class="full-program">
-	<mat-toolbar class="full-program__toolbar">
-		<span>{{'Program' | translate}}</span>
+<div class="full-program" #programList>
+	<div class="toolbar-wrapper">
+		<mat-toolbar class="full-program__toolbar">
+			<h3 class="font-3rdman program-heading">{{'Program' | translate}}</h3>
 
-		<div class="full-program__toolbar__actions">
-			<app-user-info></app-user-info>
-
-			<button mat-icon-button
-				aria-label="Filter events"
-				(click)="showFilters()">
-				<mat-icon>filter_list</mat-icon>
-			</button>
-
-			<button mat-icon-button
-				aria-label="Search events"
-				(click)="showEventList()">
-				<mat-icon>search</mat-icon>
-			</button>
-
-			<button mat-icon-button
-				(click)="toggleSecondaryToolbar()"
-				aria-label="More actions">
-				<mat-icon>more_vert</mat-icon>
-			</button>
-		</div>
-	</mat-toolbar>
-
-	<div #secondaryToolbar class="full-program__secondary-toolbar">
-		<mat-toolbar>
-			<button mat-icon-button (click)="refreshApp()">
-				<mat-icon>refresh</mat-icon>
-			</button>
-			<div class="full-program__secondary-toolbar__actions">
-				<app-language-menu></app-language-menu>
+			<div class="full-program__toolbar__actions">
+				<app-user-info></app-user-info>
 
 				<button mat-icon-button
 					aria-label="Filter events"
-					(click)="exportFavorites()">
-					<mat-icon>import_export</mat-icon>
+					(click)="showFilters()">
+					<mat-icon>filter_list</mat-icon>
 				</button>
 
 				<button mat-icon-button
-					aria-label="Filter events"
-					(click)="toggleEventDetails()">
-					<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>
+					aria-label="Search events"
+					(click)="showEventList()">
+					<mat-icon>search</mat-icon>
 				</button>
 
+				<button mat-icon-button
+					(click)="toggleSecondaryToolbar()"
+					aria-label="More actions">
+					<mat-icon>more_vert</mat-icon>
+				</button>
 			</div>
 		</mat-toolbar>
+
+		<div #secondaryToolbar class="full-program__secondary-toolbar">
+			<mat-toolbar>
+				<button mat-icon-button (click)="refreshApp()">
+					<mat-icon>refresh</mat-icon>
+				</button>
+				<div class="full-program__secondary-toolbar__actions">
+					<app-language-menu></app-language-menu>
+
+					<button mat-icon-button
+						aria-label="Filter events"
+						(click)="exportFavorites()">
+						<mat-icon>import_export</mat-icon>
+					</button>
+
+					<button mat-icon-button
+						aria-label="Filter events"
+						(click)="toggleEventDetails()">
+						<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>
+					</button>
+
+				</div>
+			</mat-toolbar>
+		</div>
 	</div>
 
 	<app-list-day-select [days]="days"
 		[selectedDay]="selectedDay"
 		(selectedDayChange)="selectedDay = $event">
 	</app-list-day-select>
+
+
 
 	<div class="full-program__list" #programList>
 <!--		<a mat-raised-button-->
@@ -63,9 +67,9 @@
 <!--		>-->
 <!--			Ohodnoť aplikaci!-->
 <!--		</a>-->
+		<!-- THIS WAR REMOVED DUE TO BAD SCROLLING ON EVENT ENDING AT NEXT DAY [style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'" -->
 		<div class="list-horizontal"
 			*ngIf="allSegments.length > 0; else noEvents"
-			[style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"
 		>
 			<app-list-timeline
 				[segments]="allSegments"
@@ -97,8 +101,8 @@
 
 	<ng-template #noEvents>
 		<div class="full-program__no-events">
-			<h2>{{'Dnes tu není žádná akce' | translate}}</h2>
-			<h4>{{'Zkontrolujte nastavení filtrů' | translate}}</h4>
+			<h3>{{'Dnes tu není žádná akce' | translate}}</h3>
+			<h5>{{'Zkontrolujte nastavení filtrů' | translate}}</h5>
 		</div>
 	</ng-template>
 </div>

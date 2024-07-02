@@ -2,29 +2,31 @@
 	mat-dialog-title
 >
 	<div class="user-info-title__content">
-		<h2>{{ 'Peněženka' | translate }}</h2>
+		<h3>{{ 'Peněženka' | translate }}</h3>
 		<small>{{ 'Aktualizováno' | translate }}: {{ userService.lastChecked | date: 'dd.MM.yyyy HH:mm' }}</small>
 	</div>
 </div>
 
 <div mat-dialog-content>
-	<div class="detail-item">
-		<label>{{ 'Vloženo' | translate}}: </label>
-		<strong>{{ dialogData.data.user.DepositSum ?? 0 }}&nbsp;Kč</strong>
-	</div>
+	<mat-list class="balance-list">
+		<mat-list-item>
+			<label>{{ 'Vloženo' | translate}}: </label>
+			<strong>{{ dialogData.data.user.DepositSum ?? 0 }}&nbsp;Kč</strong>
+		</mat-list-item>
+		<mat-list-item>
+			<label>{{ 'Utraceno' | translate}}: </label>
+			<strong>{{ dialogData.data.user.BuySum ?? 0 }}&nbsp;Kč</strong>
+		</mat-list-item>
+		<mat-list-item>
+			<label>{{ 'Zbývá' | translate}}: </label>
+			<strong>{{ dialogData.data.user.TotalSum }}&nbsp;Kč</strong>
+		</mat-list-item>
+	</mat-list>
 
-	<div class="detail-item">
-		<label>{{ 'Utraceno' | translate}}: </label>
-		<strong>{{ dialogData.data.user.BuySum ?? 0 }}&nbsp;Kč</strong>
-	</div>
 
-	<div class="detail-item">
-		<label>{{ 'Zbývá' | translate}}: </label>
-		<strong>{{ dialogData.data.user.TotalSum }}&nbsp;Kč</strong>
-	</div>
 	<ng-container *ngIf="dialogData.data.transactions.length > 0">
-		<h3 class="transactions-title">{{ 'Poslední transakce' | translate}}</h3>
-		<mat-list role="list">
+		<h4 class="transactions-title">{{ 'Poslední transakce' | translate}}</h4>
+		<mat-list role="list" class="transaction-list">
 			<mat-list-item role="listitem"
 				*ngFor="let transaction of dialogData.data.transactions">
 				<span matListItemTitle>{{transaction.Name}}</span>

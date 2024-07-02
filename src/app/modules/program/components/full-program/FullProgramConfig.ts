@@ -54,5 +54,11 @@ export class FullProgramConfig {
 			color: '#ef7f1b',
 			abbr: 'P',
 		},
+		7: {
+			id: 7,
+			name: 'Kmenový program',
+			color: '#ef7f1b',
+			abbr: 'P',
+		},
 	}
 }

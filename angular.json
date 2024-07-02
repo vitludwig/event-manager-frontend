@@ -37,7 +37,6 @@
               "src/OneSignalSDKWorker.js"
             ],
             "styles": [
-              "node_modules/augmented-ui/augmented-ui.min.css",
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {

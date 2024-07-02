@@ -1,5 +1,5 @@
 import {inject, Injectable, isDevMode, signal, WritableSignal} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {environment} from '../../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';

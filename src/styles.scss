@@ -1,26 +1,33 @@
-
-@use "app/styles/functions/hex2rgb" as rgb;
 @use '@angular/material' as mat;
+@use 'app/styles/m3-theme';
 
-@import '@angular/material/theming';
+@font-face {
+	font-family: rdman;
+	src: url(/assets/fonts/3rd_man.otf);
+}
 
-// always include only once per project
+@font-face {
+	font-family: Oswald;
+	src: url(/assets/fonts/Oswald-Regular.ttf);
+	font-weight: normal;
+}
+
+@font-face {
+	font-family: Oswald;
+	src: url(/assets/fonts/Oswald-Bold.ttf);
+	font-weight: bold;
+}
 
 @include mat.core();
 
-// import our custom theme
-@import 'app/styles/cyber.theme.scss';
-@import 'app/styles/variables';
+:root {
+	@include mat.core-theme(m3-theme.$dark-theme);
+	@include mat.button-theme(m3-theme.$dark-theme);
+	@include mat.all-component-themes(m3-theme.$dark-theme);
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-// specify theme class eg: <body class="my-theme"> ... </body>
-
-
-// use our theme with angular-material-theme mixin
-@include angular-material-theme($theme);
-//@include angular-material-theme($theme);
-
+	@include mat.color-variants-backwards-compatibility(m3-theme.$dark-theme);
+	@include mat.typography-hierarchy(m3-theme.$dark-theme);
+}
 
 @import "app/styles/overides";
 @import "app/styles/utilities";
@@ -42,4 +49,26 @@ html, body {
 		padding: 12px 16px;
 	}
 }
-// $Cybertown123!
+
+@font-face {
+	font-family: 'Material Icons';
+	font-style: normal;
+	font-weight: 400;
+	src: url(/assets/fonts/material-icons.woff2) format('woff2');
+}
+
+.material-icons {
+	font-family: 'Material Icons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px;
+	line-height: 1;
+	letter-spacing: normal;
+	text-transform: none;
+	display: inline-block;
+	white-space: nowrap;
+	word-wrap: normal;
+	direction: ltr;
+	-webkit-font-feature-settings: 'liga';
+	-webkit-font-smoothing: antialiased;
+}

@@ -53,6 +53,11 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: space-evenly;
+
+				.event-title {
+					color: #f0c100;
+					margin-bottom: 0.3rem;
+				}
 			}
 		}
 

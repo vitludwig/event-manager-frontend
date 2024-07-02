@@ -2,17 +2,15 @@
 	<div class="event-detail__content"
 		(click)="openFullDetail()">
 		<div class="event-detail__content__title">
-			<div class="event-detail__content__title__image">
-				<img [src]="'/assets/images/cybertown_logo_square.jpg'"
-					alt="Event image">
-			</div>
 
 			<div class="event-detail__content__title__info">
-				<h3>{{ data.event | translateEventProperty: 'name' }}</h3>
-				<h4>{{ fullProgramConfig.eventTypes[data.event.type].name | translate }}</h4>
+				<h4>{{ data.event | translateEventProperty: 'name' }}</h4>
+				<h6>{{ fullProgramConfig.eventTypes[data.event.type].name | translate }}</h6>
 				<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
 			</div>
 		</div>
+
+		<mat-divider />
 
 		<div class="event-detail__content__description">
 			<p>{{ data.event | translateEventProperty: 'description' | ellipsis: 200 }}</p>

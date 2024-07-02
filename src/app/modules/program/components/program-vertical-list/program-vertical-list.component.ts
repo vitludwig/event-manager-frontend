@@ -83,7 +83,8 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 		this.dialog.closeAll();
 	}
 
-	protected toggleFavorite(event: IEvent): void {
+	protected toggleFavorite(event: IEvent, clickEvent: MouseEvent): void {
+		clickEvent.stopPropagation();
 		event.favorite = !event.favorite;
 		this.programService.updateEvent(event, 'favorite', event.favorite);
 	}

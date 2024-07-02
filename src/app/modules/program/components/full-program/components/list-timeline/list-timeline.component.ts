@@ -29,7 +29,9 @@ export class ListTimelineComponent implements AfterViewInit {
 	constructor() {
 		setInterval(() => {
 			this.setRoundedNow();
-			this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
+			if(this.segmentNow) {
+				this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
+			}
 		}, 300000);
 
 		this.setRoundedNow();
@@ -48,7 +50,7 @@ export class ListTimelineComponent implements AfterViewInit {
 		}
 		console.log(this.parentContainer.scrollLeft);
 		this.parentContainer.scrollTo({
-			left: this.segmentNowLeft - 100,
+			left: this.segmentNowLeft - 200,
 		})
 	}
 
