@@ -184,7 +184,6 @@ export class ProgramService {
 
 	private updateFavorites(): void {
 		this.favorites = this.getFavorites();
-		console.log('new favorites', this.favorites);
 		localStorage.setItem('favorites', JSON.stringify(this.favorites.map((obj) => obj.id)));
 	}
 

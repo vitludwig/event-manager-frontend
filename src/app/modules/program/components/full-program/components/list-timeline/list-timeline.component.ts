@@ -48,7 +48,7 @@ export class ListTimelineComponent implements AfterViewInit {
 		if(!this.segmentNow) {
 			return;
 		}
-		console.log(this.parentContainer.scrollLeft);
+
 		this.parentContainer.scrollTo({
 			left: this.segmentNowLeft - 200,
 		})
