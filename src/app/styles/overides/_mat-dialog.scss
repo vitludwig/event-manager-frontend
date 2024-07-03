@@ -1,7 +1,5 @@
 .mat-mdc-dialog-container {
 	.mdc-dialog__surface {
-		background-color: var(--mdc-theme-surface) !important;
-
 		.mdc-dialog__title {
 			color: #eeeeee;
 			margin: 0;
@@ -26,10 +24,6 @@
 		font-size: 1.5rem;
 		margin-top: 2rem;
 	}
-}
-
-.mat-mdc-dialog-container .mdc-dialog__content {
-	color: #eee !important;
 }
 
 .full-overlay {
