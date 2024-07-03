@@ -59,7 +59,7 @@
   ],
   "screenshots": [
       {
-        "src": "/images/screenshot1.jpg",
+        "src": "/assets/images/screenshot1.jpg",
         "type": "image/jpg",
         "sizes": "415x912",
         "form_factor": "narrow"
