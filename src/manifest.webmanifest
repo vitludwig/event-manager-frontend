@@ -56,5 +56,13 @@
       "type": "image/png",
       "purpose": "maskable any"
     }
-  ]
+  ],
+  "screenshots": [
+      {
+        "src": "/images/screenshot1.jpg",
+        "type": "image/jpg",
+        "sizes": "415x912",
+        "form_factor": "narrow"
+      }
+    ]
 }
