@@ -1,12 +1,15 @@
-<zxing-scanner
-	#scanner
-	[enable]="!!currentDevice"
-	(scanSuccess)="handleQrCodeResult($event)"
-	(camerasFound)="camerasFoundHandler($event)"
-	(camerasNotFound)="camerasNotFoundHandler($event)"
-	[device]="currentDevice"
-	class="mb-1"
-></zxing-scanner>
+<div class="scanner-wrapper">
+	<zxing-scanner
+		#scanner
+		[enable]="!!currentDevice"
+		(scanSuccess)="handleQrCodeResult($event)"
+		(camerasFound)="camerasFoundHandler($event)"
+		(camerasNotFound)="camerasNotFoundHandler($event)"
+		[device]="currentDevice"
+		[previewFitMode]="'contain'"
+		class="mb-1"
+	></zxing-scanner>
+</div>
 
 @if(cameraNotFound) {
 	<h5>{{ 'Nejde načíst kameru' | translate }}</h5>

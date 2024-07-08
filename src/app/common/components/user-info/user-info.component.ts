@@ -23,7 +23,7 @@ export class UserInfoComponent implements OnInit {
 	private readonly dialog: MatDialog = inject(MatDialog);
 
 	public ngOnInit(): void {
-		if(this.userService.userId && this.userService.token) {
+		if(this.userService.userId && this.userService.walletToken) {
 			this.loadData();
 
 			setInterval(() => {
@@ -50,16 +50,16 @@ export class UserInfoComponent implements OnInit {
 
 		dialog.afterClosed().subscribe((result: IUserInfoTerminal) => {
 			this.userService.userId = result.userId;
-			this.userService.token = result.token;
+			this.userService.walletToken = result.token;
 
 			this.loadData();
 		});
 	}
 
 	private loadData = async (): Promise<void> => {
-		if(this.userService.userId && this.userService.token) {
+		if(this.userService.userId && this.userService.walletToken) {
 			try {
-				this.userInfo = await this.userService.getUserInfo(this.userService.userId, this.userService.token);
+				this.userInfo = await this.userService.getUserInfo(this.userService.userId, this.userService.walletToken);
 				this.userService.lastChecked = new Date().toString();
 			} catch(e) {
 				console.error(e);

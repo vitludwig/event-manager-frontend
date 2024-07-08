@@ -5,6 +5,9 @@ import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
 import {TranslateModule} from '@ngx-translate/core';
 import {QrScannerComponent} from '../../../qr-scanner/qr-scanner.component';
+import {MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
 	selector: 'app-user-info-scanner',
@@ -16,6 +19,9 @@ import {QrScannerComponent} from '../../../qr-scanner/qr-scanner.component';
 		MatTabsModule,
 		TranslateModule,
 		QrScannerComponent,
+		MatFormField,
+		MatInput,
+		MatIconModule
 	],
 	templateUrl: './user-info-scanner.component.html',
 	styleUrls: ['./user-info-scanner.component.scss']
@@ -24,6 +30,12 @@ export class UserInfoScannerComponent {
 	private readonly dialogRef: MatDialogRef<void> = inject(MatDialogRef<void>);
 
 	protected onCodeResult(resultString: string): void {
-		this.dialogRef.close(JSON.parse(resultString));
+		if(!resultString) {
+			return;
+		}
+
+		const userId = resultString.substring(0, resultString.length - 6);
+		const token = resultString.slice(-6)
+		this.dialogRef.close({userId, token});
 	}
 }

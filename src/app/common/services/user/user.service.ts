@@ -8,11 +8,11 @@ import {IUserInfo} from '../../components/user-info/types/IUserInfo';
 })
 export class UserService {
 
-	public get token(): string | undefined {
+	public get walletToken(): string | undefined {
 		return this.#token ?? localStorage.getItem('token') ?? undefined;
 	}
 
-	public set token(value: string | undefined) {
+	public set walletToken(value: string | undefined) {
 		this.#token = value;
 		if(value) {
 			localStorage.setItem('token', value);

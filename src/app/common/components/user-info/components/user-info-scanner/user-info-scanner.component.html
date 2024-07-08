@@ -5,6 +5,16 @@
 <div mat-dialog-content>
 	<h5>{{ 'Načtěte QR kód z terminálu na infostánku.' | translate }}</h5>
 	<app-qr-scanner (scanned)="onCodeResult($event)"></app-qr-scanner>
+
+	<h5>{{ 'Nebo zadej kód ručně' | translate }}</h5>
+	<mat-form-field>
+		<input type="text" matInput placeholder="AB123CD456E" maxlength="12" #walletCode>
+	</mat-form-field>
+
+	<button mat-button mat-stroked-button style="margin-left: 1.5rem;"
+	(click)="onCodeResult(walletCode.value)">
+		Potvrdit <mat-icon>check</mat-icon>
+	</button>
 </div>
 
 <mat-dialog-actions align="end">

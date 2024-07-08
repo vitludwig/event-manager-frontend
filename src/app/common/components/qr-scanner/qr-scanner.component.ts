@@ -6,6 +6,7 @@ import {CommonModule} from '@angular/common';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatInput} from '@angular/material/input';
 
 @Component({
 	selector: 'app-qr-scanner',
@@ -17,6 +18,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 		TranslateModule,
 		MatSelectModule,
 		MatDialogModule,
+		MatInput,
 	],
 	templateUrl: './qr-scanner.component.html',
 	styleUrls: ['./qr-scanner.component.scss']
