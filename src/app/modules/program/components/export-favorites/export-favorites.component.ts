@@ -9,6 +9,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {QrScannerComponent} from '../../../../common/components/qr-scanner/qr-scanner.component';
 import { QrCodeModule } from 'ng-qrcode';
+import * as short from "short-uuid";
 
 @Component({
 	selector: 'app-export-favorites',
@@ -28,20 +29,20 @@ import { QrCodeModule } from 'ng-qrcode';
 	styleUrls: ['./export-favorites.component.scss']
 })
 export class ExportFavoritesComponent implements OnInit {
-	protected favoritesData: string;
-	protected code: string;
+	protected favoritesData: string = "";
 
 	#programService: ProgramService = inject(ProgramService);
 	#dialogRef: MatDialogRef<void> = inject(MatDialogRef<void>);
+	#translator = short();
 
 	public ngOnInit(): void {
-		this.favoritesData = JSON.stringify(this.#programService.getFavorites().map((event) => event.id));
-		console.log(this.favoritesData.length);
+		this.favoritesData = JSON.stringify(this.#programService.getFavorites().map((event) => this.#translator.fromUUID(event.id)));
+		console.log(this.favoritesData);
 	}
 
 	protected onCodeResult(resultString: string): void {
-		this.code = resultString;
-		this.#programService.loadFavorites(JSON.parse(resultString));
+		const favorites = (JSON.parse(resultString) as string[]).map((obj) => this.#translator.toUUID(obj))
+		this.#programService.loadFavorites(favorites);
 		this.#dialogRef.close();
 	}
 }

@@ -16,7 +16,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 		FormsModule,
 		TranslateModule,
 		MatSelectModule,
-		MatDialogModule
+		MatDialogModule,
 	],
 	templateUrl: './qr-scanner.component.html',
 	styleUrls: ['./qr-scanner.component.scss']

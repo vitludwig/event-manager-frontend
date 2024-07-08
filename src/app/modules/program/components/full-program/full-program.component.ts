@@ -149,7 +149,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 	protected exportFavorites(): void {
 		this.dialog.open(ExportFavoritesComponent, {
-			width: '500px',
+			width: '600px',
 		});
 	}
 
