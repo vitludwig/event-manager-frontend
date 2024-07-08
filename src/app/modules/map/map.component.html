@@ -7,7 +7,7 @@
 		</ng-template>
 	</mat-tab>
 
-	<mat-tab [label]="'Atrakce' | translate">
+	<mat-tab [label]="'Soutěže' | translate">
 		<ng-template matTabContent>
 			<mat-tab-group class="sub-tabs">
 				<mat-tab [label]="'Mapa' | translate">
@@ -20,18 +20,30 @@
 
 				<mat-tab [label]="'Otevírací doba' | translate">
 					<ng-template matTabContent>
-						<app-opening-hours></app-opening-hours>
+						<app-competitions-info />
 					</ng-template>
 				</mat-tab>
 			</mat-tab-group>
 		</ng-template>
 	</mat-tab>
 
-	<mat-tab [label]="'Kmeny' | translate">
+	<mat-tab [label]="'Atrakce&kmeny' | translate">
 		<ng-template matTabContent>
-			<div class="img-wrapper">
-				<img src="assets/map/kmeny.png">
-			</div>
+			<mat-tab-group class="sub-tabs">
+				<mat-tab [label]="'Mapa' | translate">
+					<ng-template matTabContent>
+						<div class="img-wrapper">
+							<img src="assets/map/kmeny.png">
+						</div>
+					</ng-template>
+				</mat-tab>
+
+				<mat-tab [label]="'Otevírací doba' | translate">
+					<ng-template matTabContent>
+						<app-tribes-info />
+					</ng-template>
+				</mat-tab>
+			</mat-tab-group>
 		</ng-template>
 	</mat-tab>
 </mat-tab-group>

@@ -1,0 +1,23 @@
+mat-list {
+	mat-list-item {
+		padding: 16px;
+		height: auto !important;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid #b08d0025;
+		}
+
+		span[matlistitemtitle] {
+			color: #f0c100;
+		}
+
+		.mat-mdc-list-item-line {
+			word-wrap: break-word;
+			white-space: pre-wrap;
+		}
+
+		.sub-header {
+			margin-bottom: 0.5rem;
+		}
+	}
+}

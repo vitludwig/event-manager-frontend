@@ -4,13 +4,13 @@ import {MatListModule} from '@angular/material/list';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 @Component({
-	selector: 'app-opening-hours',
+	selector: 'app-competitions-info',
 	standalone: true,
 	imports: [CommonModule, MatListModule, TranslateModule],
-	templateUrl: './opening-hours.component.html',
-	styleUrls: ['./opening-hours.component.scss']
+	templateUrl: './competitions-info.component.html',
+	styleUrls: ['./competitions-info.component.scss']
 })
-export class OpeningHoursComponent {
+export class CompetitionsInfoComponent {
 
 	protected readonly translate: TranslateService = inject(TranslateService);
 }

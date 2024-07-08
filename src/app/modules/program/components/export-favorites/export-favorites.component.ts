@@ -36,6 +36,7 @@ export class ExportFavoritesComponent implements OnInit {
 
 	public ngOnInit(): void {
 		this.favoritesData = JSON.stringify(this.#programService.getFavorites().map((event) => event.id));
+		console.log(this.favoritesData.length);
 	}
 
 	protected onCodeResult(resultString: string): void {
