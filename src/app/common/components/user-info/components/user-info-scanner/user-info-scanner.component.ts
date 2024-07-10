@@ -8,6 +8,7 @@ import {QrScannerComponent} from '../../../qr-scanner/qr-scanner.component';
 import {MatFormField} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
+import {AutoUppercaseDirective} from "../../../../directives/auto-uppercase.directive";
 
 @Component({
 	selector: 'app-user-info-scanner',
@@ -21,7 +22,8 @@ import {MatIconModule} from '@angular/material/icon';
 		QrScannerComponent,
 		MatFormField,
 		MatInput,
-		MatIconModule
+		MatIconModule,
+		AutoUppercaseDirective,
 	],
 	templateUrl: './user-info-scanner.component.html',
 	styleUrls: ['./user-info-scanner.component.scss']
