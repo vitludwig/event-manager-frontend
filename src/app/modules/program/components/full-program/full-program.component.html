@@ -51,51 +51,52 @@
 		</div>
 	</div>
 
-	<app-list-day-select [days]="days"
-		[selectedDay]="selectedDay"
-		(selectedDayChange)="selectedDay = $event">
-	</app-list-day-select>
-
-	<div class="full-program__list" #programList>
-<!--		<a mat-raised-button-->
-<!--			color="primary"-->
-<!--			class="feedback-btn"-->
-<!--			href="https://forms.gle/LCFgm8QFFCEh4X2r9"-->
-<!--			target="_blank"-->
-<!--		>-->
-<!--			Ohodnoť aplikaci!-->
-<!--		</a>-->
-		<!-- THIS WAR REMOVED DUE TO BAD SCROLLING ON EVENT ENDING AT NEXT DAY [style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'" -->
-		<div class="list-horizontal"
-			*ngIf="allSegments.length > 0; else noEvents"
+<!--	<app-list-day-select [days]="days"-->
+<!--		[selectedDay]="selectedDay"-->
+<!--		(selectedDayChange)="selectedDay = $event">-->
+<!--	</app-list-day-select>-->
+	<div class="feedback-container">
+		<a mat-raised-button
+			color="primary"
+			class="feedback-btn"
+			href="https://forms.gle/LCFgm8QFFCEh4X2r9"
+			target="_blank"
 		>
-			<app-list-timeline
-				[segments]="allSegments"
-				[parentContainer]="programList"
-			></app-list-timeline>
-
-			<div class="list-events">
-				<div class="list-events__place"
-					*ngFor="let place of places"
-				>
-					<app-list-place [place]="place"
-						[events]="eventsByPlaces[place.id]"
-						[segments]="allSegments"
-						(placeSelect)="showEventDetail($event)"
-					>
-					</app-list-place>
-				</div>
-			</div>
-
-			<button mat-mini-fab
-				color="primary"
-				class="full-program__list__scroll-to-now"
-				(click)="scrollToNow()"
-			>
-				<mat-icon>gps_fixed</mat-icon>
-			</button>
-		</div>
+			Ohodnoť aplikaci!
+		</a>
 	</div>
+<!--	<div class="full-program__list" #programList>-->
+		<!-- THIS WAR REMOVED DUE TO BAD SCROLLING ON EVENT ENDING AT NEXT DAY [style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'" -->
+<!--		<div class="list-horizontal"-->
+<!--			*ngIf="allSegments.length > 0; else noEvents"-->
+<!--		>-->
+<!--			<app-list-timeline-->
+<!--				[segments]="allSegments"-->
+<!--				[parentContainer]="programList"-->
+<!--			></app-list-timeline>-->
+
+<!--			<div class="list-events">-->
+<!--				<div class="list-events__place"-->
+<!--					*ngFor="let place of places"-->
+<!--				>-->
+<!--					<app-list-place [place]="place"-->
+<!--						[events]="eventsByPlaces[place.id]"-->
+<!--						[segments]="allSegments"-->
+<!--						(placeSelect)="showEventDetail($event)"-->
+<!--					>-->
+<!--					</app-list-place>-->
+<!--				</div>-->
+<!--			</div>-->
+
+<!--			<button mat-mini-fab-->
+<!--				color="primary"-->
+<!--				class="full-program__list__scroll-to-now"-->
+<!--				(click)="scrollToNow()"-->
+<!--			>-->
+<!--				<mat-icon>gps_fixed</mat-icon>-->
+<!--			</button>-->
+<!--		</div>-->
+<!--	</div>-->
 
 	<ng-template #noEvents>
 		<div class="full-program__no-events">
