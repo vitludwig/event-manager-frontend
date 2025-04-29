@@ -3,6 +3,7 @@ import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr'
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {TEventMethodName} from './types/TEventMethodName';
 import {IEvent} from '../../types/IEvent';
+import {environment} from "../../../../../environments/environment";
 
 @Injectable({
 	providedIn: 'root'
@@ -20,7 +21,7 @@ export class EventService {
 		try {
 			this.connection = new HubConnectionBuilder()
 				.configureLogging(LogLevel.Critical)
-				.withUrl('signalr/events')
+				.withUrl(`${environment.signalrUrl}/signalr/events`)
 				.build();
 
 			await this.connection.start();

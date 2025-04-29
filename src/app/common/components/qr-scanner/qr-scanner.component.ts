@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
 import {Subject, takeUntil} from 'rxjs';
 import {FormsModule} from '@angular/forms';
@@ -7,6 +7,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatInput} from '@angular/material/input';
+import {PermissionsService} from "../../services/permissions/permissions.service";
 
 @Component({
 	selector: 'app-qr-scanner',
@@ -24,6 +25,8 @@ import {MatInput} from '@angular/material/input';
 	styleUrls: ['./qr-scanner.component.scss']
 })
 export class QrScannerComponent implements OnInit, OnDestroy {
+	private readonly permissionsService: PermissionsService = inject(PermissionsService);
+
 	@ViewChild('scanner')
 	public scanner!: ZXingScannerComponent;
 
@@ -46,7 +49,15 @@ export class QrScannerComponent implements OnInit, OnDestroy {
 	protected tryScannerInterval: number | null = null;
 	protected destroy: Subject<void> = new Subject<void>();
 
-	public ngOnInit() {
+	public async ngOnInit() {
+		const hasCameraPermission = await this.permissionsService.requestCameraPermissions();
+
+		if(hasCameraPermission) {
+			this.initScanning()
+		}
+	}
+
+	private initScanning() {
 		this.tryScannerInterval = window.setInterval(() => {
 			if(!this.scanner) {
 				return;
