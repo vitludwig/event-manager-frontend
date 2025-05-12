@@ -7,8 +7,8 @@ export interface IEvent {
 	description: string;
 	description_EN: string;
 	image?: string;
-	start: number;
-	end: number;
+	start: string;
+	end: string;
 	placeId: string;
 	place: IProgramPlace;
 	favorite: boolean;
