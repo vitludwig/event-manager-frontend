@@ -32,7 +32,6 @@ import {LanguageMenuComponent} from '../../../../common/components/language-menu
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
-import {UserService} from '../../../../common/services/user/user.service';
 import {UserInfoComponent} from '../../../../common/components/user-info/user-info.component';
 
 
@@ -79,7 +78,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	protected eventsByPlaces: Record<string, Record<number, IProgramEvent>> = {};
 	protected selectedEvent: IProgramEvent | null = null;
 
-	protected get selectedDay(): number {
+	protected get selectedDay(): number | undefined {
 		return this.#selectedDay;
 	}
 
@@ -98,14 +97,13 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	#firstEventAt: Dayjs;
-	#selectedDay: number;
+	#selectedDay?: number;
 	#unsubscribe: Subject<void> = new Subject<void>();
 
 	protected readonly programService: ProgramService = inject(ProgramService);
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
-	private readonly userService: UserService = inject(UserService);
 
 	public ngOnInit(): void {
 		this.loadPlaces();
@@ -216,11 +214,9 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		const startingTime = this.#firstEventAt;
 
 		this.allSegments = Array(segmentCount).fill(1).map((value, index) => {
-			let time = null;
-
 			// Increment time by 15 minutes on every segment and display it only on full hours
 			const incIndex = index * FullProgramConfig.segmentDuration;
-			time = startingTime.add(incIndex, 'minutes').format('HH:mm');
+			const time = startingTime.add(incIndex, 'minutes').format('HH:mm');
 			let isWholeHour = false;
 			if(incIndex % (60 / FullProgramConfig.segmentDuration) === 0) {
 				isWholeHour = true;
@@ -247,9 +243,10 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		let segmentCount;
 
 		for(const event of allEvents) {
+			const selectedDay = dayjs(this.selectedDay);
 			eventStart = dayjs(event.start);
 			eventEnd = dayjs(event.end);
-			dayStart = eventStart.set('hour', this.#firstEventAt.hour()).set('minutes', this.#firstEventAt.minute());
+			dayStart = eventStart.set('hour', this.#firstEventAt.hour()).set('minutes', this.#firstEventAt.minute()).set('date', selectedDay.get('date'));
 			// convert to seconds -> minutes -> 15 minutes segments
 			startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
 			segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
@@ -271,7 +268,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	 * @param day
 	 * @protected
 	 */
-	private loadEvents(day: number = this.selectedDay): void {
+	private loadEvents(day: number | undefined = this.selectedDay): void {
 		this.programService.getEvents(day)
 			.pipe(takeUntil(this.#unsubscribe))
 			.subscribe((events) => {
@@ -327,9 +324,19 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		return Math.ceil(milliseconds / 1000 / 60 / FullProgramConfig.segmentDuration);
 	}
 
-	private filterEventsByDay(events: IEvent[], day: number): IEvent[] {
+	/**
+	 * Filter events by given day
+	 * Add days from given day with start after 6AM and events from next day with start before 6AM
+	 * @param events
+	 * @param day
+	 * @private
+	 */
+	private filterEventsByDay(events: IEvent[], day?: number): IEvent[] {
 		return events.filter((event) => {
-			return dayjs(event.start).isSame(day, 'day');
+			const eventStart = dayjs(event.start);
+			const nextDay = dayjs(day).add(1, 'day');
+			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= 6);
+			return (dayjs(event.start).isSame(day, 'day') && eventStart.get('hour') > 6) || addEarlyNextDayEvent;
 		});
 	}
 }

@@ -16,7 +16,7 @@ export class ListDaySelectComponent {
 	public days: IProgramDay[];
 
 	@Input()
-	public selectedDay: number;
+	public selectedDay?: number;
 
 	@Output()
 	public selectedDayChange: EventEmitter<number> = new EventEmitter<number>();
