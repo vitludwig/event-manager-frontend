@@ -5,7 +5,7 @@ import {ProgramService} from './modules/program/services/program/program.service
 import * as dayjs from 'dayjs';
 import {NavigationEnd, Router} from '@angular/router';
 import {ERoute} from './common/types/ERoute';
-import {SwUpdate} from '@angular/service-worker';
+import {ELocalNotificationAction} from "./modules/notifications/types/ILocalNotificationPayload";
 
 @Component({
 	selector: 'app-root',
@@ -15,7 +15,6 @@ import {SwUpdate} from '@angular/service-worker';
 export class AppComponent implements OnInit {
 
 	private readonly translate: TranslateService = inject(TranslateService);
-	private readonly swUpdate: SwUpdate = inject(SwUpdate);
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
@@ -23,16 +22,8 @@ export class AppComponent implements OnInit {
 	#alreadyNotified: string[] = [];
 
 	public async ngOnInit(): Promise<void> {
-		setInterval(() => {
-			this.checkForUpdates();
-		}, 1000 * 60 * 30); // 0.5 hour
-		this.checkForUpdates();
-
 		this.handleLanguage();
 		await this.handleLocalNotifications();
-		await this.handlePermissions();
-
-		await this.notificationService.initOneSignal();
 
 		this.handleSubscriptionBtn();
 	}
@@ -88,12 +79,6 @@ export class AppComponent implements OnInit {
 	 */
 	private async handleLocalNotifications(): Promise<void> {
 		try {
-			const registration = await navigator.serviceWorker.getRegistration('notification.worker.js');
-			console.log('SW registrations: ', registration);
-			if(registration) {
-				this.notificationService.notificationRegistration = registration;
-			}
-
 			setInterval(() => {
 				// TODO: filter only events after now
 				const now = dayjs();
@@ -106,7 +91,11 @@ export class AppComponent implements OnInit {
 					const diff = Math.abs(now.diff(dayjs(event.start), 'minutes'));
 					const isInRange = diff >= 9 && diff <= 11;
 					if(!this.#alreadyNotified.includes(favorite.id) && isInRange) {
-						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
+						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`,
+							{
+								actionId: ELocalNotificationAction.NAVIGATE_TO,
+								value: `/event-detail/${favorite.id}`
+							});
 						this.#alreadyNotified.push(favorite.id);
 					}
 				}
@@ -114,36 +103,6 @@ export class AppComponent implements OnInit {
 
 		} catch(err) {
 			console.error('SW registration error: ', err);
-		}
-	}
-
-	/**
-	 * Separate check for notification permissions used by local notifications
-	 * TODO: app should use only OneSignal's permission popup
-	 *
-	 * @private
-	 */
-	private async handlePermissions(): Promise<void> {
-		const permission = await Notification.requestPermission();
-		this.notificationService.showNotifications = permission === 'granted';
-
-		if(localStorage.getItem('showNotifications') === null) {
-			this.notificationService.showNotifications = true;
-		}
-	}
-
-	private async checkForUpdates(): Promise<void> {
-		if(this.swUpdate.isEnabled) {
-			try {
-				const updateAvailable = await this.swUpdate.checkForUpdate();
-				if(updateAvailable) {
-					if(confirm(this.translate.instant('Nová verze aplikace je k dispozici. Chcete ji nyní nainstalovat?'))) {
-						window.location.reload();
-					}
-				}
-			} catch(err) {
-				console.error('SW update error: ', err);
-			}
 		}
 	}
 }

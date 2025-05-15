@@ -7,7 +7,6 @@ import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ERoute} from '../../../../common/types/ERoute';
 import {TranslateService} from '@ngx-translate/core';
-
 @Component({
 	selector: 'app-bottom-menu',
 	templateUrl: './bottom-menu.component.html',
