@@ -9,6 +9,7 @@ import {ActionPerformed, Channel, LocalNotifications, ScheduleOptions} from "@ca
 import {Capacitor} from "@capacitor/core";
 import {ELocalNotificationAction, ILocalNotificationPayload} from "../../types/ILocalNotificationPayload";
 import {Router} from "@angular/router";
+import {ERoute} from "../../../../common/types/ERoute";
 
 @Injectable({
 	providedIn: 'root'
@@ -116,6 +117,8 @@ export class NotificationService {
 			OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
 				console.log("User accepted notifications: " + accepted);
 			});
+
+			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
 		}
 	}
 

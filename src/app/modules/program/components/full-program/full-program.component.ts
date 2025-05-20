@@ -89,7 +89,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 
 		if(this.timeline) {
 			setTimeout(() => {
-				this.timeline.scrollToNowSegment();
+				this.timeline?.scrollToNowSegment();
 			}, 0);
 		}
 	}

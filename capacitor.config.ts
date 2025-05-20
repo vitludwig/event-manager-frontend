@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'cz.rzbit.eventApp',
-  appName: 'event-program',
+  appName: 'Rusthaven Program',
   webDir: 'dist/event-program',
   android: {
     adjustMarginsForEdgeToEdge: 'force',
