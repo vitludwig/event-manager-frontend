@@ -26,6 +26,8 @@ export class AppComponent implements OnInit {
 		await this.handleLocalNotifications();
 
 		this.handleSubscriptionBtn();
+
+		await this.programService.initWebsocket();
 	}
 
 	private handleSubscriptionBtn(): void {

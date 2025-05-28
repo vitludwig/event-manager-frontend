@@ -4,7 +4,6 @@ import {environment} from '../../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';
 import OneSignal  from 'onesignal-cordova-plugin';
-import {PermissionsService} from "../../../../common/services/permissions/permissions.service";
 import {ActionPerformed, Channel, LocalNotifications, ScheduleOptions} from "@capacitor/local-notifications";
 import {Capacitor} from "@capacitor/core";
 import {ELocalNotificationAction, ILocalNotificationPayload} from "../../types/ILocalNotificationPayload";
@@ -27,7 +26,6 @@ export class NotificationService {
 	}
 
 	private readonly http = inject(HttpClient);
-	private readonly permissionsService = inject(PermissionsService);
 
 	private readonly defaultChannelId = 'local_notification_channel';
 
@@ -77,12 +75,13 @@ export class NotificationService {
 
 	private async initLocalNotifications() {
 		if(Capacitor.getPlatform() === 'android') {
-			if(!await this.permissionsService.hasLocalNotificationPermissions()) {
-				if(!(await this.permissionsService.requestLocalNotificationPermissions())) {
-					console.error('Local notification permission denied')
-					return;
-				}
-			}
+			// if this is uncommented, then there might be two permission overlays and user cannot click on it
+			// if(!await this.permissionsService.hasLocalNotificationPermissions()) {
+			// 	if(!(await this.permissionsService.requestLocalNotificationPermissions())) {
+			// 		console.error('Local notification permission denied')
+			// 		return;
+			// 	}
+			// }
 
 			await this.createDefaultLocalNotificationChannel();
 		}
