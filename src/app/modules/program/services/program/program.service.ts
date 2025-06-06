@@ -72,14 +72,20 @@ export class ProgramService {
 
 	private readonly eventService: EventService = inject(EventService);
 
-	public async initWebsocket(): Promise<void> {
+	public async loadCachedData(): Promise<void> {
 		try {
 			const localPlaces = localStorage.getItem('places');
 			const localEvents = localStorage.getItem('events');
-			if(localPlaces && localEvents) {
+			if (localPlaces && localEvents) {
 				await this.loadProgramData(JSON.parse(localPlaces), JSON.parse(localEvents));
 			}
+		} catch(e) {
+			console.error("Cannot load program from cached data");
+		}
+	}
 
+	public async initWebsocket(): Promise<void> {
+		try {
 			if(window.navigator.onLine) {
 				await this.eventService.initWebsocket();
 				await this.loadProgramData();
