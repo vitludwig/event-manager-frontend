@@ -1,0 +1,162 @@
+[
+  {
+    "tribeName_cs": "Rusthaven (ne)má talent",
+    "tribeName_en": "Rusthaven (anti)talent",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "21:00",
+    "place": "Polygon",
+    "description_cs": "Horká novinka, soutěž největšího bizáru, antitalentu a sraj… Srandy! Máte (anti)talent, kterej chcete ukázat na Rusthavenu? Umíte něco, co vykouzlí úsměv na tváři těm  největším drsňákům z pustiny? Přijďte a ukažte co (ne)umíte!",
+    "description_en": "The Weirdest Show in Town! New contest for the most bizarre anti-talent out there. Got a “gift” that’ll crack even the toughest wastelanders? Sign up and show it off – we need YOU!"
+  },
+  {
+    "tribeName_cs": "Soutěž o nejlepší kostým I. kolo",
+    "tribeName_en": "Costume contest round I",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "14:00",
+    "place": "Polygon",
+    "description_cs": "Tradiční soutěž o to kdo je nevíc cool. První kolo v Polygonu hromu. Kdo se proflexí do druhýho kola v sobotu?",
+    "description_en": "Who’s the Coolest of Them All? Old-school flex-off. First round in the Polygon – who’s striking hard enough to make it to Saturday?"
+  },
+  {
+    "tribeName_cs": "Soutěž o nejlepší kostým II. kolo",
+    "tribeName_en": "Costume contest round II",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "16:00",
+    "place": "Polygon",
+    "description_cs": "Druhé kolo soutěže o nejkulervoucnější vohoz. Kdo si odnese korunu vítěze?",
+    "description_en": "Final Round – Outfit Showdown. Who’s got the ultimate wasteland look? Time to claim the crown."
+  },
+  {
+    "tribeName_cs": "Rusthaven Pubquiz",
+    "tribeName_en": "Rusthaven Pubquiz",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "13:00",
+    "place": "Polygon",
+    "description_cs": "Luke vám potrápí závity quizem na téma \"Apokalypsa před a po\". Soutěžit budou moct až pětičlenný teamy, registrace není nutná, hlavně si vemte psací potřeby a co nejvíc nerdský kámoše.",
+    "description_en": "Apocalypse Now (and Then) – Nerd Quiz by Luke. No sign-ups, just bring pens and your geekiest crew (up to five). Your brains will burn."
+  },
+  {
+    "tribeName_cs": "High Noon NERF duely I",
+    "tribeName_en": "High Noon NERF duels I",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "12:00",
+    "place": "Polygon",
+    "description_cs": "Pravý poledne, žár slunce (možná, lol), soundrack od Morriconeho a NERFky proklatě nízko u pasu – to bude High Noon, série duelů na pistole v Polygonu hromu",
+    "description_en": "High Noon – Nerf Duels at the Polygon of Thunder. Blazing sun (maybe, lol), Morricone vibes and Nerf blasters slung low. It's showdown time."
+  },
+  {
+    "tribeName_cs": "High Noon NERF duely II",
+    "tribeName_en": "High Noon NERF duels II",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "12:00",
+    "place": "Polygon",
+    "description_cs": "Pravý poledne, žár slunce (možná, lol), soundrack od Morriconeho a NERFky proklatě nízko u pasu – to bude High Noon, série duelů na pistole v Polygonu hromu",
+    "description_en": "High Noon – Nerf Duels at the Polygon of Thunder. Blazing sun (maybe, lol), Morricone vibes and Nerf blasters slung low. It's showdown time."
+  },
+  {
+    "tribeName_cs": "Colosseum – Kvalifikace",
+    "tribeName_en": "Colosseum – Arena qualifications",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "10:00",
+    "place": "Aréna",
+    "description_cs": "Přijďte vyhrát slávu a rezáky v Aréně za bránou Námka, otevřeno bude skoro furt – nejlepší bojovníci se pak utkají v sobotu v Polygonu v eventu Coloseum. Vítěz bere vše!",
+    "description_en": "Come and try to wing money and glory in the Arena, just beyond the gates of Rusthaven. The best fighters will clash in Polygon of Thunder on Saturday. There can be only one."
+  },
+  {
+    "tribeName_cs": "Colosseum",
+    "tribeName_en": "Colosseum",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "18:00",
+    "place": "Polygon",
+    "description_cs": "Velké finále gladiátorů navazující na páteční kvalifikace v Aréně. Kašlete na chleba, tohle budou HRY! Vítěz bere vše!",
+    "description_en": "The Grand Gladiator Finals\nForget the Bread – this is the Games! After Friday’s qualifiers, only one will rise."
+  },
+  {
+    "tribeName_cs": "Nejlepší kára a motorka I. kolo",
+    "tribeName_en": "Best car and bike round I",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "13:00",
+    "place": "Main stage",
+    "description_cs": "Řev motorů, kulervoucí dekošky, pach pálených pneumatik a BENZÍN! První kolo soutěže o nejlepší káru a motorku proběhne v pátek na Main stagi, finále v Polygonu hromu.",
+    "description_en": "Engine Roar, Killer Mods, Burnt Rubber and GASOLINE!\nRound one of the badass car & bike contest hits the Main stage on Friday. Finals go down at the Polygon of Thunder."
+  },
+  {
+    "tribeName_cs": "Nejlepší kára a motorka II. kolo",
+    "tribeName_en": "Best car and bike round II",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "19:15",
+    "place": "Polygon",
+    "description_cs": "Řev motorů, kulervoucí dekošky, pach pálených pneumatik a BENZÍN! První kolo soutěže o nejlepší káru a motorku proběhne v pátek na Louce, finále v Polygonu hromu.",
+    "description_en": "Engine Roar, Killer Mods, Burnt Rubber and GASOLINE!\nRound two of the badass car & bike contest hits the Polygon of Thunder."
+  },
+  {
+    "tribeName_cs": "Czech Jugger – Krutá hra",
+    "tribeName_en": "Czech Jugger – Cruel Game",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "19:45",
+    "place": "Polygon",
+    "description_cs": "Jugger už je prostě klasickej highlight fesťáku. Drsný týmy, epický souboje. Polygon hromu se bude třást!",
+    "description_en": "Jugger – A Classic peak of the festival. Savage teams, epic clashes. The Polygon of Thunder will tremble."
+  },
+  {
+    "tribeName_cs": "Casino poker turnaj",
+    "tribeName_en": "Casino poker tournament",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "15:30",
+    "place": "Casino",
+    "description_cs": "Nasaďte kamenný ksichty, nahoďte parádní večerní gardehadry, a připravte se na velký vsázky. Vítěz bere vše!",
+    "description_en": "Stone Faces, Killer Fits, Big Bets. It’s all or nothing – winner takes it all. Dress to impress and brace for glory."
+  },
+  {
+    "tribeName_cs": "Plyšová jatka – bahenní zápasy",
+    "tribeName_en": "Plush Carnage – mud fights",
+    "day_cs": "Pátek",
+    "day_en": "Friday",
+    "time": "23:00",
+    "place": "Plyšová jatka",
+    "description_cs": "Naše skvělé Nuclear Valkyries pro vás připravily tradiční klání těch nejodvážnějších bojovnic ze všech koutů pustiny, které změří svý síly v Plyšových jatkách. U toho musíte bejt, bude to pořádná hlína, eee, bahno, teda cože?",
+    "description_en": "Nuclear Valkyries Present: The Plush Carnage! Our fierceest warriors clash in this epic mud-fest. It’s wild, it’s dirty, it’s a plushy mess!"
+  },
+  {
+    "tribeName_cs": "Videostop NSFW",
+    "tribeName_en": "Videostop NSFW",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "0:30",
+    "place": "Kino",
+    "description_cs": "Tohle je jednoduchý. Kino, noc z pátka na sobotu. Dacan pustí péčko, Dacan stopne péčko, vy budete hádat co to je. Kapiš?",
+    "description_en": "Guess That Porn! Dacan plays it. Dacan pauses it. You guess what it is. Got it?"
+  },
+  {
+    "tribeName_cs": "Rustbrawl turnaj",
+    "tribeName_en": "Rustbrawl tournament",
+    "day_cs": "Sobota",
+    "day_en": "Saturday",
+    "time": "13:00",
+    "place": "Karavan City",
+    "description_cs": "První ročník turnaje při příležitosti vydání druhý edice sběratelský karetky Rust Brawl, v poklidným prostředí Karavan City. Na vítěze čeká krom klasických odměn kompletní balík edice RH2025.",
+    "description_en": "Rust Brawl Tournament – First tourney for RH2025’s new TCG set. Chill duels in Caravan City – full set for the winner!"
+  },
+  {
+    "tribeName_cs": "Nejlepší achievement hunter",
+    "tribeName_en": "Best achievement hunter",
+    "day_cs": "Pátek, sobota",
+    "day_en": "Friday, Saturday",
+    "time": "",
+    "place": "Rusthaven",
+    "description_cs": "Festivalový aktivity jako LARP, soutěže a kmenový program budou hodnoceny achievement pointy. Na nejlepší tři AP huntery čekaj nabitý lootboxy a trofej. Achievementy se načítaj na platební čipy, noste je s sebou!",
+    "description_en": "Festival activities like LARP, contests, and tribe missions earn you Achievement Points. Top 3 AP hunters score loaded lootboxes and a trophy. Points track to your payment chip — keep it on you!"
+  }
+]
