@@ -29,14 +29,15 @@ export class AppComponent implements OnInit {
 		this.checkForUpdates();
 
 		this.handleLanguage();
+
+		await this.programService.initWebsocket();
+
 		await this.handleLocalNotifications();
 		await this.handlePermissions();
 
 		await this.notificationService.initOneSignal();
 
 		this.handleSubscriptionBtn();
-
-		await this.programService.initWebsocket();
 	}
 
 	private handleSubscriptionBtn(): void {

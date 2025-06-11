@@ -1,15 +1,17 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
 import {IEvent} from '../../types/IEvent';
 import * as dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 import {EventService} from '../event/event.service';
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ProgramService {
+	private readonly http: HttpClient = inject(HttpClient);
 
 	public get userFilterOptions(): IProgramFilterOptions {
 		const savedOptions = JSON.parse(localStorage.getItem('userFilterOptions') || '{}');
@@ -74,13 +76,15 @@ export class ProgramService {
 
 	public async loadCachedData(): Promise<void> {
 		try {
+			await this.checkCacheValidity();
+
 			const localPlaces = localStorage.getItem('places');
 			const localEvents = localStorage.getItem('events');
 			if (localPlaces && localEvents) {
 				await this.loadProgramData(JSON.parse(localPlaces), JSON.parse(localEvents));
 			}
 		} catch(e) {
-			console.error("Cannot load program from cached data");
+			console.error("Cannot load program from cached data", e);
 		}
 	}
 
@@ -245,5 +249,18 @@ export class ProgramService {
 			}
 		});
 		this.#days.next(days);
+	}
+
+	private async checkCacheValidity(): Promise<void> {
+		const appEventIdStored = localStorage.getItem('appEventId');
+		const appEventId = await this.getAppEventId();
+		if(appEventIdStored !== appEventId) {
+			localStorage.clear();
+			localStorage.setItem('appEventId', appEventId);
+		}
+	}
+
+	private getAppEventId(): Promise<string> {
+		return firstValueFrom(this.http.get<string>('/assets/appEventId.txt', { responseType: 'text' as 'json'}));
 	}
 }
