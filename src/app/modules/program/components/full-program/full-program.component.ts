@@ -109,7 +109,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.loadPlaces();
 		this.loadEvents();
 
-		this.selectedDay = this.programService.selectedDay ?? this.findToday(this.days)?.id ?? 0;
+		this.selectedDay = this.programService.selectedDay ?? this.findToday(this.days)?.id ?? this.days[0].id;
 	}
 
 	public ngOnDestroy(): void {

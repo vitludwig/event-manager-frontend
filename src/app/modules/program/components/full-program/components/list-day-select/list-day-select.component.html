@@ -5,6 +5,7 @@
 		[value]="day.id"
 		(click)="setDay(day.id)"
 		[class.active]="day.id === selectedDay"
+        [checked]="day.id === selectedDay"
 		class="day-toggle__item flex-grow-1"
 	>
 		<div class="day-toggle__item__wrapper">
