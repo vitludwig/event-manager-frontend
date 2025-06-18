@@ -6,6 +6,8 @@ import * as dayjs from 'dayjs';
 import {NavigationEnd, Router} from '@angular/router';
 import {ERoute} from './common/types/ERoute';
 import {SwUpdate} from '@angular/service-worker';
+import {SettingsService} from "./common/services/settings/settings.service";
+import {EDisplayDevice} from "./common/types/EDisplayDevice";
 
 @Component({
 	selector: 'app-root',
@@ -19,6 +21,9 @@ export class AppComponent implements OnInit {
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
+	protected readonly settingsService: SettingsService = inject(SettingsService);
+
+	protected EDisplayDevice = EDisplayDevice;
 
 	#alreadyNotified: string[] = [];
 
@@ -27,6 +32,8 @@ export class AppComponent implements OnInit {
 			this.checkForUpdates();
 		}, 1000 * 60 * 30); // 0.5 hour
 		this.checkForUpdates();
+
+		this.settingsService.determineDisplayDevice();
 
 		this.handleLanguage();
 
@@ -38,6 +45,10 @@ export class AppComponent implements OnInit {
 		await this.notificationService.initOneSignal();
 
 		this.handleSubscriptionBtn();
+
+		if(this.settingsService.device === EDisplayDevice.INFO_PANEL) {
+			document.body.className += ' display-info-panel';
+		}
 	}
 
 	private handleSubscriptionBtn(): void {

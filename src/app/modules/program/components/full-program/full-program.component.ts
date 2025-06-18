@@ -1,14 +1,11 @@
-import {
-	Component, ElementRef, inject, OnDestroy,
-	OnInit, Renderer2, ViewChild
-} from '@angular/core';
+import {Component, ElementRef, inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
 import * as dayjs from 'dayjs';
+import {Dayjs} from 'dayjs';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
-import {Dayjs} from 'dayjs';
 import {IProgramSegment} from './types/IProgramSegment';
 import {FullProgramConfig} from './FullProgramConfig';
 import {ListEventComponent} from './components/list-event/list-event.component';
@@ -33,6 +30,8 @@ import {ExportFavoritesComponent} from '../export-favorites/export-favorites.com
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
 import {UserInfoComponent} from '../../../../common/components/user-info/user-info.component';
+import {SettingsService} from "../../../../common/services/settings/settings.service";
+import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
 
 
 @Component({
@@ -104,6 +103,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
+	protected readonly settingsService: SettingsService = inject(SettingsService);
 
 	public ngOnInit(): void {
 		this.loadPlaces();
@@ -339,4 +339,6 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 			return (dayjs(event.start).isSame(day, 'day') && eventStart.get('hour') > 6) || addEarlyNextDayEvent;
 		});
 	}
+
+	protected readonly EDisplayDevice = EDisplayDevice;
 }

@@ -6,7 +6,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ERoute} from '../../../../common/types/ERoute';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {SettingsService} from "../../../../common/services/settings/settings.service";
+import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
 
 @Component({
 	selector: 'app-bottom-menu',
@@ -19,12 +21,16 @@ import {TranslateService} from '@ngx-translate/core';
 		MatIconModule,
 		MatToolbarModule,
 		FormsModule,
-		RouterModule
+		RouterModule,
+		TranslateModule
 	]
 })
 export class BottomMenuComponent {
 	protected readonly ERoute = ERoute;
+	protected readonly settingsService: SettingsService = inject(SettingsService);
 	private readonly translate: TranslateService = inject(TranslateService);
+
+	protected EDisplayDevice = EDisplayDevice;
 
 	protected openFAQ(): void {
 		if(this.translate.currentLang === 'cs') {

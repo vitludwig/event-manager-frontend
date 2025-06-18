@@ -4,20 +4,21 @@
 			<h3 class="font-3rdman program-heading">{{'Program' | translate}}</h3>
 
 			<div class="full-program__toolbar__actions">
-				<app-user-info></app-user-info>
+                @if(settingsService.device !== EDisplayDevice.INFO_PANEL) {
+                    <app-user-info></app-user-info>
 
-				<button mat-icon-button
-					aria-label="Filter events"
-					(click)="showFilters()">
-					<mat-icon>filter_list</mat-icon>
-				</button>
+                    <button mat-icon-button
+                        aria-label="Filter events"
+                        (click)="showFilters()">
+                        <mat-icon>filter_list</mat-icon>
+                    </button>
 
-				<button mat-icon-button
-					aria-label="Search events"
-					(click)="showEventList()">
-					<mat-icon>search</mat-icon>
-				</button>
-
+                    <button mat-icon-button
+                        aria-label="Search events"
+                        (click)="showEventList()">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                }
 				<button mat-icon-button
 					(click)="toggleSecondaryToolbar()"
 					aria-label="More actions">

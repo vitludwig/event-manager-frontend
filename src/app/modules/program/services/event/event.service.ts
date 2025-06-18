@@ -20,7 +20,7 @@ export class EventService {
 		try {
 			this.connection = new HubConnectionBuilder()
 				.configureLogging(LogLevel.Critical)
-				.withUrl('signalr/events')
+				.withUrl('http://localhost:5000/signalr/events')
 				.build();
 
 			await this.connection.start();

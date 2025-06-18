@@ -79,7 +79,7 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	}
 
 	protected openFullDetail(event: IEvent): void {
-		this.router.navigate(['/' + ERoute.EVENT_DETAIL, event.id]);
+		this.router.navigate(['/' + ERoute.EVENT_DETAIL, event.id], {queryParamsHandling: 'merge'});
 		this.dialog.closeAll();
 	}
 

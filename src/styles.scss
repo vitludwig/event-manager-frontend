@@ -72,3 +72,9 @@ html, body {
 	-webkit-font-feature-settings: 'liga';
 	-webkit-font-smoothing: antialiased;
 }
+
+body.display-info-panel {
+	.cdk-global-overlay-wrapper {
+		align-items: flex-start !important;
+	}
+}
