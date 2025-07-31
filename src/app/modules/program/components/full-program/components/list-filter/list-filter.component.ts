@@ -8,10 +8,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {FormsModule} from '@angular/forms';
 import {ProgramService} from '../../../../services/program/program.service';
-import {EEventType} from '../../../../types/EEventType';
 import {IProgramFilterOptions} from '../../types/IProgramFilterOptions';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {FullProgramConfig} from '../../FullProgramConfig';
 import {IEventType} from '../../../../types/IEventType';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
@@ -34,9 +32,9 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 	styleUrls: ['./list-filter.component.scss']
 })
 export class ListFilterComponent implements OnInit {
-	protected eventTypes: IEventType[] = Object.values(FullProgramConfig.eventTypes);
+	protected eventTypes: IEventType[] = [];
 	protected placeId: string[] | undefined;
-	protected eventType: EEventType[] | undefined;
+	protected eventType: string[] | undefined;
 	protected onlyFavorite: boolean = false;
 
 	protected translate: TranslateService = inject(TranslateService);
@@ -46,6 +44,8 @@ export class ListFilterComponent implements OnInit {
 
 
 	public ngOnInit(): void {
+		this.eventTypes = this.programService.eventTypes;
+
 		this.placeId = this.#data.options.placeId ?? undefined;
 		this.eventType = this.#data.options.eventType ?? undefined;
 		this.onlyFavorite = this.#data.options.onlyFavorite ?? false;

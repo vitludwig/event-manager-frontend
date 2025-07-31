@@ -12,9 +12,14 @@ export class EventEllipsisPipe implements PipeTransform {
 		let result = name;
 		const diff = dayjs(event.end).diff(dayjs(event.start), 'minutes');
 
-		if(diff <= 30 && name.length > 22) {
-			result = name.substring(0, 22).trim() + '…';
+		if(diff <= 60 && name.length > 15) {
+			result = name.substring(0, 15).trim() + '…';
 		}
+
+		if(diff <= 30 && name.length > 5) {
+			result = name.substring(0, 5).trim() + '…';
+		}
+
 		return result;
 	}
 

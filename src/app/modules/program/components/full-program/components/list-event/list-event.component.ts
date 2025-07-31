@@ -8,6 +8,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
 import {ProgramService} from '../../../../services/program/program.service';
 import {EventEllipsisPipe} from './pipes/event-ellipsis.pipe';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
 	selector: 'app-list-event',
@@ -25,6 +26,7 @@ export class ListEventComponent {
 
 	protected readonly fullProgramConfig = FullProgramConfig;
 	protected readonly programService: ProgramService = inject(ProgramService);
+	protected readonly translate: TranslateService = inject(TranslateService);
 
 	protected showDetail(event: IProgramEvent): void {
 		this.eventSelect.emit(event);

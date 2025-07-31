@@ -10,8 +10,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {Subject, takeUntil} from 'rxjs';
 import {MatRippleModule} from '@angular/material/core';
 import {MatDialog} from '@angular/material/dialog';
-import {FullProgramConfig} from '../full-program/FullProgramConfig';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
 import {ERoute} from '../../../../common/types/ERoute';
 import {Router} from '@angular/router';
@@ -47,11 +46,10 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	protected placesById: Record<string, IProgramPlace> = {};
 	protected groupEvents: Record<number, IEvent[]> = {};
 
-	protected readonly fullProgramConfig = FullProgramConfig;
-
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
 	private readonly dialog: MatDialog = inject(MatDialog);
+	protected readonly translate: TranslateService = inject(TranslateService);
 
 	#events: IEvent[] | null = [];
 	#unsubscribe: Subject<void> = new Subject<void>();

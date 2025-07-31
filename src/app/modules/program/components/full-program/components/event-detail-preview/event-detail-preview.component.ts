@@ -11,9 +11,10 @@ import {Router} from '@angular/router';
 import {ERoute} from '../../../../../../common/types/ERoute';
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {EllipsisPipe} from '../../../../../../common/pipes/ellipsis/ellipsis.pipe';
 import {MatDivider} from '@angular/material/divider';
+import {EventTagsComponent} from "../../../event-tags/event-tags.component";
 
 @Component({
 	selector: 'app-event-detail-preview',
@@ -27,18 +28,18 @@ import {MatDivider} from '@angular/material/divider';
 		TranslateEventPropertyPipe,
 		TranslateModule,
 		EllipsisPipe,
-		MatDivider
+		MatDivider,
+		EventTagsComponent
 	],
 	templateUrl: './event-detail-preview.component.html',
 	styleUrls: ['./event-detail-preview.component.scss']
 })
 export class EventDetailPreviewComponent {
-	protected readonly fullProgramConfig = FullProgramConfig;
-
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly router: Router = inject(Router);
 	protected readonly data: { event: IProgramEvent } = inject(MAT_BOTTOM_SHEET_DATA);
+	protected readonly translate: TranslateService = inject(TranslateService);
 
 	protected toggleFavorite(): void {
 		this.data.event.favorite = !this.data.event.favorite;

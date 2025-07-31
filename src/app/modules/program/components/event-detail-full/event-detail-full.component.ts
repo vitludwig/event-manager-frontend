@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule, Location, NgOptimizedImage} from '@angular/common';
 import {MatDialogModule} from '@angular/material/dialog';
 import {IProgramPlace} from '../../types/IProgramPlace';
@@ -9,37 +9,36 @@ import {ProgramService} from '../../services/program/program.service';
 import {firstValueFrom,} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {IEvent} from '../../types/IEvent';
-import {FullProgramConfig} from '../full-program/FullProgramConfig';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
+import {EventTagsComponent} from "../event-tags/event-tags.component";
 
 @Component({
 	selector: 'app-event-detail-full',
 	standalone: true,
-	imports: [
-		CommonModule,
-		MatDialogModule,
-		MatButtonModule,
-		MatIconModule,
-		MatDividerModule,
-		NgOptimizedImage,
-		TranslateModule,
-		TranslateEventPropertyPipe,
-	],
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatDividerModule,
+        NgOptimizedImage,
+        TranslateModule,
+        TranslateEventPropertyPipe,
+        EventTagsComponent,
+    ],
 	templateUrl: './event-detail-full.component.html',
 	styleUrls: ['./event-detail-full.component.scss']
 })
 export class EventDetailFullComponent implements OnInit {
+	protected readonly programService: ProgramService = inject(ProgramService);
+	private readonly route: ActivatedRoute = inject(ActivatedRoute);
+	private readonly location: Location = inject(Location);
+	protected readonly translate: TranslateService = inject(TranslateService);
+
 	protected place: IProgramPlace | undefined;
 	protected event: IEvent | undefined;
 	protected loading: boolean = false;
-	protected readonly fullProgramConfig = FullProgramConfig;
-
-	constructor(
-		protected programService: ProgramService,
-		private route: ActivatedRoute,
-		private location: Location,
-	) {}
 
 	public async ngOnInit(): Promise<void> {
 		try {

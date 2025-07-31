@@ -1,6 +1,6 @@
 export interface IEventType {
-	id: number;
+	id: string;
 	name: string;
+	name_EN: string;
 	color: string;
-	abbr: string;
 }

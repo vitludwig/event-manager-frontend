@@ -18,7 +18,14 @@
 			<div class="event-detail__content">
 				<div class="event-detail__content__title">
 					<h3>{{ event | translateEventProperty: 'name' }}</h3>
-					<div>{{ fullProgramConfig.eventTypes[event.type].name | translate }}</div>
+					<div>
+                        @if(translate.currentLang === 'cs') {
+                            {{ event.type.name }}
+                        } @else {
+                            {{ event.type.name_EN }}
+                        }
+                    </div>
+                    <div style="display: flex; justify-content: center"><app-event-tags [event]="event" /></div>
 					<div>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</div>
 					<div>{{ place.name }}</div>
 				</div>
