@@ -79,6 +79,20 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "roztoc": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.roztoc.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -94,6 +108,9 @@
             },
             "development": {
               "buildTarget": "event-program:build:development"
+            },
+            "roztoc": {
+              "buildTarget": "event-program:build:roztoc"
             }
           },
           "defaultConfiguration": "development"

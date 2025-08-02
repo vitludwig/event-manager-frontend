@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use 'app/styles/m3-theme';
+@use 'app/styles/roztoc-theme';
 
 @font-face {
 	font-family: rdman;
@@ -21,16 +21,18 @@
 @include mat.core();
 
 :root {
-	@include mat.core-theme(m3-theme.$dark-theme);
-	@include mat.button-theme(m3-theme.$dark-theme);
-	@include mat.all-component-themes(m3-theme.$dark-theme);
+	@include mat.core-theme(roztoc-theme.$dark-theme);
+	@include mat.button-theme(roztoc-theme.$dark-theme);
+	@include mat.all-component-themes(roztoc-theme.$dark-theme);
 
-	@include mat.color-variants-backwards-compatibility(m3-theme.$dark-theme);
-	@include mat.typography-hierarchy(m3-theme.$dark-theme);
+	@include mat.color-variants-backwards-compatibility(roztoc-theme.$dark-theme);
+	@include mat.typography-hierarchy(roztoc-theme.$dark-theme);
 }
 
 @import "app/styles/overides";
 @import "app/styles/utilities";
+
+@import "app/styles/roztoc-overrides";
 
 html, body {
 	height: 100%;

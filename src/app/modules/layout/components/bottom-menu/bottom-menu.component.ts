@@ -9,6 +9,8 @@ import {ERoute} from '../../../../common/types/ERoute';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {SettingsService} from "../../../../common/services/settings/settings.service";
 import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
+import {environment} from "../../../../../environments/environment";
+import {EFestivalID} from "../../../../common/types/EFestivalID";
 
 @Component({
 	selector: 'app-bottom-menu',
@@ -34,9 +36,12 @@ export class BottomMenuComponent {
 
 	protected openFAQ(): void {
 		if(this.translate.currentLang === 'cs') {
-			window.open('https://docs.google.com/document/d/1StVQlwSWorjiQyfoLuckcz8geOw3uurjPaC8ni5jwbQ/edit?usp=sharing', '_blank');
+			window.open(environment.faqUrl_CS, '_blank');
 		} else {
-			window.open('https://docs.google.com/document/d/1UGDLkfL1gM7RnHSdhyqBucoIrqRw9k5MxgfKodPGEAE/edit?usp=sharing', '_blank');
+			window.open(environment.faqUrl_EN, '_blank');
 		}
 	}
+
+	protected readonly environment = environment;
+	protected readonly EFestivalID = EFestivalID;
 }

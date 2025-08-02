@@ -1,0 +1,65 @@
+$purple: #c158bb;
+$dark-purple: #880C9E;
+$light-green: #03a27b;
+$dark-green: #115F52;
+$dark-background: #0A322C;
+
+@font-face {
+  font-family: YanoneKaffeesatz;
+  src: url(/assets/fonts/YanoneKaffeesatz-VariableFont_wght.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: WorkSans;
+  src: url(/assets/fonts/WorkSans-VariableFont_wght.ttf);
+  font-weight: bold;
+}
+
+:root {
+  --mat-standard-button-toggle-selected-state-background-color: #880C9E !important;
+}
+
+
+.mat-toolbar {
+  background-color: $dark-background !important;
+}
+
+.full-program__list {
+  //background-color: #0A322C !important;
+  //background-color: $dark-purple !important;
+}
+
+.mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-fab, .mat-mdc-mini-fab {
+  &.mat-unthemed {
+    background-color: unset !important;
+  }
+}
+
+.place__title__text {
+  background-color: $dark-purple !important;
+}
+
+h4,h3 {
+  color: unset !important;
+}
+
+.mat-divider {
+  border-top-color: $purple !important;
+}
+
+.list-timeline__segment__border--now {
+  background-color: $purple !important;
+}
+
+.list-timeline__segment__border {
+  background-color: #c158bb30 !important;
+}
+
+.card-title, p {
+  font-family: WorkSans, sans-serif;
+}
+
+.list-vertical__event:not(:last-child) {
+  border-bottom: 1px solid #c158bb80;
+}
