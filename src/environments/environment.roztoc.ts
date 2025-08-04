@@ -1,6 +1,6 @@
 export const environment = {
 	oneSignalApiKey: "NDcwZWY5YTUtYWQyMy00NTY1LWIxZDEtNzRjYTAxZDAyYzJh",
-	oneSignalAppId: "14d3b005-8f00-478a-b84e-14807cf26f99",
+	oneSignalAppId: "655aca75-1bc7-4a63-b9d6-0d0127a4b92d",
 	wsUrl: "signalr/events",
 	apiUrl: "",
 	faqUrl_CS: "https://roztocfest.com/faq/?lang=cs",
