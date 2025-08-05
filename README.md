@@ -18,3 +18,6 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The appli
 ## Generating PWA icons
 - https://pwa-icon-generator.vercel.app/
 - https://github.com/pverhaert/ngx-pwa-icons
+
+## Generating m3 scheme
+- ng generate @angular/material:m3-theme

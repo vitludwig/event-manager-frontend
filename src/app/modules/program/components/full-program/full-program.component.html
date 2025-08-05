@@ -2,10 +2,12 @@
 	<div class="toolbar-wrapper">
 		<mat-toolbar class="full-program__toolbar">
 <!--			<h3 class="font-3rdman program-heading">{{'Program' | translate}}</h3>-->
-            <img src="/assets/images/roztoc-logo.png" alt="Logo">
+            <img src="/assets/images/roztoc-logo-light.png" alt="Logo">
 			<div class="full-program__toolbar__actions">
                 @if(settingsService.device !== EDisplayDevice.INFO_PANEL) {
-                    <app-user-info></app-user-info>
+                    @if(environment.festivalId === EFestivalID.RUSTHAVEN) {
+                        <app-user-info></app-user-info>
+                    }
 
                     <button mat-icon-button
                         aria-label="Filter events"
@@ -41,11 +43,11 @@
 <!--						<mat-icon>import_export</mat-icon>-->
 <!--					</button>-->
 
-					<button mat-icon-button
-						aria-label="Filter events"
-						(click)="toggleEventDetails()">
-						<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>
-					</button>
+<!--					<button mat-icon-button-->
+<!--						aria-label="Filter events"-->
+<!--						(click)="toggleEventDetails()">-->
+<!--						<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>-->
+<!--					</button>-->
 
 				</div>
 			</mat-toolbar>

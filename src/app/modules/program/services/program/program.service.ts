@@ -8,6 +8,7 @@ import {EventService} from '../event/event.service';
 import {HttpClient} from "@angular/common/http";
 import {IEventType} from "../../types/IEventType";
 import {environment} from "../../../../../environments/environment";
+import ProgramConfig from "../../config/ProgramConfig";
 
 @Injectable({
 	providedIn: 'root'
@@ -250,12 +251,19 @@ export class ProgramService {
 
 	private loadDays(): void {
 		const days = this.#days.getValue();
-		this.#allEvents.forEach((event) => {
-			const date = dayjs(event.start).startOf('day').valueOf();
-			if(!days[date]) {
-				days[date] = date;
+		for(const event of this.#allEvents) {
+			const startDate = dayjs(event.start).startOf('day').valueOf();
+			const endDate = dayjs(event.end);
+
+			if(Object.values(days).length > 0 && endDate.get('hour') <= ProgramConfig.eventEndHourThreshold) {
+				continue;
 			}
-		});
+
+			if(!days[startDate]) {
+				days[startDate] = startDate;
+			}
+		}
+
 		this.#days.next(days);
 	}
 

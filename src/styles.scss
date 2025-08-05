@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use 'app/styles/roztoc-theme';
+@use 'app/styles/roztoc-theme-light';
 
 @font-face {
 	font-family: rdman;
@@ -21,12 +21,12 @@
 @include mat.core();
 
 :root {
-	@include mat.core-theme(roztoc-theme.$dark-theme);
-	@include mat.button-theme(roztoc-theme.$dark-theme);
-	@include mat.all-component-themes(roztoc-theme.$dark-theme);
+	@include mat.core-theme(roztoc-theme-light.$light-theme);
+	@include mat.button-theme(roztoc-theme-light.$light-theme);
+	@include mat.all-component-themes(roztoc-theme-light.$light-theme);
 
-	@include mat.color-variants-backwards-compatibility(roztoc-theme.$dark-theme);
-	@include mat.typography-hierarchy(roztoc-theme.$dark-theme);
+	@include mat.color-variants-backwards-compatibility(roztoc-theme-light.$light-theme);
+	@include mat.typography-hierarchy(roztoc-theme-light.$light-theme);
 }
 
 @import "app/styles/overides";

@@ -8,7 +8,6 @@ import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
 import {IProgramSegment} from './types/IProgramSegment';
 import {FullProgramConfig} from './FullProgramConfig';
-import {ListEventComponent} from './components/list-event/list-event.component';
 import {EventDetailPreviewComponent} from './components/event-detail-preview/event-detail-preview.component';
 import {ListTimelineComponent} from './components/list-timeline/list-timeline.component';
 import {ListPlaceComponent} from './components/list-place/list-place.component';
@@ -32,6 +31,9 @@ import {IProgramDay} from './types/IProgramDay';
 import {UserInfoComponent} from '../../../../common/components/user-info/user-info.component';
 import {SettingsService} from "../../../../common/services/settings/settings.service";
 import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
+import ProgramConfig from "../../config/ProgramConfig";
+import {environment} from "../../../../../environments/environment";
+import {EFestivalID} from "../../../../common/types/EFestivalID";
 
 
 @Component({
@@ -40,8 +42,6 @@ import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
 	imports: [
 		CommonModule,
 		MatTabsModule,
-		ListEventComponent,
-		EventDetailPreviewComponent,
 		ListTimelineComponent,
 		ListPlaceComponent,
 		ListDaySelectComponent,
@@ -93,7 +93,9 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	protected readonly FullProgramConfig = FullProgramConfig;
+	protected readonly EDisplayDevice = EDisplayDevice;
+	protected readonly environment = environment;
+	protected readonly EFestivalID = EFestivalID;
 
 	#firstEventAt: Dayjs;
 	#selectedDay?: number;
@@ -335,10 +337,8 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		return events.filter((event) => {
 			const eventStart = dayjs(event.start);
 			const nextDay = dayjs(day).add(1, 'day');
-			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= 6);
+			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
 			return (dayjs(event.start).isSame(day, 'day') && eventStart.get('hour') > 6) || addEarlyNextDayEvent;
 		});
 	}
-
-	protected readonly EDisplayDevice = EDisplayDevice;
 }
