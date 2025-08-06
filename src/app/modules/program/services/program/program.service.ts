@@ -106,6 +106,7 @@ export class ProgramService {
 				this.eventService.on<IEvent>('updateEvent', (data) => {
 					const index = this.#allEvents.findIndex((event) => event.id === data.id);
 					this.#allEvents[index] = data;
+					localStorage.setItem('events', JSON.stringify(this.#allEvents));
 
 					this.updateFavorites();
 					this.propagateEventUpdate();
