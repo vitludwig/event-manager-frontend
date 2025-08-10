@@ -12,8 +12,7 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
-import {ERoute} from '../../../../common/types/ERoute';
-import {Router} from '@angular/router';
+import {EventDetailFullComponent} from "../event-detail-full/event-detail-full.component";
 
 @Component({
 	selector: 'app-program-vertical-list',
@@ -47,7 +46,6 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	protected groupEvents: Record<number, IEvent[]> = {};
 
 	private readonly programService: ProgramService = inject(ProgramService);
-	private readonly router: Router = inject(Router);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	protected readonly translate: TranslateService = inject(TranslateService);
 
@@ -76,9 +74,16 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 		this.#unsubscribe.next();
 	}
 
-	protected openFullDetail(event: IEvent): void {
-		this.router.navigate(['/' + ERoute.EVENT_DETAIL, event.id], {queryParamsHandling: 'merge'});
-		this.dialog.closeAll();
+	protected openFullDetail(event: IEvent, place: IProgramPlace): void {
+		this.dialog.open(EventDetailFullComponent, {
+			data: {
+				event: event,
+				place: place,
+			},
+			panelClass: 'full-overlay',
+		});
+		// this.router.navigate(['/' + ERoute.EVENT_DETAIL, event.id], {queryParamsHandling: 'merge'});
+		// this.dialog.closeAll();
 	}
 
 	protected toggleFavorite(event: IEvent, clickEvent: MouseEvent): void {

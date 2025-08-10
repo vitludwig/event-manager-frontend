@@ -7,6 +7,10 @@ $light-green: #03a27b;
 $dark-green: #115F52;
 $dark-background: #0A322C;
 
+:root .mat-accent.mat-mdc-fab, :root .mat-accent.mat-mdc-mini-fab {
+  --mdc-fab-small-container-color: #c158bb30 !important;
+}
+
 @font-face {
   font-family: YanoneKaffeesatz;
   src: url(/assets/fonts/YanoneKaffeesatz-VariableFont_wght.ttf);
@@ -173,4 +177,10 @@ p {
 
 mat-bottom-sheet-container {
   background: $purple-light;
+}
+
+.card-sidebar {
+  background: $purple;
+  color: white;
+  border-color: #00000060
 }

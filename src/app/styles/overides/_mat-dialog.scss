@@ -32,4 +32,8 @@
 	max-width: 100vw !important;
 	max-height: 100vh;
 	width: 100%;
+
+	.mat-mdc-dialog-surface {
+		border-radius: 0;
+	}
 }

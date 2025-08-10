@@ -1,20 +1,18 @@
 <div class="event-detail">
 	<ng-container *ngIf="event && place; else noData">
-		<div>
-			<button mat-icon-button
-				(click)="navigateBack()"
-				class="event-detail__close"
-				aria-label="Close event detail"
-			>
-				<mat-icon>keyboard_backspace</mat-icon>
-			</button>
-
+        <button mat-icon-button
+            mat-dialog-close
+            class="event-detail__close"
+            aria-label="Close event detail"
+        >
+            <mat-icon>keyboard_backspace</mat-icon>
+        </button>
 <!--			<div class="event-detail__image">-->
 <!--				<img [src]="'/assets/icons/icon-192x192.png'"-->
 <!--					alt="Event image"-->
 <!--				>-->
 <!--			</div>-->
-
+        <div class="event-detail__content--wrapper">
 			<div class="event-detail__content">
 				<div class="event-detail__content__title">
 					<h3>{{ event | translateEventProperty: 'name' }}</h3>
@@ -36,10 +34,10 @@
 					<p>{{ event | translateEventProperty: 'description' }}</p>
 				</div>
 			</div>
-		</div>
+        </div>
 
 		<div class="event-detail__actions">
-			<button mat-icon-button
+			<button mat-mini-fab
 				class="favorite-button"
 				(click)="toggleFavorite()">
 				<mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>

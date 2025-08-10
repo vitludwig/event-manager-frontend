@@ -10,7 +10,7 @@
 				role="list"
 			>
 				<div *ngFor="let event of day.value"
-					(click)="openFullDetail(event)"
+					(click)="openFullDetail(event, event.place)"
 					[style.border-left]="'8px solid ' + event.type.color"
 					matRipple
 					role="listitem"

@@ -118,9 +118,11 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.#unsubscribe.next();
 	}
 
-	protected showEventDetail(event: IProgramEvent): void {
+	protected showEventDetail(event: IProgramEvent, place: IProgramPlace): void {
 		this.bottomSheet.open(EventDetailPreviewComponent, {
-			data: {event: event},
+			data: {
+				event, place
+			},
 			panelClass: 'mat-bottom-sheet-fullwidth',
 		});
 		this.selectedEvent = event;
