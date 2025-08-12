@@ -84,9 +84,10 @@ export class AppComponent implements OnInit {
 	}
 
 	private handleLanguage(): void {
-		let language = localStorage.getItem('language') ?? this.translate.getBrowserLang() ?? 'cs';
+		let language = localStorage.getItem('language') ?? Intl.DateTimeFormat().resolvedOptions().locale ?? 'en';
+		language = language.split('-')[0];
 		if(!['cs', 'en'].includes(language)) {
-			language = 'cs';
+			language = 'en';
 		}
 
 		this.translate.setDefaultLang(language);
