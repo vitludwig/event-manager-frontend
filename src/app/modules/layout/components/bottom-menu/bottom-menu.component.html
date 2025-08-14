@@ -12,20 +12,20 @@
                 {{ 'Program' | translate }}
             }
         </button>
-        @if(environment.festivalId !== EFestivalID.ROZTOCFEST) {
-            <button mat-button
-                routerLinkActive="bottom-menu__button--active"
-                class="bottom-menu__button"
-                [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
-                [routerLink]="ERoute.MAP"
-                [queryParamsHandling]="'merge'"
-            >
-                <mat-icon> place</mat-icon>
-                @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
-                    {{ 'Mapa' | translate }}
-                }
-            </button>
-        }
+
+        <button mat-button
+            routerLinkActive="bottom-menu__button--active"
+            class="bottom-menu__button"
+            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
+            [routerLink]="ERoute.MAP"
+            [queryParamsHandling]="'merge'"
+        >
+            <mat-icon> place</mat-icon>
+            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
+                {{ 'Mapa' | translate }}
+            }
+        </button>
+
 		<button mat-button
 			routerLinkActive="bottom-menu__button--active"
 			class="bottom-menu__button"
