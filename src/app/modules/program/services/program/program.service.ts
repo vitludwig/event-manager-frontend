@@ -9,6 +9,7 @@ import {HttpClient} from "@angular/common/http";
 import {IEventType} from "../../types/IEventType";
 import {environment} from "../../../../../environments/environment";
 import ProgramConfig from "../../config/ProgramConfig";
+import {IEventTag} from "../../types/IEventTag";
 
 @Injectable({
 	providedIn: 'root'
@@ -32,6 +33,7 @@ export class ProgramService {
 
 	public favorites: IEvent[] = [];
 	public eventTypes: IEventType[] = [];
+	public tags: IEventTag[] = [];
 	public selectedDay: number; // used to persist the selected day between routes
 	#showEventDetails: boolean = false; // show detailed information of event in program (i.e. abbreviation of event type)
 
@@ -130,6 +132,7 @@ export class ProgramService {
 		this.loadDays();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
 		await this.loadEventTypes();
+		await this.loadTags();
 	}
 
 	public getEvents(day?: number): Observable<IEvent[]> {
@@ -215,7 +218,11 @@ export class ProgramService {
 	}
 
 	public async loadEventTypes(): Promise<void> {
-		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(environment.apiUrl + '/eventTypes'));
+		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/eventTypes`));
+	}
+
+	public async loadTags(): Promise<void> {
+		this.tags = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/tags`));
 	}
 
 	private propagateEventUpdate(): void {
@@ -238,6 +245,11 @@ export class ProgramService {
 
 			if(filterOptions.eventType !== undefined) {
 				include = filterOptions.eventType.includes(event.type.id);
+			}
+
+			if(filterOptions.tags !== undefined && filterOptions.tags.length > 0) {
+				const eventTagIds = event.tags.map((tag) => tag.id);
+				include = filterOptions.tags.some((tag) => eventTagIds.includes(tag));
 			}
 
 			if(filterOptions.onlyFavorite === true) {
@@ -277,6 +289,10 @@ export class ProgramService {
 		}
 	}
 
+	/**
+	 * Used to invalidate events in local storage from another event
+	 * @private
+	 */
 	private getAppEventId(): Promise<string> {
 		return firstValueFrom(this.http.get<string>('/assets/appEventId.txt', { responseType: 'text' as 'json'}));
 	}

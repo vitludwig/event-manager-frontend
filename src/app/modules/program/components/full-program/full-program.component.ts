@@ -187,6 +187,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.programService.filterEvents({
 			eventType: options.eventType,
 			onlyFavorite: options.onlyFavorite,
+			tags: options.tags,
 		});
 	}
 
