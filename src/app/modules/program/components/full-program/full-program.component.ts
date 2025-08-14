@@ -34,6 +34,7 @@ import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
 import ProgramConfig from "../../config/ProgramConfig";
 import {environment} from "../../../../../environments/environment";
 import {EFestivalID} from "../../../../common/types/EFestivalID";
+import {MatBadge} from "@angular/material/badge";
 
 
 @Component({
@@ -54,6 +55,7 @@ import {EFestivalID} from "../../../../common/types/EFestivalID";
 		LanguageMenuComponent,
 		MatMenuModule,
 		UserInfoComponent,
+		MatBadge,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']

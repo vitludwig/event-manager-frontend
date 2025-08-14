@@ -28,9 +28,11 @@ export class ProgramService {
 
 	public set userFilterOptions(value: IProgramFilterOptions) {
 		this.#userFilterOptions = value;
+		this.activeFiltersCount = Object.values(value).filter((v) => !!v).length;
 		localStorage.setItem('userFilterOptions', JSON.stringify(value));
 	}
 
+	public activeFiltersCount: number = 0;
 	public favorites: IEvent[] = [];
 	public eventTypes: IEventType[] = [];
 	public tags: IEventTag[] = [];

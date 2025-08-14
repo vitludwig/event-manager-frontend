@@ -11,7 +11,8 @@
 
                     <button mat-icon-button
                         aria-label="Filter events"
-                        (click)="showFilters()">
+                        (click)="showFilters()"
+                        [matBadge]="programService.activeFiltersCount === 0 ? null : programService.activeFiltersCount">
                         <mat-icon>filter_list</mat-icon>
                     </button>
 
