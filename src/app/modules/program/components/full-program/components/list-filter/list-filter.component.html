@@ -27,17 +27,31 @@
 
 	<mat-form-field class="w-100">
 		<mat-label>{{'Druh akce' | translate}}</mat-label>
-		<mat-select [(ngModel)]="eventType"
+		<mat-select [(ngModel)]="selectedEventType"
 			multiple
 		>
 			<mat-option *ngFor="let item of eventTypes"
 				[value]="item.id"
 			>
-				{{ item.name | translate }}
+				{{ translate.currentLang === 'cs' ? item.name : item.name_EN }}
 			</mat-option>
 		</mat-select>
 	</mat-form-field>
 
+    @if(tags && tags.length > 0) {
+        <mat-form-field class="w-100">
+            <mat-label>{{'Tagy' | translate}}</mat-label>
+            <mat-select [(ngModel)]="selectedTags"
+                        multiple
+            >
+                <mat-option *ngFor="let item of tags"
+                            [value]="item.id"
+                >
+                    {{ translate.currentLang === 'cs' ? item.name : item.name_EN }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    }
 	<mat-slide-toggle
 		class="example-margin w-100"
 		[checked]="onlyFavorite"

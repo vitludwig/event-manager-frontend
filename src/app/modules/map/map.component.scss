@@ -1,16 +1,12 @@
 .img-wrapper {
-	width: 100%;
+	width: auto;
 	height: 100%;
 	overflow: auto;
 	text-align: center;
 
 	img {
-		width: 1000px;
-		height: auto;
-
-		@media screen and (min-width: 1000px) {
-			width: 100vw;
-		}
+		width: auto;
+		height: 100%;
 	}
 }
 

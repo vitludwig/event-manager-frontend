@@ -5,8 +5,17 @@
 
 			<div class="event-detail__content__title__info">
 				<h4>{{ data.event | translateEventProperty: 'name' }}</h4>
-				<h6>{{ fullProgramConfig.eventTypes[data.event.type].name | translate }}</h6>
-				<div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
+				<h6>
+                    @if(translate.currentLang === 'cs') {
+                        {{ data.event.type.name }}
+                    } @else {
+                        {{ data.event.type.name_EN }}
+                    }
+                </h6>
+				<div style="display: flex; justify-content: space-between; align-items: center">
+                    <div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
+                    <app-event-tags [event]="data.event" />
+                </div>
 			</div>
 		</div>
 
@@ -18,12 +27,12 @@
 	</div>
 
 	<div class="event-detail__controls">
-		<button mat-icon-button
+		<button mat-mini-fab
 			(click)="toggleFavorite()">
 			<mat-icon>{{ data.event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
 		</button>
 
-		<button mat-icon-button
+		<button mat-mini-fab
 			(click)="openFullDetail()">
 			<mat-icon>arrow_forward</mat-icon>
 		</button>

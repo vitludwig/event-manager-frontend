@@ -1,15 +1,21 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
 import {IEvent} from '../../types/IEvent';
 import * as dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 import {EventService} from '../event/event.service';
+import {HttpClient} from "@angular/common/http";
+import {IEventType} from "../../types/IEventType";
+import {environment} from "../../../../../environments/environment";
+import ProgramConfig from "../../config/ProgramConfig";
+import {IEventTag} from "../../types/IEventTag";
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ProgramService {
+	private readonly http: HttpClient = inject(HttpClient);
 
 	public get userFilterOptions(): IProgramFilterOptions {
 		const savedOptions = JSON.parse(localStorage.getItem('userFilterOptions') || '{}');
@@ -22,10 +28,14 @@ export class ProgramService {
 
 	public set userFilterOptions(value: IProgramFilterOptions) {
 		this.#userFilterOptions = value;
+		this.activeFiltersCount = Object.values(value).filter((v) => !!v).length;
 		localStorage.setItem('userFilterOptions', JSON.stringify(value));
 	}
 
+	public activeFiltersCount: number = 0;
 	public favorites: IEvent[] = [];
+	public eventTypes: IEventType[] = [];
+	public tags: IEventTag[] = [];
 	public selectedDay: number; // used to persist the selected day between routes
 	#showEventDetails: boolean = false; // show detailed information of event in program (i.e. abbreviation of event type)
 
@@ -74,13 +84,15 @@ export class ProgramService {
 
 	public async loadCachedData(): Promise<void> {
 		try {
+			await this.checkCacheValidity();
+
 			const localPlaces = localStorage.getItem('places');
 			const localEvents = localStorage.getItem('events');
 			if (localPlaces && localEvents) {
 				await this.loadProgramData(JSON.parse(localPlaces), JSON.parse(localEvents));
 			}
 		} catch(e) {
-			console.error("Cannot load program from cached data");
+			console.error("Cannot load program from cached data", e);
 		}
 	}
 
@@ -98,6 +110,7 @@ export class ProgramService {
 				this.eventService.on<IEvent>('updateEvent', (data) => {
 					const index = this.#allEvents.findIndex((event) => event.id === data.id);
 					this.#allEvents[index] = data;
+					localStorage.setItem('events', JSON.stringify(this.#allEvents));
 
 					this.updateFavorites();
 					this.propagateEventUpdate();
@@ -120,6 +133,8 @@ export class ProgramService {
 
 		this.loadDays();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
+		await this.loadEventTypes();
+		await this.loadTags();
 	}
 
 	public getEvents(day?: number): Observable<IEvent[]> {
@@ -204,6 +219,14 @@ export class ProgramService {
 		this.propagateEventUpdate();
 	}
 
+	public async loadEventTypes(): Promise<void> {
+		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/eventTypes`));
+	}
+
+	public async loadTags(): Promise<void> {
+		this.tags = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/tags`));
+	}
+
 	private propagateEventUpdate(): void {
 		const newEvents = this.applyEventFilters(this.#allEvents, this.userFilterOptions);
 		this.#events.next(newEvents);
@@ -223,7 +246,12 @@ export class ProgramService {
 			}
 
 			if(filterOptions.eventType !== undefined) {
-				include = filterOptions.eventType.includes(event.type);
+				include = filterOptions.eventType.includes(event.type.id);
+			}
+
+			if(filterOptions.tags !== undefined && filterOptions.tags.length > 0) {
+				const eventTagIds = event.tags.map((tag) => tag.id);
+				include = filterOptions.tags.some((tag) => eventTagIds.includes(tag));
 			}
 
 			if(filterOptions.onlyFavorite === true) {
@@ -238,12 +266,36 @@ export class ProgramService {
 
 	private loadDays(): void {
 		const days = this.#days.getValue();
-		this.#allEvents.forEach((event) => {
-			const date = dayjs(event.start).startOf('day').valueOf();
-			if(!days[date]) {
-				days[date] = date;
+		for(const event of this.#allEvents) {
+			const startDate = dayjs(event.start).startOf('day').valueOf();
+			const endDate = dayjs(event.end);
+
+			if(Object.values(days).length > 0 && endDate.get('hour') <= ProgramConfig.eventEndHourThreshold) {
+				continue;
 			}
-		});
+
+			if(!days[startDate]) {
+				days[startDate] = startDate;
+			}
+		}
+
 		this.#days.next(days);
+	}
+
+	private async checkCacheValidity(): Promise<void> {
+		const appEventIdStored = localStorage.getItem('appEventId');
+		const appEventId = await this.getAppEventId();
+		if(appEventIdStored !== appEventId) {
+			localStorage.clear();
+			localStorage.setItem('appEventId', appEventId);
+		}
+	}
+
+	/**
+	 * Used to invalidate events in local storage from another event
+	 * @private
+	 */
+	private getAppEventId(): Promise<string> {
+		return firstValueFrom(this.http.get<string>('/assets/appEventId.txt', { responseType: 'text' as 'json'}));
 	}
 }

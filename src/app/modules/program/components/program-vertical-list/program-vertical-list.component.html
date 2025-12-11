@@ -10,8 +10,8 @@
 				role="list"
 			>
 				<div *ngFor="let event of day.value"
-					(click)="openFullDetail(event)"
-					[style.border-left]="'8px solid ' + fullProgramConfig.eventTypes[event.type].color"
+					(click)="openFullDetail(event, event.place)"
+					[style.border-left]="'8px solid ' + event.type.color"
 					matRipple
 					role="listitem"
 					class="list-vertical__event"
@@ -26,7 +26,13 @@
 						<div class="d-flex align-items-center">
 							<span class="list-vertical__event__content__title">
 								<span class="event-title">{{ event | translateEventProperty: 'name' }}</span>
-								<small>{{fullProgramConfig.eventTypes[event.type].name | translate }}</small>
+								<small>
+                                    @if(translate.currentLang === 'cs') {
+                                        {{ event.type.name }}
+                                    } @else {
+                                        {{ event.type.name_EN }}
+                                    }
+                                </small>
 								<small>{{event.place.name }}</small>
 							</span>
 						</div>

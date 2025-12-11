@@ -9,8 +9,9 @@
 		&::after {
 			content: "";
 			display: block;
-			height: 10px;
-			background-image: url("/assets/images/line-big.jpg");
+			height: 20px;
+			//background-image: url("/assets/images/line-big.jpg");
+			background-image: url("/assets/images/line-big-roztoc.jpg");
 		}
 	}
 
@@ -29,7 +30,7 @@
 
 	&__secondary-toolbar {
 		mat-toolbar {
-			background-color: #151515 !important;
+			background-color: #151515;
 			height: 0;
 			overflow: hidden;
 			transition: all 0.3s ease-in-out;
@@ -60,8 +61,8 @@
 
 		&__scroll-to-now {
 			position: absolute;
-			right: 15px;
-			bottom: 15px;
+			right: 25px;
+			bottom: 25px;
 			z-index: 2
 		}
 	}

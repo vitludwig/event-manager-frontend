@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use 'app/styles/m3-theme';
+@use 'app/styles/roztoc-theme-light';
 
 @font-face {
 	font-family: rdman;
@@ -21,16 +21,18 @@
 @include mat.core();
 
 :root {
-	@include mat.core-theme(m3-theme.$dark-theme);
-	@include mat.button-theme(m3-theme.$dark-theme);
-	@include mat.all-component-themes(m3-theme.$dark-theme);
+	@include mat.core-theme(roztoc-theme-light.$light-theme);
+	@include mat.button-theme(roztoc-theme-light.$light-theme);
+	@include mat.all-component-themes(roztoc-theme-light.$light-theme);
 
-	@include mat.color-variants-backwards-compatibility(m3-theme.$dark-theme);
-	@include mat.typography-hierarchy(m3-theme.$dark-theme);
+	@include mat.color-variants-backwards-compatibility(roztoc-theme-light.$light-theme);
+	@include mat.typography-hierarchy(roztoc-theme-light.$light-theme);
 }
 
 @import "app/styles/overides";
 @import "app/styles/utilities";
+
+@import "app/styles/roztoc-overrides";
 
 html, body {
 	height: 100%;
@@ -71,4 +73,14 @@ html, body {
 	direction: ltr;
 	-webkit-font-feature-settings: 'liga';
 	-webkit-font-smoothing: antialiased;
+}
+
+body.display-info-panel {
+	.cdk-global-overlay-wrapper {
+		align-items: flex-start !important;
+	}
+}
+
+p {
+	white-space: pre-line;
 }

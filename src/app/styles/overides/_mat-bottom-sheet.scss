@@ -5,3 +5,8 @@
 		padding: 16px 16px 8px 16px;
 	}
 }
+.position-top {
+	.cdk-global-overlay-wrapper {
+		align-items: flex-start;
+	}
+}

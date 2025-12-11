@@ -3,33 +3,52 @@
 		<button mat-button
 			class="bottom-menu__button"
 			routerLinkActive="bottom-menu__button--active"
+            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
 			[routerLink]="ERoute.PROGRAM"
+            [queryParamsHandling]="'merge'"
 		>
 			<mat-icon>view_list</mat-icon>
-		</button>
+            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
+                {{ 'Program' | translate }}
+            }
+        </button>
+
+        <button mat-button
+            routerLinkActive="bottom-menu__button--active"
+            class="bottom-menu__button"
+            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
+            [routerLink]="ERoute.MAP"
+            [queryParamsHandling]="'merge'"
+        >
+            <mat-icon> place</mat-icon>
+            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
+                {{ 'Mapa' | translate }}
+            }
+        </button>
 
 		<button mat-button
 			routerLinkActive="bottom-menu__button--active"
 			class="bottom-menu__button"
-			[routerLink]="ERoute.MAP"
-		>
-			<mat-icon> place</mat-icon>
-		</button>
-
-		<button mat-button
-			routerLinkActive="bottom-menu__button--active"
-			class="bottom-menu__button"
+            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
 			[routerLink]="ERoute.NOTIFICATIONS"
+            [queryParamsHandling]="'merge'"
 		>
 			<mat-icon>notifications</mat-icon>
+            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
+                {{ 'Notifikace' | translate }}
+            }
 		</button>
 
 		<button mat-button
 			routerLinkActive="bottom-menu__button--active"
 			class="bottom-menu__button"
+            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
 			(click)="openFAQ()"
 		>
 			<mat-icon>help</mat-icon>
+            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
+                {{ 'FAQ' | translate }}
+            }
 		</button>
 	</div>
 </mat-toolbar>

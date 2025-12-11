@@ -6,6 +6,7 @@ import * as dayjs from 'dayjs';
 import {NavigationEnd, Router} from '@angular/router';
 import {ERoute} from './common/types/ERoute';
 import {ELocalNotificationAction} from "./modules/notifications/types/ILocalNotificationPayload";
+import { SettingsService } from "./common/services/settings/settings.service";
 
 @Component({
 	selector: 'app-root',
@@ -18,16 +19,25 @@ export class AppComponent implements OnInit {
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
+	protected readonly settingsService: SettingsService = inject(SettingsService);
+
+	protected EDisplayDevice = EDisplayDevice;
 
 	#alreadyNotified: string[] = [];
 
 	public async ngOnInit(): Promise<void> {
+        this.settingsService.determineDisplayDevice();
+
 		this.handleLanguage();
 		await this.handleLocalNotifications();
 
 		this.handleSubscriptionBtn();
 
 		await this.programService.initWebsocket();
+
+		if(this.settingsService.device === EDisplayDevice.INFO_PANEL) {
+			document.body.className += ' display-info-panel';
+		}
 	}
 
 	private handleSubscriptionBtn(): void {
@@ -63,9 +73,10 @@ export class AppComponent implements OnInit {
 	}
 
 	private handleLanguage(): void {
-		let language = localStorage.getItem('language') ?? this.translate.getBrowserLang() ?? 'cs';
+		let language = localStorage.getItem('language') ?? Intl.DateTimeFormat().resolvedOptions().locale ?? 'en';
+		language = language.split('-')[0];
 		if(!['cs', 'en'].includes(language)) {
-			language = 'cs';
+			language = 'en';
 		}
 
 		this.translate.setDefaultLang(language);

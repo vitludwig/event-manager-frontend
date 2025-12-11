@@ -6,7 +6,12 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ERoute} from '../../../../common/types/ERoute';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {SettingsService} from "../../../../common/services/settings/settings.service";
+import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
+import {environment} from "../../../../../environments/environment";
+import {EFestivalID} from "../../../../common/types/EFestivalID";
+
 @Component({
 	selector: 'app-bottom-menu',
 	templateUrl: './bottom-menu.component.html',
@@ -18,18 +23,24 @@ import {TranslateService} from '@ngx-translate/core';
 		MatIconModule,
 		MatToolbarModule,
 		FormsModule,
-		RouterModule
+		RouterModule,
+		TranslateModule
 	]
 })
 export class BottomMenuComponent {
 	protected readonly ERoute = ERoute;
+	protected readonly settingsService: SettingsService = inject(SettingsService);
 	private readonly translate: TranslateService = inject(TranslateService);
+
+	protected EDisplayDevice = EDisplayDevice;
 
 	protected openFAQ(): void {
 		if(this.translate.currentLang === 'cs') {
-			window.open('https://docs.google.com/document/d/1StVQlwSWorjiQyfoLuckcz8geOw3uurjPaC8ni5jwbQ/edit?usp=sharing', '_blank');
+			window.open(environment.faqUrl_CS, '_blank');
 		} else {
-			window.open('https://docs.google.com/document/d/1UGDLkfL1gM7RnHSdhyqBucoIrqRw9k5MxgfKodPGEAE/edit?usp=sharing', '_blank');
+			window.open(environment.faqUrl_EN, '_blank');
 		}
 	}
+
+	protected readonly environment = environment;
 }

@@ -8,12 +8,11 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {FormsModule} from '@angular/forms';
 import {ProgramService} from '../../../../services/program/program.service';
-import {EEventType} from '../../../../types/EEventType';
 import {IProgramFilterOptions} from '../../types/IProgramFilterOptions';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {FullProgramConfig} from '../../FullProgramConfig';
 import {IEventType} from '../../../../types/IEventType';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {IEventTag} from "../../../../types/IEventTag";
 
 @Component({
 	selector: 'app-list-filter',
@@ -34,9 +33,12 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 	styleUrls: ['./list-filter.component.scss']
 })
 export class ListFilterComponent implements OnInit {
-	protected eventTypes: IEventType[] = Object.values(FullProgramConfig.eventTypes);
+	protected eventTypes: IEventType[] = [];
+	protected tags: IEventTag[] = [];
+
 	protected placeId: string[] | undefined;
-	protected eventType: EEventType[] | undefined;
+	protected selectedEventType: string[] | undefined;
+	protected selectedTags: string[] | undefined;
 	protected onlyFavorite: boolean = false;
 
 	protected translate: TranslateService = inject(TranslateService);
@@ -46,26 +48,33 @@ export class ListFilterComponent implements OnInit {
 
 
 	public ngOnInit(): void {
+		this.eventTypes = this.programService.eventTypes;
+		this.tags = this.programService.tags;
+
 		this.placeId = this.#data.options.placeId ?? undefined;
-		this.eventType = this.#data.options.eventType ?? undefined;
+		this.selectedEventType = this.#data.options.eventType ?? undefined;
+		this.selectedTags = this.#data.options.tags ?? undefined;
 		this.onlyFavorite = this.#data.options.onlyFavorite ?? false;
 	}
 
 	protected applyFilters(): void {
-		this.eventType = this.eventType?.length ? this.eventType : undefined;
+		this.selectedEventType = this.selectedEventType?.length ? this.selectedEventType : undefined;
 		this.placeId = this.placeId?.length ? this.placeId : undefined;
 
 		this.#dialogRef.close({
-			eventType: this.eventType,
+			eventType: this.selectedEventType,
 			placeId: this.placeId,
 			onlyFavorite: this.onlyFavorite,
+			tags: this.selectedTags,
 		});
 	}
 
 	protected resetFilters(): void {
-		this.eventType = undefined;
+		this.selectedEventType = undefined;
 		this.placeId = undefined;
 		this.onlyFavorite = false;
+		this.selectedTags = undefined;
+
 		this.applyFilters();
 	}
 }

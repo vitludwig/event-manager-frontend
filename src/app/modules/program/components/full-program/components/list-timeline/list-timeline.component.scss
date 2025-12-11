@@ -1,30 +1,42 @@
-.list-timeline {
-	display: flex;
+:host {
 	position: sticky;
-	top: 0;
-	background-color: #0f0f0f;
+	display: block;
 	z-index: 100;
-	padding: 0.3rem 0;
+	top: 0;
 
-	&__segment {
-		position: relative;
+	.list-timeline-bg {
+		background-color: #0f0f0f;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		opacity: 0.4;
+		left: -15px;
+	}
 
-		&__border {
-			position: absolute;
-			width: 1px;
-			height: 100vh;
-			background-color: #fecc0030;
+	.list-timeline {
+		display: flex;
+		padding: 0.3rem 0;
 
-			&--now {
+		&__segment {
+			position: relative;
+
+			&__border {
 				position: absolute;
 				width: 1px;
 				height: 100vh;
-				background-color: #fecc00;
-			}
-		}
+				background-color: #fecc0030;
 
-		&__time {
-			padding: 0 10px;
+				&--now {
+					position: absolute;
+					width: 1px;
+					height: 100vh;
+					background-color: #fecc00;
+				}
+			}
+
+			&__time {
+				padding: 0 10px;
+			}
 		}
 	}
 }

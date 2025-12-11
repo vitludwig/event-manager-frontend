@@ -1,50 +1,46 @@
-import {Component, OnInit} from '@angular/core';
-import {CommonModule, Location, NgOptimizedImage} from '@angular/common';
-import {MatDialogModule} from '@angular/material/dialog';
-import {IProgramPlace} from '../../types/IProgramPlace';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
 import {ProgramService} from '../../services/program/program.service';
-import {firstValueFrom,} from 'rxjs';
-import {ActivatedRoute} from '@angular/router';
 import {IEvent} from '../../types/IEvent';
-import {FullProgramConfig} from '../full-program/FullProgramConfig';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
+import {EventTagsComponent} from "../event-tags/event-tags.component";
 
 @Component({
 	selector: 'app-event-detail-full',
 	standalone: true,
-	imports: [
-		CommonModule,
-		MatDialogModule,
-		MatButtonModule,
-		MatIconModule,
-		MatDividerModule,
-		NgOptimizedImage,
-		TranslateModule,
-		TranslateEventPropertyPipe,
-	],
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatDividerModule,
+        TranslateModule,
+        TranslateEventPropertyPipe,
+        EventTagsComponent,
+    ],
 	templateUrl: './event-detail-full.component.html',
 	styleUrls: ['./event-detail-full.component.scss']
 })
 export class EventDetailFullComponent implements OnInit {
+	protected readonly programService: ProgramService = inject(ProgramService);
+	protected readonly translate: TranslateService = inject(TranslateService);
+	protected data: { event: IProgramEvent; place: IProgramPlace } = inject(MAT_DIALOG_DATA);
+
 	protected place: IProgramPlace | undefined;
 	protected event: IEvent | undefined;
 	protected loading: boolean = false;
-	protected readonly fullProgramConfig = FullProgramConfig;
-
-	constructor(
-		protected programService: ProgramService,
-		private route: ActivatedRoute,
-		private location: Location,
-	) {}
 
 	public async ngOnInit(): Promise<void> {
 		try {
 			this.loading = true;
-			await this.loadData();
+			this.event = this.data.event;
+			this.place = this.data.place;
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -59,18 +55,4 @@ export class EventDetailFullComponent implements OnInit {
 		}
 	}
 
-	protected navigateBack(): void {
-		this.location.back();
-	}
-
-	private async loadData(): Promise<void> {
-		const eventId = this.route.snapshot.paramMap.get('id');
-		if(eventId) {
-			this.event = await firstValueFrom(this.programService.getEventById(eventId));
-
-			if(this.event) {
-				this.place = await firstValueFrom(this.programService.getPlaceById(this.event.placeId));
-			}
-		}
-	}
 }

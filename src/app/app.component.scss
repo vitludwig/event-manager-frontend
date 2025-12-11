@@ -6,6 +6,10 @@
 	.main-content {
 		height: 100%;
 	}
+
+	&.revert-items {
+		flex-direction: column-reverse;
+	}
 }
 
 .mat-drawer-container {

@@ -1,17 +1,13 @@
-import {
-	Component, ElementRef, inject, OnDestroy,
-	OnInit, Renderer2, ViewChild
-} from '@angular/core';
+import {Component, ElementRef, inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
 import * as dayjs from 'dayjs';
+import {Dayjs} from 'dayjs';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
-import {Dayjs} from 'dayjs';
 import {IProgramSegment} from './types/IProgramSegment';
 import {FullProgramConfig} from './FullProgramConfig';
-import {ListEventComponent} from './components/list-event/list-event.component';
 import {EventDetailPreviewComponent} from './components/event-detail-preview/event-detail-preview.component';
 import {ListTimelineComponent} from './components/list-timeline/list-timeline.component';
 import {ListPlaceComponent} from './components/list-place/list-place.component';
@@ -33,6 +29,12 @@ import {ExportFavoritesComponent} from '../export-favorites/export-favorites.com
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
 import {UserInfoComponent} from '../../../../common/components/user-info/user-info.component';
+import {SettingsService} from "../../../../common/services/settings/settings.service";
+import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
+import ProgramConfig from "../../config/ProgramConfig";
+import {environment} from "../../../../../environments/environment";
+import {EFestivalID} from "../../../../common/types/EFestivalID";
+import {MatBadge} from "@angular/material/badge";
 
 
 @Component({
@@ -41,8 +43,6 @@ import {UserInfoComponent} from '../../../../common/components/user-info/user-in
 	imports: [
 		CommonModule,
 		MatTabsModule,
-		ListEventComponent,
-		EventDetailPreviewComponent,
 		ListTimelineComponent,
 		ListPlaceComponent,
 		ListDaySelectComponent,
@@ -55,6 +55,7 @@ import {UserInfoComponent} from '../../../../common/components/user-info/user-in
 		LanguageMenuComponent,
 		MatMenuModule,
 		UserInfoComponent,
+		MatBadge,
 	],
 	templateUrl: './full-program.component.html',
 	styleUrls: ['./full-program.component.scss']
@@ -94,7 +95,9 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	protected readonly FullProgramConfig = FullProgramConfig;
+	protected readonly EDisplayDevice = EDisplayDevice;
+	protected readonly environment = environment;
+	protected readonly EFestivalID = EFestivalID;
 
 	#firstEventAt: Dayjs;
 	#selectedDay?: number;
@@ -104,21 +107,24 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
+	protected readonly settingsService: SettingsService = inject(SettingsService);
 
 	public ngOnInit(): void {
 		this.loadPlaces();
 		this.loadEvents();
 
-		this.selectedDay = this.programService.selectedDay ?? this.findToday(this.days)?.id ?? 0;
+		this.selectedDay = this.programService.selectedDay ?? this.findToday(this.days)?.id ?? this.days[0].id;
 	}
 
 	public ngOnDestroy(): void {
 		this.#unsubscribe.next();
 	}
 
-	protected showEventDetail(event: IProgramEvent): void {
+	protected showEventDetail(event: IProgramEvent, place: IProgramPlace): void {
 		this.bottomSheet.open(EventDetailPreviewComponent, {
-			data: {event: event},
+			data: {
+				event, place
+			},
 			panelClass: 'mat-bottom-sheet-fullwidth',
 		});
 		this.selectedEvent = event;
@@ -183,6 +189,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		this.programService.filterEvents({
 			eventType: options.eventType,
 			onlyFavorite: options.onlyFavorite,
+			tags: options.tags,
 		});
 	}
 
@@ -335,7 +342,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		return events.filter((event) => {
 			const eventStart = dayjs(event.start);
 			const nextDay = dayjs(day).add(1, 'day');
-			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= 6);
+			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
 			return (dayjs(event.start).isSame(day, 'day') && eventStart.get('hour') > 6) || addEarlyNextDayEvent;
 		});
 	}

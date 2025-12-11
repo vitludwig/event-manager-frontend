@@ -11,17 +11,19 @@
 .event-detail {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
 	min-height: 100%;
+
+	&__content--wrapper {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+	}
 
 	mat-dialog-content {
 		display: flex;
 		flex-direction: column;
 	}
 	&__close {
-		position: absolute;
-		top: 0;
-		left: 0;
 		z-index: 100;
 		color: white;
 	}
@@ -61,6 +63,7 @@
 		padding: 15px;
 		display: flex;
 		justify-content: flex-end;
+		margin: 20px;
 
 		.favorite-button {
 			transform: scale(1.5);
