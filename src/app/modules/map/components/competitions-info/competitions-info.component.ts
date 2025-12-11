@@ -18,7 +18,7 @@ export class CompetitionsInfoComponent {
 	protected competitionsInfo$;
 
 	constructor() {
-		this.competitionsInfo$ = this.http.get<any[]>('/assets/competitions-info.json');
+		this.competitionsInfo$ = this.http.get<any[]>('/public/competitions-info.json');
 	}
 
 }

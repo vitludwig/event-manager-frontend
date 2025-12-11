@@ -1,8 +1,10 @@
 <div class="full-program">
 	<div class="toolbar-wrapper">
 		<mat-toolbar class="full-program__toolbar">
-<!--			<h3 class="font-3rdman program-heading">{{'Program' | translate}}</h3>-->
-            <img src="/assets/images/roztoc-logo-light.png" alt="Logo">
+            <object data="/public/themes/logo.png" type="image/png" class="program-logo">
+                <h3 class="program-heading">{{'Program' | translate}}</h3>
+            </object>
+
 			<div class="full-program__toolbar__actions">
                 @if(settingsService.device !== EDisplayDevice.INFO_PANEL) {
                     @if(environment.festivalId === EFestivalID.RUSTHAVEN) {

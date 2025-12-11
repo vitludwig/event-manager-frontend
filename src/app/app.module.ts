@@ -10,7 +10,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {BottomMenuComponent} from './modules/layout/components/bottom-menu/bottom-menu.component';
 import {HttpClient, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {appInitializerFactory} from './app-initializer.factory';
-import {ProgramService} from './modules/program/services/program/program.service';
 import {
     TranslateModule,
     TranslateLoader,
@@ -18,6 +17,7 @@ import {
     MissingTranslationHandler
 } from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {InitService} from "./common/services/init/init.service";
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http);
@@ -57,7 +57,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
         }),
     ],
     providers: [
-        {provide: APP_INITIALIZER, useFactory: appInitializerFactory, deps: [ProgramService], multi: true},
+        {provide: APP_INITIALIZER, useFactory: appInitializerFactory, deps: [InitService], multi: true},
         provideHttpClient(withInterceptorsFromDi()),
     ]
 })

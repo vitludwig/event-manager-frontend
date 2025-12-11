@@ -1,5 +1,5 @@
-import {ProgramService} from './modules/program/services/program/program.service';
+import {InitService} from "./common/services/init/init.service";
 
-export function appInitializerFactory(programService: ProgramService): () => Promise<void> {
-	return () => programService.loadCachedData();
+export function appInitializerFactory(initService: InitService): () => Promise<void> {
+	return () => initService.init();
 }
