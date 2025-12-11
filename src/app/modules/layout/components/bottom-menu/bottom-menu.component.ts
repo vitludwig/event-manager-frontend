@@ -43,4 +43,5 @@ export class BottomMenuComponent {
 	}
 
 	protected readonly environment = environment;
+	protected readonly EFestivalID = EFestivalID;
 }

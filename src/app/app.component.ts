@@ -7,6 +7,7 @@ import {NavigationEnd, Router} from '@angular/router';
 import {ERoute} from './common/types/ERoute';
 import {ELocalNotificationAction} from "./modules/notifications/types/ILocalNotificationPayload";
 import { SettingsService } from "./common/services/settings/settings.service";
+import {EDisplayDevice} from "./common/types/EDisplayDevice";
 
 @Component({
 	selector: 'app-root',
