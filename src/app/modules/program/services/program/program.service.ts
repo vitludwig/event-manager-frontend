@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
 import {IEvent} from '../../types/IEvent';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
 import {EventService} from '../event/event.service';
@@ -41,7 +41,11 @@ export class ProgramService {
 
 
 	public get showEventDetails(): boolean {
-		return localStorage.getItem('showEventDetails') === 'true' ?? this.#showEventDetails;
+        const showDetails = localStorage.getItem('showEventDetails');
+        if(showDetails == null) {
+            return this.#showEventDetails;
+        }
+		return localStorage.getItem('showEventDetails') === 'true';
 	}
 
 	public set showEventDetails(value: boolean) {

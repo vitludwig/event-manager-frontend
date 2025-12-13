@@ -1,15 +1,14 @@
 import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {IProgramSegment} from '../../types/IProgramSegment';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 @Component({
-	selector: 'app-list-timeline',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './list-timeline.component.html',
-	styleUrls: ['./list-timeline.component.scss']
+    selector: 'app-list-timeline',
+    imports: [],
+    templateUrl: './list-timeline.component.html',
+    styleUrls: ['./list-timeline.component.scss']
 })
 export class ListTimelineComponent implements AfterViewInit {
 	@Input()

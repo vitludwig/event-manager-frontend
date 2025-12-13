@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {UserService} from '../../services/user/user.service';
 import {MatDialog} from '@angular/material/dialog';
 import {UserInfoDetailComponent} from './components/user-info-detail/user-info-detail.component';
@@ -10,11 +10,10 @@ import {IUserInfo} from './types/IUserInfo';
 import {IUserInfoTerminal} from './types/IUserInfoTerminal';
 
 @Component({
-	selector: 'app-user-info',
-	standalone: true,
-	imports: [CommonModule, MatButtonModule, MatIconModule],
-	templateUrl: './user-info.component.html',
-	styleUrls: ['./user-info.component.scss']
+    selector: 'app-user-info',
+    imports: [MatButtonModule, MatIconModule],
+    templateUrl: './user-info.component.html',
+    styleUrls: ['./user-info.component.scss']
 })
 export class UserInfoComponent implements OnInit {
 	protected userInfo: IUserInfo;

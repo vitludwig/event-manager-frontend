@@ -4,7 +4,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {ProgramService} from '../../services/program/program.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {IEvent} from '../../types/IEvent';
 import {MatIconModule} from '@angular/material/icon';
 import {Subject, takeUntil} from 'rxjs';
@@ -15,19 +15,18 @@ import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/t
 import {EventDetailFullComponent} from "../event-detail-full/event-detail-full.component";
 
 @Component({
-	selector: 'app-program-vertical-list',
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatListModule,
-		MatButtonModule,
-		MatIconModule,
-		MatRippleModule,
-		TranslateModule,
-		TranslateEventPropertyPipe,
-	],
-	templateUrl: './program-vertical-list.component.html',
-	styleUrls: ['./program-vertical-list.component.scss']
+    selector: 'app-program-vertical-list',
+    imports: [
+        CommonModule,
+        MatListModule,
+        MatButtonModule,
+        MatIconModule,
+        MatRippleModule,
+        TranslateModule,
+        TranslateEventPropertyPipe,
+    ],
+    templateUrl: './program-vertical-list.component.html',
+    styleUrls: ['./program-vertical-list.component.scss']
 })
 export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 	@Input()

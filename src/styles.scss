@@ -29,8 +29,8 @@
 //	@include mat.typography-hierarchy(roztoc-theme-light.$light-theme);
 //}
 
-@import "app/styles/overides";
-@import "app/styles/utilities";
+@use "app/styles/overides";
+@use "app/styles/utilities";
 
 
 

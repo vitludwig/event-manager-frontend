@@ -1,66 +1,66 @@
 <div class="full-program">
-	<div class="toolbar-wrapper">
-		<mat-toolbar class="full-program__toolbar">
-            <object data="/public/themes/logo.png" type="image/png" class="program-logo">
-                <h3 class="program-heading">{{'Program' | translate}}</h3>
-            </object>
+  <div class="toolbar-wrapper">
+    <mat-toolbar class="full-program__toolbar">
+      <object data="/public/themes/logo.png" type="image/png" class="program-logo">
+        <h3 class="program-heading">{{'Program' | translate}}</h3>
+      </object>
 
-			<div class="full-program__toolbar__actions">
-                @if(settingsService.device !== EDisplayDevice.INFO_PANEL) {
-                    @if(environment.festivalId === EFestivalID.RUSTHAVEN) {
-                        <app-user-info></app-user-info>
-                    }
+      <div class="full-program__toolbar__actions">
+        @if(settingsService.device !== EDisplayDevice.INFO_PANEL) {
+          @if(environment.festivalId === EFestivalID.RUSTHAVEN) {
+            <app-user-info></app-user-info>
+          }
 
-                    <button mat-icon-button
-                        aria-label="Filter events"
-                        (click)="showFilters()"
-                        [matBadge]="programService.activeFiltersCount === 0 ? null : programService.activeFiltersCount">
-                        <mat-icon>filter_list</mat-icon>
-                    </button>
+          <button mat-icon-button
+            aria-label="Filter events"
+            (click)="showFilters()"
+            [matBadge]="programService.activeFiltersCount === 0 ? null : programService.activeFiltersCount">
+            <mat-icon>filter_list</mat-icon>
+          </button>
 
-                    <button mat-icon-button
-                        aria-label="Search events"
-                        (click)="showEventList()">
-                        <mat-icon>search</mat-icon>
-                    </button>
-                }
-				<button mat-icon-button
-					(click)="toggleSecondaryToolbar()"
-					aria-label="More actions">
-					<mat-icon>more_vert</mat-icon>
-				</button>
-			</div>
-		</mat-toolbar>
+          <button mat-icon-button
+            aria-label="Search events"
+            (click)="showEventList()">
+            <mat-icon>search</mat-icon>
+          </button>
+        }
+        <button mat-icon-button
+          (click)="toggleSecondaryToolbar()"
+          aria-label="More actions">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+    </mat-toolbar>
 
-		<div #secondaryToolbar class="full-program__secondary-toolbar">
-			<mat-toolbar>
-				<button mat-icon-button (click)="refreshApp()">
-					<mat-icon>refresh</mat-icon>
-				</button>
-				<div class="full-program__secondary-toolbar__actions">
-					<app-language-menu></app-language-menu>
+    <div #secondaryToolbar class="full-program__secondary-toolbar">
+      <mat-toolbar>
+        <button mat-icon-button (click)="refreshApp()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <div class="full-program__secondary-toolbar__actions">
+          <app-language-menu></app-language-menu>
 
-<!--					<button mat-icon-button-->
-<!--						aria-label="Filter events"-->
-<!--						(click)="exportFavorites()">-->
-<!--						<mat-icon>import_export</mat-icon>-->
-<!--					</button>-->
+          <!--					<button mat-icon-button-->
+          <!--						aria-label="Filter events"-->
+          <!--						(click)="exportFavorites()">-->
+          <!--						<mat-icon>import_export</mat-icon>-->
+        <!--					</button>-->
 
-<!--					<button mat-icon-button-->
-<!--						aria-label="Filter events"-->
-<!--						(click)="toggleEventDetails()">-->
-<!--						<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>-->
-<!--					</button>-->
+        <!--					<button mat-icon-button-->
+        <!--						aria-label="Filter events"-->
+        <!--						(click)="toggleEventDetails()">-->
+        <!--						<mat-icon>{{ programService.showEventDetails ? 'info' : 'info_outline' }}</mat-icon>-->
+      <!--					</button>-->
 
-				</div>
-			</mat-toolbar>
-		</div>
-	</div>
+    </div>
+  </mat-toolbar>
+</div>
+</div>
 
-	<app-list-day-select [days]="days"
-		[selectedDay]="selectedDay"
-		(selectedDayChange)="selectedDay = $event">
-	</app-list-day-select>
+<app-list-day-select [days]="days"
+  [selectedDay]="selectedDay"
+  (selectedDayChange)="selectedDay = $event">
+</app-list-day-select>
 <!--	<div class="feedback-container">-->
 <!--		<a mat-raised-button-->
 <!--			color="primary"-->
@@ -71,43 +71,42 @@
 <!--			Ohodnoť aplikaci!-->
 <!--		</a>-->
 <!--	</div>-->
-	<div class="full-program__list" #programList>
-<!--		 THIS WAR REMOVED DUE TO BAD SCROLLING ON EVENT ENDING AT NEXT DAY [style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"-->
-		<div class="list-horizontal"
-			*ngIf="allSegments.length > 0; else noEvents"
-		>
-			<app-list-timeline
-				[segments]="allSegments"
-				[parentContainer]="programList"
-			></app-list-timeline>
+<div class="full-program__list" #programList>
+  <!--		 THIS WAR REMOVED DUE TO BAD SCROLLING ON EVENT ENDING AT NEXT DAY [style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"-->
+  @if (allSegments.length > 0) {
+    <div class="list-horizontal"
+      >
+      <app-list-timeline
+        [segments]="allSegments"
+        [parentContainer]="programList"
+      ></app-list-timeline>
+      <div class="list-events">
+        @for (place of places; track place) {
+          <div class="list-events__place"
+            >
+            <app-list-place [place]="place"
+              [events]="eventsByPlaces[place.id]"
+              [segments]="allSegments"
+              (placeSelect)="showEventDetail($event, place)"
+              >
+            </app-list-place>
+          </div>
+        }
+      </div>
+      <button mat-mini-fab
+        color="primary"
+        class="full-program__list__scroll-to-now"
+        (click)="scrollToNow()"
+        >
+        <mat-icon>gps_fixed</mat-icon>
+      </button>
+    </div>
+  } @else {
+    <div class="full-program__no-events">
+      <h3>{{'Dnes tu není žádná akce' | translate}}</h3>
+      <h5>{{'Zkontrolujte nastavení filtrů' | translate}}</h5>
+    </div>
+  }
+</div>
 
-			<div class="list-events">
-				<div class="list-events__place"
-					*ngFor="let place of places"
-				>
-					<app-list-place [place]="place"
-						[events]="eventsByPlaces[place.id]"
-						[segments]="allSegments"
-						(placeSelect)="showEventDetail($event, place)"
-					>
-					</app-list-place>
-				</div>
-			</div>
-
-			<button mat-mini-fab
-				color="primary"
-				class="full-program__list__scroll-to-now"
-				(click)="scrollToNow()"
-			>
-				<mat-icon>gps_fixed</mat-icon>
-			</button>
-		</div>
-	</div>
-
-	<ng-template #noEvents>
-		<div class="full-program__no-events">
-			<h3>{{'Dnes tu není žádná akce' | translate}}</h3>
-			<h5>{{'Zkontrolujte nastavení filtrů' | translate}}</h5>
-		</div>
-	</ng-template>
 </div>

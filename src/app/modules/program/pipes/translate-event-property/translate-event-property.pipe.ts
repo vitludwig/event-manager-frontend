@@ -1,8 +1,6 @@
 import {inject, Pipe, PipeTransform} from '@angular/core';
 import {IEvent} from '../../types/IEvent';
 import {TranslateService} from '@ngx-translate/core';
-import {IProgramPlace} from '../../types/IProgramPlace';
-import * as dayjs from 'dayjs';
 
 @Pipe({
 	name: 'translateEventProperty',

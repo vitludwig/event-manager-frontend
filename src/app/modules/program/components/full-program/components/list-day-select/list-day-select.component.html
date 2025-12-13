@@ -1,15 +1,17 @@
 <mat-button-toggle-group class="day-toggle w-100"
-	hideSingleSelectionIndicator
->
-	<mat-button-toggle *ngFor="let day of days"
-		[value]="day.id"
-		(click)="setDay(day.id)"
-		[class.active]="day.id === selectedDay"
-        [checked]="day.id === selectedDay"
-		class="day-toggle__item flex-grow-1"
-	>
-		<div class="day-toggle__item__wrapper">
-			{{ day.name | translate }}
-		</div>
-	</mat-button-toggle>
+  hideSingleSelectionIndicator
+  >
+  @for (day of days; track day) {
+    <mat-button-toggle
+      [value]="day.id"
+      (click)="setDay(day.id)"
+      [class.active]="day.id === selectedDay"
+      [checked]="day.id === selectedDay"
+      class="day-toggle__item flex-grow-1"
+      >
+      <div class="day-toggle__item__wrapper">
+        {{ day.name | translate }}
+      </div>
+    </mat-button-toggle>
+  }
 </mat-button-toggle-group>

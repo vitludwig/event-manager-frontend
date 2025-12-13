@@ -12,11 +12,10 @@ import {IUserInfo} from '../../types/IUserInfo';
 import {UserService} from '../../../../services/user/user.service';
 
 @Component({
-	selector: 'app-user-info-detail',
-	standalone: true,
-	imports: [CommonModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatSlideToggleModule, TranslateModule, MatListModule],
-	templateUrl: './user-info-detail.component.html',
-	styleUrls: ['./user-info-detail.component.scss']
+    selector: 'app-user-info-detail',
+    imports: [CommonModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatSlideToggleModule, TranslateModule, MatListModule],
+    templateUrl: './user-info-detail.component.html',
+    styleUrls: ['./user-info-detail.component.scss']
 })
 export class UserInfoDetailComponent {
 	@Output()

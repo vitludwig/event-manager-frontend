@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {NotificationService} from './modules/notifications/services/notification/notification.service';
 import {ProgramService} from './modules/program/services/program/program.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {NavigationEnd, Router} from '@angular/router';
 import {ERoute} from './common/types/ERoute';
 import {ELocalNotificationAction} from "./modules/notifications/types/ILocalNotificationPayload";
@@ -10,9 +10,10 @@ import { SettingsService } from "./common/services/settings/settings.service";
 import {EDisplayDevice} from "./common/types/EDisplayDevice";
 
 @Component({
-	selector: 'app-root',
-	templateUrl: './app.component.html',
-	styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
 

@@ -1,24 +1,26 @@
 .place {
-	&__title {
-		padding: 10px;
+  margin-bottom: 15px;
 
-		&__text {
-			position: sticky;
-			left: 15px;
-			border: 1px solid transparent;
-			border-radius: 13px;
-			padding: 5px 10px;
-			background-color: #b08d00;
-		}
-	}
+  &__title {
+    padding: 10px;
 
-	&__segment-list {
-		display: flex;
-		flex-direction: row;
+    &__text {
+      position: sticky;
+      left: 15px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      padding: 5px 10px;
+      background-color: #b08d00;
+    }
+  }
 
-		.place__segment {
-			position: relative;
-			height: 65px;
-		}
-	}
+  &__segment-list {
+    display: flex;
+    flex-direction: row;
+
+    .place__segment {
+      position: relative;
+      height: 65px;
+    }
+  }
 }

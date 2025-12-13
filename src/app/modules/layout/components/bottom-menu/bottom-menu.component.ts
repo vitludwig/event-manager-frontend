@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -13,19 +13,17 @@ import {environment} from "../../../../../environments/environment";
 import {EFestivalID} from "../../../../common/types/EFestivalID";
 
 @Component({
-	selector: 'app-bottom-menu',
-	templateUrl: './bottom-menu.component.html',
-	styleUrls: ['./bottom-menu.component.scss'],
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatButtonModule,
-		MatIconModule,
-		MatToolbarModule,
-		FormsModule,
-		RouterModule,
-		TranslateModule
-	]
+    selector: 'app-bottom-menu',
+    templateUrl: './bottom-menu.component.html',
+    styleUrls: ['./bottom-menu.component.scss'],
+    imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule
+]
 })
 export class BottomMenuComponent {
 	protected readonly ERoute = ERoute;

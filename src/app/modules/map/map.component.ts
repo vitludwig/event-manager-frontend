@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule } from '@ngx-translate/core';
 import { TribesInfoComponent } from './components/tribes-info/tribes-info.component';
@@ -8,11 +8,10 @@ import { environment } from "../../../environments/environment";
 import { MapService, IMapImage } from "./services/map.service";
 
 @Component({
-	selector: 'app-map',
-	standalone: true,
-	imports: [CommonModule, MatTabsModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent],
-	templateUrl: './map.component.html',
-	styleUrls: ['./map.component.scss']
+    selector: 'app-map',
+    imports: [MatTabsModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent],
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
 	protected readonly environment = environment;

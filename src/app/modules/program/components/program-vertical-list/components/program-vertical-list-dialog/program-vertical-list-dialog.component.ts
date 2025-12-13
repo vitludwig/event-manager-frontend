@@ -1,5 +1,4 @@
-import {Component, inject, Inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, inject, OnInit} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import {MatDividerModule} from '@angular/material/divider';
@@ -15,22 +14,20 @@ import {ProgramService} from '../../../../services/program/program.service';
 import {Utils} from '../../../../../../common/utils/Utils';
 
 @Component({
-	selector: 'app-program-vertical-list-dialog',
-	standalone: true,
-	imports: [
-		CommonModule,
-		FormsModule,
-		MatButtonModule,
-		MatDialogModule,
-		MatDividerModule,
-		MatIconModule,
-		MatInputModule,
-		ProgramVerticalListComponent,
-		TranslateModule,
-		MatSlideToggleModule
-	],
-	templateUrl: './program-vertical-list-dialog.component.html',
-	styleUrls: ['./program-vertical-list-dialog.component.scss']
+    selector: 'app-program-vertical-list-dialog',
+    imports: [
+    FormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatIconModule,
+    MatInputModule,
+    ProgramVerticalListComponent,
+    TranslateModule,
+    MatSlideToggleModule
+],
+    templateUrl: './program-vertical-list-dialog.component.html',
+    styleUrls: ['./program-vertical-list-dialog.component.scss']
 })
 export class ProgramVerticalListDialogComponent implements OnInit {
 	protected search: string = '';

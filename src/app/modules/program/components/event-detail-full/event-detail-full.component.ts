@@ -12,8 +12,7 @@ import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/t
 import {EventTagsComponent} from "../event-tags/event-tags.component";
 
 @Component({
-	selector: 'app-event-detail-full',
-	standalone: true,
+    selector: 'app-event-detail-full',
     imports: [
         CommonModule,
         MatDialogModule,
@@ -24,8 +23,8 @@ import {EventTagsComponent} from "../event-tags/event-tags.component";
         TranslateEventPropertyPipe,
         EventTagsComponent,
     ],
-	templateUrl: './event-detail-full.component.html',
-	styleUrls: ['./event-detail-full.component.scss']
+    templateUrl: './event-detail-full.component.html',
+    styleUrls: ['./event-detail-full.component.scss']
 })
 export class EventDetailFullComponent implements OnInit {
 	protected readonly programService: ProgramService = inject(ProgramService);

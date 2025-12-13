@@ -1,8 +1,8 @@
 import {Component, ElementRef, inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {Dayjs} from 'dayjs';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -38,27 +38,25 @@ import {MatBadge} from "@angular/material/badge";
 
 
 @Component({
-	selector: 'app-full-program',
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatTabsModule,
-		ListTimelineComponent,
-		ListPlaceComponent,
-		ListDaySelectComponent,
-		MatBottomSheetModule,
-		MatToolbarModule,
-		MatButtonModule,
-		MatIconModule,
-		MatDialogModule,
-		TranslateModule,
-		LanguageMenuComponent,
-		MatMenuModule,
-		UserInfoComponent,
-		MatBadge,
-	],
-	templateUrl: './full-program.component.html',
-	styleUrls: ['./full-program.component.scss']
+    selector: 'app-full-program',
+    imports: [
+    MatTabsModule,
+    ListTimelineComponent,
+    ListPlaceComponent,
+    ListDaySelectComponent,
+    MatBottomSheetModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    TranslateModule,
+    LanguageMenuComponent,
+    MatMenuModule,
+    UserInfoComponent,
+    MatBadge
+],
+    templateUrl: './full-program.component.html',
+    styleUrls: ['./full-program.component.scss']
 })
 export class FullProgramComponent implements OnInit, OnDestroy {
 	@ViewChild('secondaryToolbar')

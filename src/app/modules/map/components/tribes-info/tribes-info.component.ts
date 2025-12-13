@@ -5,16 +5,15 @@ import {HttpClient} from "@angular/common/http";
 import {AsyncPipe} from "@angular/common";
 
 @Component({
-  selector: 'app-tribes-info',
-  standalone: true,
-	imports: [
-		TranslateModule,
-		MatAccordion,
-		MatExpansionModule,
-		AsyncPipe,
-	],
-  templateUrl: './tribes-info.component.html',
-  styleUrl: './tribes-info.component.scss'
+    selector: 'app-tribes-info',
+    imports: [
+        TranslateModule,
+        MatAccordion,
+        MatExpansionModule,
+        AsyncPipe,
+    ],
+    templateUrl: './tribes-info.component.html',
+    styleUrl: './tribes-info.component.scss'
 })
 export class TribesInfoComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);

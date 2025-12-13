@@ -1,5 +1,5 @@
 .bottom-menu {
-	border-top: 1px solid var(--mat-standard-button-toggle-selected-state-background-color);
+	border-top: 1px solid var(--mat-button-toggle-selected-state-background-color);
 	padding: 0;
 
 	&__content {
@@ -16,7 +16,7 @@
 		border-radius: 0;
 
 		&--active {
-			background-color: var(--mat-standard-button-toggle-selected-state-background-color) !important;
+			background-color: var(--mat-button-toggle-selected-state-background-color) !important;
 		}
 
 		mat-icon {

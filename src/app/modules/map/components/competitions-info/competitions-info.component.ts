@@ -5,11 +5,10 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {HttpClient} from "@angular/common/http";
 
 @Component({
-	selector: 'app-competitions-info',
-	standalone: true,
-	imports: [CommonModule, MatListModule, TranslateModule],
-	templateUrl: './competitions-info.component.html',
-	styleUrls: ['./competitions-info.component.scss']
+    selector: 'app-competitions-info',
+    imports: [CommonModule, MatListModule, TranslateModule],
+    templateUrl: './competitions-info.component.html',
+    styleUrls: ['./competitions-info.component.scss']
 })
 export class CompetitionsInfoComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);

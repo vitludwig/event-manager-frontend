@@ -1,16 +1,15 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {ListEventComponent} from '../list-event/list-event.component';
 import {IProgramEvent, IProgramPlace} from '../../../../types/IProgramPlace';
 import {IProgramSegment} from '../../types/IProgramSegment';
 
 @Component({
-	selector: 'app-list-place',
-	standalone: true,
-	imports: [CommonModule, ListEventComponent],
-	templateUrl: './list-place.component.html',
-	styleUrls: ['./list-place.component.scss']
+    selector: 'app-list-place',
+    imports: [ListEventComponent],
+    templateUrl: './list-place.component.html',
+    styleUrls: ['./list-place.component.scss']
 })
 export class ListPlaceComponent {
 	@Input()
