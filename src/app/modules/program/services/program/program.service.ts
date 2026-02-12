@@ -287,11 +287,15 @@ export class ProgramService {
 	}
 
 	private async checkCacheValidity(): Promise<void> {
-		const appEventIdStored = localStorage.getItem('appEventId');
-		const appEventId = await this.getAppEventId();
-		if(appEventIdStored !== appEventId) {
+		try {
+			const appEventIdStored = localStorage.getItem('appEventId');
+			const appEventId = await this.getAppEventId();
+			if (appEventIdStored !== appEventId) {
+				localStorage.clear();
+				localStorage.setItem('appEventId', appEventId);
+			}
+		} catch(e) {
 			localStorage.clear();
-			localStorage.setItem('appEventId', appEventId);
 		}
 	}
 
