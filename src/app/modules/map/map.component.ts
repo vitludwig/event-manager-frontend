@@ -31,11 +31,11 @@ export class MapComponent {
     });
 
     protected readonly competitionsInfo = rxResource({
-        stream: () => this.http.get<any[]>('/public/competitions-info.json'),
+        stream: () => this.http.get<any[]>(`${environment.signalrUrl}/public/competitions-info.json`),
     });
 
     protected readonly tribesInfo = rxResource({
-        stream: () => this.http.get<any[]>('/public/tribe-info.json'),
+        stream: () => this.http.get<any[]>(`${environment.signalrUrl}/public/tribe-info.json`),
     });
 
     private getMapContent(maps: IMapImage[], name: string): string | undefined {

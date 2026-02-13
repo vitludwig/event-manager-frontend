@@ -302,6 +302,6 @@ export class ProgramService {
 	 * @private
 	 */
 	private getAppEventId(): Promise<string> {
-		return firstValueFrom(this.http.get<string>('/public/appEventId.txt', { responseType: 'text' as 'json'}));
+		return firstValueFrom(this.http.get<string>(`${environment.signalrUrl}/public/appEventId.txt`, { responseType: 'text' as 'json'}));
 	}
 }
