@@ -1,23 +1,33 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {signal} from '@angular/core';
+import {RouterTestingModule} from '@angular/router/testing';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { BottomMenuComponent } from './bottom-menu.component';
+import {BottomMenuComponent} from './bottom-menu.component';
+import {SettingsService} from '../../../../common/services/settings/settings.service';
+import {EDisplayDevice} from '../../../../common/types/EDisplayDevice';
 
-describe('TopMenuComponent', () => {
-  let component: BottomMenuComponent;
-  let fixture: ComponentFixture<BottomMenuComponent>;
+describe('BottomMenuComponent', () => {
+	let component: BottomMenuComponent;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BottomMenuComponent ]
-    })
-    .compileComponents();
+	const mockSettingsService = {
+		device: signal(EDisplayDevice.BASIC),
+	};
 
-    fixture = TestBed.createComponent(BottomMenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			imports: [BottomMenuComponent, RouterTestingModule, TranslateModule.forRoot()],
+			providers: [
+				{provide: SettingsService, useValue: mockSettingsService},
+			],
+		});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+		const fixture = TestBed.createComponent(BottomMenuComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
+
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

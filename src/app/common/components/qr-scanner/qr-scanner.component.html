@@ -11,7 +11,7 @@
   ></zxing-scanner>
 </div>
 
-@if(cameraNotFound) {
+@if(cameraNotFound()) {
   <h5>{{ 'Nejde načíst kameru' | translate }}</h5>
 } @else {
   <mat-form-field class="w-100">

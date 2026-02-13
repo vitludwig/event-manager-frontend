@@ -14,10 +14,8 @@
       class="event-list-dialog__header__search-input">
       <input matInput
         [placeholder]="'Vyhledat' | translate"
-        #searchInput
-        [(ngModel)]="search"
-        (ngModelChange)="searchEvents(searchInput.value)"
-
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
         >
         <mat-icon matPrefix
           class="my-icon">search
@@ -26,15 +24,15 @@
 
       <button mat-icon-button
         (click)="toggleFavorite()">
-        <mat-icon>{{ onlyFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+        <mat-icon>{{ onlyFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
       </button>
 
     </div>
 
     <div class="event-list-dialog__content">
-      <app-program-vertical-list [events]="filteredEvents"></app-program-vertical-list>
+      <app-program-vertical-list [events]="filteredEvents()"></app-program-vertical-list>
 
-      @if (filteredEvents.length === 0) {
+      @if (filteredEvents().length === 0) {
         <div class="event-list-dialog__content__no-events">
           <h2>{{'Dnes tu není žádná akce' | translate}}</h2>
           <h4>{{'Zkontrolujte nastavení filtrů' | translate}}</h4>
@@ -42,5 +40,3 @@
       }
     </div>
   </div>
-
-

@@ -1,7 +1,7 @@
 <div style="position: relative">
   <div class="list-timeline-bg"></div>
   <div class="list-timeline">
-    @for (segment of segments; track segment; let isFirst = $first) {
+    @for (segment of segments(); track segment; let isFirst = $first) {
       <div class="list-timeline__segment"
         [style.width]="FullProgramConfig.segmentWidth + 'px'"
         >

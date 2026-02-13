@@ -1,19 +1,17 @@
 import {inject, Injectable} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
+import {toSignal} from "@angular/core/rxjs-interop";
+import {map} from "rxjs";
 import {EDisplayDevice} from "../../types/EDisplayDevice";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
-  private route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
 
-  public device: EDisplayDevice = EDisplayDevice.BASIC;
-
-  public determineDisplayDevice() {
-    // TODO: rewite to signals
-    this.route.queryParams.subscribe((param) => {
-      this.device = param['display'] ?? EDisplayDevice.BASIC;
-    })
-  }
+  public readonly device = toSignal(
+    this.route.queryParams.pipe(map(p => p['display'] ?? EDisplayDevice.BASIC)),
+    {initialValue: EDisplayDevice.BASIC}
+  );
 }

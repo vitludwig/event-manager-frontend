@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -30,30 +30,18 @@ import {IEventTag} from "../../../../types/IEventTag";
     templateUrl: './list-filter.component.html',
     styleUrls: ['./list-filter.component.scss']
 })
-export class ListFilterComponent implements OnInit {
-	protected eventTypes: IEventType[] = [];
-	protected tags: IEventTag[] = [];
-
-	protected placeId: string[] | undefined;
-	protected selectedEventType: string[] | undefined;
-	protected selectedTags: string[] | undefined;
-	protected onlyFavorite: boolean = false;
-
+export class ListFilterComponent {
 	protected translate: TranslateService = inject(TranslateService);
 	protected programService: ProgramService = inject(ProgramService);
 	#data: { options: IProgramFilterOptions } = inject(MAT_DIALOG_DATA);
 	#dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions> = inject(MatDialogRef<ListFilterComponent, IProgramFilterOptions>);
 
-
-	public ngOnInit(): void {
-		this.eventTypes = this.programService.eventTypes;
-		this.tags = this.programService.tags;
-
-		this.placeId = this.#data.options.placeId ?? undefined;
-		this.selectedEventType = this.#data.options.eventType ?? undefined;
-		this.selectedTags = this.#data.options.tags ?? undefined;
-		this.onlyFavorite = this.#data.options.onlyFavorite ?? false;
-	}
+	protected eventTypes: IEventType[] = this.programService.eventTypes;
+	protected tags: IEventTag[] = this.programService.tags;
+	protected placeId: string[] | undefined = this.#data.options.placeId ?? undefined;
+	protected selectedEventType: string[] | undefined = this.#data.options.eventType ?? undefined;
+	protected selectedTags: string[] | undefined = this.#data.options.tags ?? undefined;
+	protected onlyFavorite: boolean = this.#data.options.onlyFavorite ?? false;
 
 	protected applyFilters(): void {
 		this.selectedEventType = this.selectedEventType?.length ? this.selectedEventType : undefined;

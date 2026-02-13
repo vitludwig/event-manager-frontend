@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, computed, inject, Input, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
@@ -7,7 +7,6 @@ import {ProgramService} from '../../services/program/program.service';
 import dayjs from 'dayjs';
 import {IEvent} from '../../types/IEvent';
 import {MatIconModule} from '@angular/material/icon';
-import {Subject, takeUntil} from 'rxjs';
 import {MatRippleModule} from '@angular/material/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
@@ -28,50 +27,35 @@ import {EventDetailFullComponent} from "../event-detail-full/event-detail-full.c
     templateUrl: './program-vertical-list.component.html',
     styleUrls: ['./program-vertical-list.component.scss']
 })
-export class ProgramVerticalListComponent implements OnInit, OnDestroy {
+export class ProgramVerticalListComponent {
 	@Input()
 	public set events(value: IEvent[] | null) {
-		this.#events = value;
-		if(this.#days) {
-			this.groupEvents = this.getGroupedEventsByDay(value, this.#days);
-		}
+		this.#events.set(value);
 	}
 
 	public get events(): IEvent[] | null {
-		return this.#events;
+		return this.#events();
 	}
 
-	protected placesById: Record<string, IProgramPlace> = {};
-	protected groupEvents: Record<number, IEvent[]> = {};
+	protected readonly placesById = computed(() => {
+		const places = this.programService.places();
+		const result: Record<string, IProgramPlace> = {};
+		for(const place of places) {
+			result[place.id] = place;
+		}
+		return result;
+	});
+
+	protected readonly groupEvents = computed(() => {
+		const days = this.programService.days();
+		return this.getGroupedEventsByDay(this.#events(), days);
+	});
 
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	protected readonly translate: TranslateService = inject(TranslateService);
 
-	#events: IEvent[] | null = [];
-	#unsubscribe: Subject<void> = new Subject<void>();
-	#days: Record<number, number> = {};
-
-	public ngOnInit(): void {
-		this.programService.days$
-			.pipe(takeUntil(this.#unsubscribe))
-			.subscribe(days => {
-				this.#days = days;
-				this.groupEvents = this.getGroupedEventsByDay(this.events, days);
-			});
-
-		this.programService.places$
-			.pipe(takeUntil(this.#unsubscribe))
-			.subscribe(places => {
-				for(const place of places) {
-					this.placesById[place.id] = place;
-				}
-			});
-	}
-
-	public ngOnDestroy(): void {
-		this.#unsubscribe.next();
-	}
+	#events = signal<IEvent[] | null>([]);
 
 	protected openFullDetail(event: IEvent, place: IProgramPlace): void {
 		this.dialog.open(EventDetailFullComponent, {
@@ -81,8 +65,6 @@ export class ProgramVerticalListComponent implements OnInit, OnDestroy {
 			},
 			panelClass: 'full-overlay',
 		});
-		// this.router.navigate(['/' + ERoute.EVENT_DETAIL, event.id], {queryParamsHandling: 'merge'});
-		// this.dialog.closeAll();
 	}
 
 	protected toggleFavorite(event: IEvent, clickEvent: MouseEvent): void {

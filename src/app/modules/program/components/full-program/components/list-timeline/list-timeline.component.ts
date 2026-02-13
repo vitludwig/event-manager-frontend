@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, ElementRef, inject, input, ViewChild} from '@angular/core';
 
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {IProgramSegment} from '../../types/IProgramSegment';
@@ -11,11 +11,8 @@ import dayjs from 'dayjs';
     styleUrls: ['./list-timeline.component.scss']
 })
 export class ListTimelineComponent implements AfterViewInit {
-	@Input()
-	public segments: IProgramSegment[];
-
-	@Input()
-	public parentContainer: HTMLElement;
+	readonly segments = input.required<IProgramSegment[]>();
+	readonly parentContainer = input.required<HTMLElement>();
 
 	@ViewChild('segmentNow')
 	public segmentNow: ElementRef;
@@ -26,14 +23,18 @@ export class ListTimelineComponent implements AfterViewInit {
 	protected readonly FullProgramConfig = FullProgramConfig;
 
 	constructor() {
-		setInterval(() => {
+		const destroyRef = inject(DestroyRef);
+
+		this.setRoundedNow();
+
+		const intervalId = setInterval(() => {
 			this.setRoundedNow();
 			if(this.segmentNow) {
 				this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
 			}
 		}, 300000);
 
-		this.setRoundedNow();
+		destroyRef.onDestroy(() => clearInterval(intervalId));
 	}
 
 	public ngAfterViewInit(): void {
@@ -48,15 +49,11 @@ export class ListTimelineComponent implements AfterViewInit {
 			return;
 		}
 
-		this.parentContainer.scrollTo({
+		this.parentContainer().scrollTo({
 			left: this.segmentNowLeft - 200,
 		})
 	}
 
-	/**
-	 * Round current time to nearest 15 minutes
-	 * @private
-	 */
 	private setRoundedNow() {
 		const hours = dayjs().hour();
 		const minutes = (Math.round(dayjs().minute() / 15) * 15) % 60;

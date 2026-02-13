@@ -1,11 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
-
-import { MatTabsModule } from '@angular/material/tabs';
-import { TranslateModule } from '@ngx-translate/core';
-import { TribesInfoComponent } from './components/tribes-info/tribes-info.component';
-import { CompetitionsInfoComponent } from './components/competitions-info/competitions-info.component';
-import { environment } from "../../../environments/environment";
-import { MapService, IMapImage } from "./services/map.service";
+import {Component, inject} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs';
+import {MatTabsModule} from '@angular/material/tabs';
+import {TranslateModule} from '@ngx-translate/core';
+import {rxResource} from '@angular/core/rxjs-interop';
+import {TribesInfoComponent} from './components/tribes-info/tribes-info.component';
+import {CompetitionsInfoComponent} from './components/competitions-info/competitions-info.component';
+import {environment} from "../../../environments/environment";
+import {IMapImage, MapService} from "./services/map.service";
 
 @Component({
     selector: 'app-map',
@@ -13,24 +15,31 @@ import { MapService, IMapImage } from "./services/map.service";
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements OnInit {
-	protected readonly environment = environment;
-	private readonly mapService = inject(MapService);
+export class MapComponent {
+    protected readonly environment = environment;
+    private readonly mapService = inject(MapService);
+    private readonly http = inject(HttpClient);
 
-	protected festivalMap: string | undefined;
-	protected competitionMap: string | undefined;
-	protected tribesMap: string | undefined;
+    protected readonly mapsResource = rxResource({
+        stream: () => this.mapService.getMaps().pipe(
+            map(maps => ({
+                festivalMap: this.getMapContent(maps, 'map1'),
+                competitionMap: this.getMapContent(maps, 'map2'),
+                tribesMap: this.getMapContent(maps, 'map3'),
+            }))
+        ),
+    });
 
-	ngOnInit() {
-        this.mapService.getMaps().subscribe(maps => {
-            this.festivalMap = this.getMapContent(maps, 'map1');
-            this.competitionMap = this.getMapContent(maps, 'map2');
-            this.tribesMap = this.getMapContent(maps, 'map3');
-        });
-	}
+    protected readonly competitionsInfo = rxResource({
+        stream: () => this.http.get<any[]>('/public/competitions-info.json'),
+    });
 
-	private getMapContent(maps: IMapImage[], name: string): string | undefined {
-		const map = maps.find(m => m.name === name);
-		return map ? `data:image/png;base64,${map.content}` : undefined;
-	}
+    protected readonly tribesInfo = rxResource({
+        stream: () => this.http.get<any[]>('/public/tribe-info.json'),
+    });
+
+    private getMapContent(maps: IMapImage[], name: string): string | undefined {
+        const map = maps.find(m => m.name === name);
+        return map ? `${map.value}` : undefined;
+    }
 }

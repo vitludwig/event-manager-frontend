@@ -1,6 +1,6 @@
 <div class="list-vertical">
   <mat-list role="list">
-    @for (day of groupEvents | keyvalue; track day) {
+    @for (day of groupEvents() | keyvalue; track day) {
       <div role="listitem"
         class="list-vertical__day">
         {{ ((day.key | date: 'EEEE') || '') | translate }}

@@ -1,4 +1,4 @@
-<div class="body-wrapper" [class.revert-items]="settingsService.device === EDisplayDevice.INFO_PANEL">
+<div class="body-wrapper" [class.revert-items]="settingsService.device() === EDisplayDevice.INFO_PANEL">
 	<mat-drawer-container autosize>
 		<div class="main-content"
 			tabindex="0">

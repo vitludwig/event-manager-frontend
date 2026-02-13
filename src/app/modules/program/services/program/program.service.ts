@@ -134,6 +134,7 @@ export class ProgramService {
 
 		this.#places.set(this.#allPlaces);
 		this.loadDays();
+		this.autoSelectDay();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
 		await this.loadEventTypes();
 		await this.loadTags();
@@ -249,6 +250,20 @@ export class ProgramService {
 		});
 
 		return result;
+	}
+
+	private autoSelectDay(): void {
+		if(this.selectedDay() !== undefined) {
+			return;
+		}
+		const days = this.#days();
+		const entries = Object.entries(days).sort();
+		if(entries.length === 0) {
+			return;
+		}
+		const today = dayjs();
+		const todayEntry = entries.find(([_, date]) => dayjs(date).isSame(today, 'day'));
+		this.selectedDay.set(todayEntry ? Number(todayEntry[0]) : Number(entries[0][0]));
 	}
 
 	private loadDays(): void {

@@ -6,7 +6,7 @@
       </object>
 
       <div class="full-program__toolbar__actions">
-        @if(settingsService.device !== EDisplayDevice.INFO_PANEL) {
+        @if(settingsService.device() !== EDisplayDevice.INFO_PANEL) {
           @if(environment.festivalId === EFestivalID.RUSTHAVEN) {
             <app-user-info></app-user-info>
           }
@@ -57,7 +57,7 @@
 </div>
 </div>
 
-<app-list-day-select [days]="days"
+<app-list-day-select [days]="days()"
   [selectedDay]="selectedDay"
   (selectedDayChange)="selectedDay = $event">
 </app-list-day-select>
@@ -73,20 +73,20 @@
 <!--	</div>-->
 <div class="full-program__list" #programList>
   <!--		 THIS WAR REMOVED DUE TO BAD SCROLLING ON EVENT ENDING AT NEXT DAY [style.width]="allSegments.length * FullProgramConfig.segmentWidth + 'px'"-->
-  @if (allSegments.length > 0) {
+  @if (allSegments().length > 0) {
     <div class="list-horizontal"
       >
       <app-list-timeline
-        [segments]="allSegments"
+        [segments]="allSegments()"
         [parentContainer]="programList"
       ></app-list-timeline>
       <div class="list-events">
-        @for (place of places; track place) {
+        @for (place of places(); track place) {
           <div class="list-events__place"
             >
             <app-list-place [place]="place"
-              [events]="eventsByPlaces[place.id]"
-              [segments]="allSegments"
+              [events]="eventsByPlaces()[place.id]"
+              [segments]="allSegments()"
               (placeSelect)="showEventDetail($event, place)"
               >
             </app-list-place>

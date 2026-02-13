@@ -1,6 +1,6 @@
-import {Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, OnInit, Output, signal, ViewChild} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
-import {Subject, takeUntil} from 'rxjs';
 import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatSelectModule} from '@angular/material/select';
@@ -19,8 +19,9 @@ import {PermissionsService} from "../../services/permissions/permissions.service
     templateUrl: './qr-scanner.component.html',
     styleUrls: ['./qr-scanner.component.scss']
 })
-export class QrScannerComponent implements OnInit, OnDestroy {
+export class QrScannerComponent implements OnInit {
     private readonly permissionsService: PermissionsService = inject(PermissionsService);
+    private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
     @ViewChild('scanner')
     public scanner!: ZXingScannerComponent;
@@ -33,16 +34,13 @@ export class QrScannerComponent implements OnInit, OnDestroy {
         this.currentDevice = this.cameras.find((device) => device.deviceId === value);
     }
 
-    public cameraNotFound: boolean = false;
+    public cameraNotFound = signal(false);
 
     @Output()
     public scanned: EventEmitter<string> = new EventEmitter();
 
     protected cameras: any[] = [];
     protected currentDevice: any = null;
-
-    protected tryScannerInterval: number | null = null;
-    protected destroy: Subject<void> = new Subject<void>();
 
     public async ngOnInit() {
         const hasCameraPermission = await this.permissionsService.requestCameraPermissions();
@@ -53,28 +51,24 @@ export class QrScannerComponent implements OnInit, OnDestroy {
     }
 
     private initScanning() {
-        this.tryScannerInterval = window.setInterval(() => {
+        const intervalId = window.setInterval(() => {
             if (!this.scanner) {
                 return;
             }
 
             // @ts-ignore
-            this.cameraNotFound = !this.scanner.hasPermission;
+            this.cameraNotFound.set(!this.scanner.hasPermission);
             if (this.scanner.permissionResponse) {
-                this.scanner.permissionResponse.pipe(takeUntil(this.destroy)).subscribe((value) => {
-                    this.cameraNotFound = !value;
+                this.scanner.permissionResponse.pipe(
+                    takeUntilDestroyed(this.destroyRef),
+                ).subscribe((value) => {
+                    this.cameraNotFound.set(!value);
                 });
             }
-            clearInterval(this.tryScannerInterval!);
+            clearInterval(intervalId);
         }, 333);
-    }
 
-    public ngOnDestroy() {
-        if (this.tryScannerInterval) {
-            clearInterval(this.tryScannerInterval);
-        }
-        this.destroy.next();
-        this.destroy.complete();
+        this.destroyRef.onDestroy(() => clearInterval(intervalId));
     }
 
     public camerasFoundHandler($event: any[]) {
@@ -89,6 +83,6 @@ export class QrScannerComponent implements OnInit, OnDestroy {
     }
 
     public camerasNotFoundHandler($event: any) {
-        this.cameraNotFound = true;
+        this.cameraNotFound.set(true);
     }
 }

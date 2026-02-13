@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 export interface IMapImage {
     name: string;
-    content: string;
+    value: string;
 }
 
 @Injectable({
@@ -15,6 +15,6 @@ export class MapService {
     private readonly http = inject(HttpClient);
 
     public getMaps(): Observable<IMapImage[]> {
-        return this.http.get<IMapImage[]>(`${environment.apiUrl}/map`);
+        return this.http.get<IMapImage[]>(`${environment.apiUrl}/maps`);
     }
 }

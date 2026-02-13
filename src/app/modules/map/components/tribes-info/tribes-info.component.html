@@ -1,5 +1,5 @@
 <mat-accordion>
-    @for(item of tribesInfo$ | async; track $index) {
+    @for(item of data(); track $index) {
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>{{ item.tribeName }}</mat-panel-title>

@@ -1,23 +1,26 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { EventTagsComponent } from './event-tags.component';
+import {EventTagsComponent} from './event-tags.component';
 
 describe('EventTagsComponent', () => {
-  let component: EventTagsComponent;
-  let fixture: ComponentFixture<EventTagsComponent>;
+	let component: EventTagsComponent;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [EventTagsComponent]
-    })
-    .compileComponents();
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			imports: [EventTagsComponent, TranslateModule.forRoot()],
+		});
 
-    fixture = TestBed.createComponent(EventTagsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		const fixture = TestBed.createComponent(EventTagsComponent);
+		component = fixture.componentInstance;
+		fixture.componentRef.setInput('event', {
+			id: 'e1', name: 'Test', name_EN: 'Test EN',
+			tags: [{id: 't1', name: 'Rock', name_EN: 'Rock'}],
+		});
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

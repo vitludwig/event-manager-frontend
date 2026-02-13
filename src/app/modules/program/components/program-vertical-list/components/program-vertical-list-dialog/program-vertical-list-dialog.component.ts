@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import {MatDividerModule} from '@angular/material/divider';
@@ -7,7 +7,6 @@ import {ProgramVerticalListComponent} from '../../program-vertical-list.componen
 import {IProgramEvent} from '../../../../types/IProgramPlace';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
-import {debounce} from '../../../../../../common/decorators/debounce';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {ProgramService} from '../../../../services/program/program.service';
@@ -29,36 +28,36 @@ import {Utils} from '../../../../../../common/utils/Utils';
     templateUrl: './program-vertical-list-dialog.component.html',
     styleUrls: ['./program-vertical-list-dialog.component.scss']
 })
-export class ProgramVerticalListDialogComponent implements OnInit {
-	protected search: string = '';
-	protected filteredEvents: IProgramEvent[] = [];
-	protected data: { events: IProgramEvent[] } = inject(MAT_DIALOG_DATA);
-	protected onlyFavorite: boolean = false;
+export class ProgramVerticalListDialogComponent {
+	protected readonly search = signal('');
+	protected readonly onlyFavorite = signal(false);
+	protected readonly data: { events: IProgramEvent[] } = inject(MAT_DIALOG_DATA);
 
 	private readonly programService: ProgramService = inject(ProgramService);
 
-	public ngOnInit(): void {
-		this.filteredEvents = this.data.events;
-		this.onlyFavorite = this.programService.userFilterOptions.onlyFavorite ?? false;
-	}
+	protected readonly filteredEvents = computed(() => {
+		let events = this.data.events;
 
-	@debounce()
-	protected searchEvents(search: string): void {
-		if(!search) {
-			this.filteredEvents = this.data.events;
-			return;
+		if(this.onlyFavorite()) {
+			events = events.filter((event: IProgramEvent) => event.favorite);
 		}
-		search = Utils.replaceCzechAccentSymbols(search.toLowerCase().trim());
-		this.filteredEvents = this.data.events.filter((event: IProgramEvent) => Utils.replaceCzechAccentSymbols(event.name.toLowerCase().trim()).includes(search));
+
+		const searchTerm = this.search();
+		if(searchTerm) {
+			const normalized = Utils.replaceCzechAccentSymbols(searchTerm.toLowerCase().trim());
+			events = events.filter((event: IProgramEvent) =>
+				Utils.replaceCzechAccentSymbols(event.name.toLowerCase().trim()).includes(normalized)
+			);
+		}
+
+		return events;
+	});
+
+	constructor() {
+		this.onlyFavorite.set(this.programService.userFilterOptions.onlyFavorite ?? false);
 	}
 
 	protected toggleFavorite(): void {
-		this.onlyFavorite = !this.onlyFavorite;
-
-		if(this.onlyFavorite) {
-			this.filteredEvents = this.data.events.filter((event: IProgramEvent) => event.favorite);
-		} else {
-			this.filteredEvents = this.data.events
-		}
+		this.onlyFavorite.update(v => !v);
 	}
 }
