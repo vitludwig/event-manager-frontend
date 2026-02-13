@@ -6,8 +6,19 @@
     "start": "ng serve",
     "build": "ng build",
     "build:android": "ng build --configuration development-android",
+    "build:ios": "ng build --configuration development-ios",
+    "build:mobile": "ng build --configuration production",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "cap:sync": "npx cap sync",
+    "cap:sync:android": "npx cap sync android",
+    "cap:sync:ios": "npx cap sync ios",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios",
+    "android": "npm run build:android && npm run cap:sync:android && npm run cap:open:android",
+    "ios": "npm run build:ios && npm run cap:sync:ios && npm run cap:open:ios",
+    "android:prod": "npm run build:mobile && npm run cap:sync:android && npm run cap:open:android",
+    "ios:prod": "npm run build:mobile && npm run cap:sync:ios && npm run cap:open:ios"
   },
   "private": true,
   "dependencies": {

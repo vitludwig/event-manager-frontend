@@ -1,5 +1,5 @@
-import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
+import {inject, Injectable, signal} from '@angular/core';
+import {firstValueFrom} from 'rxjs';
 import {IEvent} from '../../types/IEvent';
 import dayjs from 'dayjs';
 import {IProgramPlace} from '../../types/IProgramPlace';
@@ -36,8 +36,8 @@ export class ProgramService {
 	public favorites: IEvent[] = [];
 	public eventTypes: IEventType[] = [];
 	public tags: IEventTag[] = [];
-	public selectedDay: number; // used to persist the selected day between routes
-	#showEventDetails: boolean = false; // show detailed information of event in program (i.e. abbreviation of event type)
+	public selectedDay = signal<number | undefined>(undefined);
+	#showEventDetails: boolean = false;
 
 
 	public get showEventDetails(): boolean {
@@ -66,19 +66,16 @@ export class ProgramService {
 
 	/**
 	 * Filtered events in program
-	 * This subject is used to subscribe to all changes and filtering in events, but these changes are also propagated
-	 * to allEvents, so we can use it offline
-	 *
-	 * TODO: implement store?
 	 * @private
 	 */
-	#events: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
-	#places: BehaviorSubject<IProgramPlace[]> = new BehaviorSubject(this.#allPlaces);
-	#days: BehaviorSubject<Record<number, number>> = new BehaviorSubject<Record<number, number>>({});
+	#events = signal<IEvent[]>([]);
+	#places = signal<IProgramPlace[]>([]);
+	#days = signal<Record<number, number>>({});
 	#userFilterOptions: IProgramFilterOptions = {};
 
-	public places$: Observable<IProgramPlace[]> = this.#places.asObservable();
-	public days$ = this.#days.asObservable();
+	public readonly places = this.#places.asReadonly();
+	public readonly days = this.#days.asReadonly();
+	public readonly events = this.#events.asReadonly();
 
 	public get allPlaces(): IProgramPlace[] {
 		return this.#allPlaces;
@@ -135,24 +132,11 @@ export class ProgramService {
 			event.favorite = this.favorites.map((obj) => obj.id).includes(event.id);
 		}
 
+		this.#places.set(this.#allPlaces);
 		this.loadDays();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
 		await this.loadEventTypes();
 		await this.loadTags();
-	}
-
-	public getEvents(day?: number): Observable<IEvent[]> {
-		let result = this.#allEvents;
-
-		if(day) {
-			result = this.#allEvents.filter((event) => {
-				return dayjs(event.start).isSame(day, 'day');
-			});
-		}
-
-		this.#events.next(result);
-
-		return this.#events;
 	}
 
 	public getEvent(id: string): IEvent | undefined {
@@ -165,8 +149,7 @@ export class ProgramService {
 	 */
 	public filterEvents(filterOptions: Partial<IProgramFilterOptions>): void {
 		const result = this.applyEventFilters(this.#allEvents, filterOptions);
-
-		this.#events.next(result);
+		this.#events.set(result);
 	}
 
 	/**
@@ -176,18 +159,18 @@ export class ProgramService {
 	public filterPlaces(placeId: string[] | null = null): void {
 		if(placeId) {
 			const newPlaces = this.#allPlaces.filter((place) => placeId.includes(place.id));
-			this.#places.next(newPlaces);
+			this.#places.set(newPlaces);
 		} else {
-			this.#places.next(this.#allPlaces);
+			this.#places.set(this.#allPlaces);
 		}
 	}
 
-	public getPlaceById(id: string): Observable<IProgramPlace | undefined> {
-		return of(this.#allPlaces.find((place) => place.id === id));
+	public getPlaceById(id: string): IProgramPlace | undefined {
+		return this.#allPlaces.find((place) => place.id === id);
 	}
 
-	public getEventById(id: string): Observable<IEvent | undefined> {
-		return of(this.#allEvents.find((event) => event.id === id));
+	public getEventById(id: string): IEvent | undefined {
+		return this.#allEvents.find((event) => event.id === id);
 	}
 
 	public updateEvent(event: IEvent, property: keyof IEvent, value: string | number | boolean): void {
@@ -233,7 +216,7 @@ export class ProgramService {
 
 	private propagateEventUpdate(): void {
 		const newEvents = this.applyEventFilters(this.#allEvents, this.userFilterOptions);
-		this.#events.next(newEvents);
+		this.#events.set(newEvents);
 	}
 
 	private applyEventFilters(events: IEvent[], filterOptions: IProgramFilterOptions): IEvent[] {
@@ -269,7 +252,7 @@ export class ProgramService {
 	}
 
 	private loadDays(): void {
-		const days = this.#days.getValue();
+		const days = {...this.#days()};
 		for(const event of this.#allEvents) {
 			const startDate = dayjs(event.start).startOf('day').valueOf();
 			const endDate = dayjs(event.end);
@@ -283,7 +266,7 @@ export class ProgramService {
 			}
 		}
 
-		this.#days.next(days);
+		this.#days.set(days);
 	}
 
 	private async checkCacheValidity(): Promise<void> {

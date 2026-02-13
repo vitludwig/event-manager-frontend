@@ -85,6 +85,18 @@
                   "with": "src/environments/environment.development.android.ts"
                 }
               ]
+            },
+            "development-ios": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ios.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

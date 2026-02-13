@@ -2,8 +2,8 @@ export const environment = {
 	signalrUrl: "https://program.rusthaven.cz",
 	oneSignalApiKey: "NDcwZWY5YTUtYWQyMy00NTY1LWIxZDEtNzRjYTAxZDAyYzJh",
 	oneSignalAppId: "14d3b005-8f00-478a-b84e-14807cf26f99",
-	wsUrl: "signalr/events",
-	apiUrl: "/api/v1",
+	wsUrl: "https://program.rusthaven.cz/signalr/events",
+	apiUrl: "https://program.rusthaven.cz/api/v1",
 	faqUrl_CS: "https://docs.google.com/document/d/1StVQlwSWorjiQyfoLuckcz8geOw3uurjPaC8ni5jwbQ/edit?usp=sharing",
 	faqUrl_EN: "https://docs.google.com/document/d/1UGDLkfL1gM7RnHSdhyqBucoIrqRw9k5MxgfKodPGEAE/edit?usp=sharing",
 	festivalId: 'RUSTHAVEN'

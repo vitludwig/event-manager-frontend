@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npx cap sync)",
+      "Bash(npm run build:mobile:*)",
+      "Bash(npm run cap:sync:*)",
+      "Bash(keytool:*)",
+      "Bash(# Try to find any java binary on the system find / -name \"\"keytool\"\" -type f)",
+      "Bash(JAVA_HOME=\"\" ./gradlew:*)",
+      "Bash(npx cap sync:*)",
+      "Bash(npx ng build:*)"
+    ]
+  }
+}
