@@ -51,14 +51,15 @@ export class QrScannerComponent implements OnInit {
     }
 
     private initScanning() {
+        let subscribed = false;
         const intervalId = window.setInterval(() => {
             if (!this.scanner) {
                 return;
             }
 
-            // @ts-ignore
-            this.cameraNotFound.set(!this.scanner.hasPermission);
-            if (this.scanner.permissionResponse) {
+            this.cameraNotFound.set(!(this.scanner as any).hasPermission);
+            if (!subscribed && this.scanner.permissionResponse) {
+                subscribed = true;
                 this.scanner.permissionResponse.pipe(
                     takeUntilDestroyed(this.destroyRef),
                 ).subscribe((value) => {

@@ -169,6 +169,73 @@ describe('FullProgramComponent', () => {
 			const filtered = (component as any).filteredEvents();
 			expect(filtered.length).toBe(2);
 		});
+
+		it('should include events starting after the threshold hour on selected day', () => {
+			const baseDay = dayjs('2025-07-10');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({id: 'e1', start: baseDay.hour(7).toISOString(), end: baseDay.hour(8).toISOString()}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const filtered = (component as any).filteredEvents();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('e1');
+		});
+
+		it('should assign events at threshold hour to previous day (early next-day)', () => {
+			const baseDay = dayjs('2025-07-10');
+			const nextDay = dayjs('2025-07-11');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({id: 'e1', start: nextDay.hour(6).toISOString(), end: nextDay.hour(8).toISOString()}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const filtered = (component as any).filteredEvents();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('e1');
+		});
+
+		it('should exclude pre-threshold events from their own calendar day', () => {
+			const baseDay = dayjs('2025-07-10');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({id: 'e1', start: baseDay.hour(5).toISOString(), end: baseDay.hour(6).toISOString()}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const filtered = (component as any).filteredEvents();
+			expect(filtered.length).toBe(0);
+		});
+
+		it('should show after-midnight favorite events on previous day', () => {
+			const baseDay = dayjs('2025-07-10');
+			const nextDay = dayjs('2025-07-11');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({id: 'e1', favorite: true, start: baseDay.hour(22).toISOString(), end: nextDay.hour(2).toISOString()}),
+				createMockEvent({id: 'e2', favorite: true, start: nextDay.hour(1).toISOString(), end: nextDay.hour(3).toISOString()}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const filtered = (component as any).filteredEvents();
+			expect(filtered.length).toBe(2);
+			expect(filtered.map((e: any) => e.id)).toContain('e1');
+			expect(filtered.map((e: any) => e.id)).toContain('e2');
+		});
 	});
 
 	describe('allSegments computed signal', () => {
@@ -284,6 +351,49 @@ describe('FullProgramComponent', () => {
 			TestBed.flushEffects();
 
 			expect((component as any).places()).toEqual(places);
+		});
+	});
+
+	describe('applyFilters (only favorites integration)', () => {
+		it('should call filterEvents with onlyFavorite from filter dialog result', () => {
+			const filterOptions = {onlyFavorite: true, placeId: undefined, eventType: undefined, tags: undefined};
+
+			(component as any).applyFilters(filterOptions);
+
+			expect(mockProgramService.filterPlaces).toHaveBeenCalledWith(undefined);
+			expect(mockProgramService.filterEvents).toHaveBeenCalledWith({
+				eventType: undefined,
+				onlyFavorite: true,
+				tags: undefined,
+			});
+		});
+
+		it('should show only favorite events in filteredEvents after filterEvents updates signal', () => {
+			const baseDay = dayjs('2025-07-10');
+			const day = baseDay.startOf('day').valueOf();
+			const favoriteEvent = createMockEvent({
+				id: 'e1',
+				favorite: true,
+				start: baseDay.hour(14).toISOString(),
+				end: baseDay.hour(15).toISOString(),
+			});
+			const nonFavoriteEvent = createMockEvent({
+				id: 'e2',
+				favorite: false,
+				start: baseDay.hour(16).toISOString(),
+				end: baseDay.hour(17).toISOString(),
+			});
+
+			// Simulate service returning only favorites after filterEvents
+			mockProgramService.events.set([favoriteEvent]);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const filtered = (component as any).filteredEvents();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('e1');
+			expect(filtered[0].favorite).toBeTrue();
 		});
 	});
 });

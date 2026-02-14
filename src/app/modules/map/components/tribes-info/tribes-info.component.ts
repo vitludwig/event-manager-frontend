@@ -1,6 +1,7 @@
 import {Component, inject, input} from '@angular/core';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
+import {ITribeInfo} from "../../types/ITribeInfo";
 
 @Component({
     selector: 'app-tribes-info',
@@ -15,5 +16,5 @@ import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 export class TribesInfoComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);
 
-	readonly data = input.required<any[]>();
+	readonly data = input.required<ITribeInfo[]>();
 }

@@ -1,4 +1,5 @@
 import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {UserService} from '../../services/user/user.service';
 import {MatDialog} from '@angular/material/dialog';
@@ -50,7 +51,9 @@ export class UserInfoComponent implements OnInit {
 			width: '500px',
 		});
 
-		dialog.afterClosed().subscribe((result: IUserInfoTerminal) => {
+		dialog.afterClosed().pipe(
+			takeUntilDestroyed(this.destroyRef),
+		).subscribe((result: IUserInfoTerminal) => {
 			if(result) {
 				this.userService.userId = result.userId;
 				this.userService.walletToken = result.token;

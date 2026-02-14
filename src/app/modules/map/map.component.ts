@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -8,12 +8,15 @@ import {TribesInfoComponent} from './components/tribes-info/tribes-info.componen
 import {CompetitionsInfoComponent} from './components/competitions-info/competitions-info.component';
 import {environment} from "../../../environments/environment";
 import {IMapImage, MapService} from "./services/map.service";
+import {ICompetitionInfo} from "./types/ICompetitionInfo";
+import {ITribeInfo} from "./types/ITribeInfo";
 
 @Component({
     selector: 'app-map',
     imports: [MatTabsModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent],
     templateUrl: './map.component.html',
-    styleUrls: ['./map.component.scss']
+    styleUrls: ['./map.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapComponent {
     protected readonly environment = environment;
@@ -31,11 +34,11 @@ export class MapComponent {
     });
 
     protected readonly competitionsInfo = rxResource({
-        stream: () => this.http.get<any[]>(`${environment.signalrUrl}/public/competitions-info.json`),
+        stream: () => this.http.get<ICompetitionInfo[]>(`${environment.signalrUrl}/public/competitions-info.json`),
     });
 
     protected readonly tribesInfo = rxResource({
-        stream: () => this.http.get<any[]>(`${environment.signalrUrl}/public/tribe-info.json`),
+        stream: () => this.http.get<ITribeInfo[]>(`${environment.signalrUrl}/public/tribe-info.json`),
     });
 
     private getMapContent(maps: IMapImage[], name: string): string | undefined {

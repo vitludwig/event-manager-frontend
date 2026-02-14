@@ -1,4 +1,5 @@
-import {Component, computed, ElementRef, inject, Renderer2, Signal, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, Renderer2, Signal, ViewChild} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
@@ -54,7 +55,8 @@ import {MatBadge} from "@angular/material/badge";
     MatBadge
 ],
     templateUrl: './full-program.component.html',
-    styleUrls: ['./full-program.component.scss']
+    styleUrls: ['./full-program.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FullProgramComponent {
 	@ViewChild('secondaryToolbar')
@@ -74,6 +76,7 @@ export class FullProgramComponent {
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
+	private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
 	protected readonly days: Signal<IProgramDay[]> = computed(() => {
 		return this.getParsedDays(this.programService.days());
@@ -218,7 +221,9 @@ export class FullProgramComponent {
 			data: {options: this.programService.userFilterOptions},
 		});
 
-		dialog.afterClosed().subscribe((result) => {
+		dialog.afterClosed().pipe(
+			takeUntilDestroyed(this.destroyRef),
+		).subscribe((result) => {
 			if(result) {
 				this.programService.userFilterOptions = result;
 				this.applyFilters(result);
@@ -290,8 +295,9 @@ export class FullProgramComponent {
 		return events.filter((event) => {
 			const eventStart = dayjs(event.start);
 			const nextDay = dayjs(day).add(1, 'day');
-			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
-			return (dayjs(event.start).isSame(day, 'day') && eventStart.get('hour') > 6) || addEarlyNextDayEvent;
+			const isEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
+			const isSelectedDayEvent = eventStart.isSame(day, 'day') && eventStart.get('hour') > ProgramConfig.eventStartHourThreshold;
+			return isSelectedDayEvent || isEarlyNextDayEvent;
 		});
 	}
 }

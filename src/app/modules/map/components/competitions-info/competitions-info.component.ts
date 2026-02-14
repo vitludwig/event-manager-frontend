@@ -1,6 +1,7 @@
 import {Component, inject, input} from '@angular/core';
 import {MatListModule} from '@angular/material/list';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {ICompetitionInfo} from "../../types/ICompetitionInfo";
 
 @Component({
     selector: 'app-competitions-info',
@@ -11,5 +12,5 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
 export class CompetitionsInfoComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);
 
-	readonly data = input.required<any[]>();
+	readonly data = input.required<ICompetitionInfo[]>();
 }

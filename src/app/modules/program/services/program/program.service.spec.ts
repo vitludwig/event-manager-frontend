@@ -60,7 +60,7 @@ describe('ProgramService', () => {
 	let mockEventService: jasmine.SpyObj<EventService>;
 
 	beforeEach(() => {
-		mockEventService = jasmine.createSpyObj('EventService', ['initWebsocket', 'on', 'getEvents', 'getPlaces']);
+		mockEventService = jasmine.createSpyObj('EventService', ['initWebsocket', 'on', 'off', 'onReconnected', 'getEvents', 'getPlaces']);
 		mockEventService.getEvents.and.resolveTo([]);
 		mockEventService.getPlaces.and.resolveTo([]);
 
@@ -225,8 +225,50 @@ describe('ProgramService', () => {
 			expect(filtered[0].id).toBe('e3');
 		});
 
+		it('should filter events by favorites combined with event type', () => {
+			service.filterEvents({onlyFavorite: true, eventType: ['concert']});
+			const filtered = service.events();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('e3');
+		});
+
+		it('should filter events by place', () => {
+			service.filterEvents({placeId: ['p1']});
+			const filtered = service.events();
+			expect(filtered.length).toBe(2);
+			expect(filtered.every(e => e.placeId === 'p1')).toBeTrue();
+		});
+
+		it('should combine place and event type filters', () => {
+			service.filterEvents({placeId: ['p2'], eventType: ['workshop']});
+			const filtered = service.events();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('e2');
+		});
+
+		it('should return no events when filters have no match', () => {
+			service.filterEvents({placeId: ['p2'], eventType: ['concert']});
+			const filtered = service.events();
+			expect(filtered.length).toBe(0);
+		});
+
+		it('should apply onlyFavorite via propagateEventUpdate when userFilterOptions is set', () => {
+			service.userFilterOptions = {onlyFavorite: true};
+			// Toggle a favorite to trigger propagateEventUpdate
+			const event = service.getEvent('e1')!;
+			service.updateEvent(event, 'favorite', true);
+			const filtered = service.events();
+			expect(filtered.length).toBe(2);
+			expect(filtered.every(e => e.favorite)).toBeTrue();
+		});
+
 		it('should return all events with empty filter options', () => {
 			service.filterEvents({});
+			expect(service.events().length).toBe(3);
+		});
+
+		it('should ignore empty arrays in filter options', () => {
+			service.filterEvents({placeId: [], eventType: [], tags: []});
 			expect(service.events().length).toBe(3);
 		});
 	});

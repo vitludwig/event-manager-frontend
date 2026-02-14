@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 import {MatTabsModule} from '@angular/material/tabs';
 import {FullProgramComponent} from './components/full-program/full-program.component';
@@ -10,7 +10,8 @@ import {FullProgramComponent} from './components/full-program/full-program.compo
     FullProgramComponent
 ],
     templateUrl: './program.component.html',
-    styleUrls: ['./program.component.scss']
+    styleUrls: ['./program.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgramComponent {
 
