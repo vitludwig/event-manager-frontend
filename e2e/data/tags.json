@@ -1,0 +1,12 @@
+[
+    {
+        "id": "tag1",
+        "name": "Pro začátečníky",
+        "name_EN": "For Beginners"
+    },
+    {
+        "id": "tag2",
+        "name": "Hudba",
+        "name_EN": "Music"
+    }
+]

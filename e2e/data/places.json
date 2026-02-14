@@ -1,0 +1,17 @@
+[
+    {
+        "id": "place1",
+        "name": "Main Stage",
+        "color": "#ff0000"
+    },
+    {
+        "id": "place2",
+        "name": "Workshop Tent",
+        "color": "#00ff00"
+    },
+    {
+        "id": "place3",
+        "name": "Bar",
+        "color": "#0000ff"
+    }
+]
