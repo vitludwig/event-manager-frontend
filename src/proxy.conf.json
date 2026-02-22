@@ -1,17 +1,17 @@
 {
   "/signalr/*": {
-    "target": "http://localhost:5000",
+    "target": "https://program.rusthaven.cz",
     "secure": false,
     "ws": true,
     "logLevel": "debug"
   },
   "/api/v1/*": {
-    "target": "http://localhost:5000",
+    "target": "https://program.rusthaven.cz",
     "secure": false,
     "changeOrigin": true
   },
   "/public/**": {
-    "target": "http://localhost:5000",
+    "target": "https://program.rusthaven.cz",
     "secure": false,
     "changeOrigin": true
   }
