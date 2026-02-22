@@ -35,6 +35,7 @@ export class QrScannerComponent implements OnInit {
     }
 
     public cameraNotFound = signal(false);
+    protected hasPermission = signal(false);
 
     @Output()
     public scanned: EventEmitter<string> = new EventEmitter();
@@ -46,7 +47,8 @@ export class QrScannerComponent implements OnInit {
         const hasCameraPermission = await this.permissionsService.requestCameraPermissions();
 
         if (hasCameraPermission) {
-            this.initScanning()
+            this.hasPermission.set(true);
+            this.initScanning();
         }
     }
 
