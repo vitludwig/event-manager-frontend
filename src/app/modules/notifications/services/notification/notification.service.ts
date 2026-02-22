@@ -33,7 +33,7 @@ export class NotificationService {
 	constructor() {
 		this.initLocalNotifications();
 		this.addNotificationActionListeners();
-		this.initOneSignalCapacitor();
+		this.initOneSignal();
 		this.loadNotifications();
 	}
 
@@ -106,19 +106,17 @@ export class NotificationService {
 
 	}
 
-	private initOneSignalCapacitor() {
-		if(Capacitor.getPlatform() === 'android') {
-			// TODO: remove verbose logging in production
-			OneSignal.Debug.setLogLevel(6);
-			OneSignal.initialize(environment.oneSignalAppId);
-			// Use this method to prompt for push notifications.
-			// We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
-			OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
-				console.log("User accepted notifications: " + accepted);
-			});
+	private initOneSignal() {
+		// TODO: remove verbose logging in production
+		//OneSignal.Debug.setLogLevel(6);
+		OneSignal.initialize(environment.oneSignalAppId);
+		// Use this method to prompt for push notifications.
+		// We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
+		OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
+			console.log("User accepted notifications: " + accepted);
+		});
 
-			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
-		}
+		OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
 	}
 
 	public async loadNotifications(): Promise<void> {
