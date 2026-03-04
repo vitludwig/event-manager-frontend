@@ -148,7 +148,6 @@ export class ProgramService {
 		this.#allPlaces = places ?? (await this.eventService.getPlaces());
 		this.#allEvents = events ?? (await this.eventService.getEvents());
 		localStorage.setItem('places', JSON.stringify(this.#allPlaces));
-		localStorage.setItem('places', JSON.stringify(this.#allPlaces));
 		localStorage.setItem('events', JSON.stringify(this.#allEvents));
 
 		for (const event of this.#allEvents) {

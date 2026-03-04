@@ -1,5 +1,5 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {environment} from '../../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';
@@ -106,36 +106,32 @@ export class NotificationService {
 
 	}
 
-	private initOneSignal() {
+	private async initOneSignal(): Promise<void> {
 		if(!Capacitor.isNativePlatform()) {
 			return;
 		}
-		// TODO: remove verbose logging in production
-		//OneSignal.Debug.setLogLevel(6);
-		OneSignal.initialize(environment.oneSignalAppId);
-		// Use this method to prompt for push notifications.
-		// We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
-		OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
-			console.log("User accepted notifications: " + accepted);
-		});
 
-		OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
+		try {
+			const config = await firstValueFrom(
+				this.http.get<{oneSignalAppId: string}>(`${environment.apiUrl}/notification/config`)
+			);
+
+			OneSignal.initialize(config.oneSignalAppId);
+			OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
+				console.log("User accepted notifications: " + accepted);
+			});
+
+			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
+		} catch(e) {
+			console.error('Cannot initialize OneSignal: ', e);
+		}
 	}
 
 	public async loadNotifications(): Promise<void> {
 		try {
-			// TODO: add this to interceptor
-			const headers = new HttpHeaders({
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': 'Basic ' + environment.oneSignalApiKey,
-			});
-
 			const notifications = await firstValueFrom(
-				this.http.get<IOneSignalNotificationsResponse>(`https://onesignal.com/api/v1/notifications?app_id=${environment.oneSignalAppId}`,
-					{headers})
+				this.http.get<IOneSignalNotificationsResponse>(`${environment.apiUrl}/notification`)
 			);
-			notifications.notifications = notifications.notifications.filter(obj => Object.keys(obj.headings).length > 0);
 
 			this.notifications.set(notifications.notifications);
 		} catch(e) {
