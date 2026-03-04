@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {TranslateModule} from '@ngx-translate/core';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {TribesInfoComponent} from './components/tribes-info/tribes-info.component';
@@ -10,10 +11,11 @@ import {environment} from "../../../environments/environment";
 import {IMapImage, MapService} from "./services/map.service";
 import {ICompetitionInfo} from "./types/ICompetitionInfo";
 import {ITribeInfo} from "./types/ITribeInfo";
+import {PinchZoomComponent} from "@meddv/ngx-pinch-zoom";
 
 @Component({
     selector: 'app-map',
-    imports: [MatTabsModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent],
+    imports: [MatTabsModule, MatProgressSpinnerModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent, PinchZoomComponent],
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +45,6 @@ export class MapComponent {
 
     private getMapContent(maps: IMapImage[], name: string): string | undefined {
         const map = maps.find(m => m.name === name);
-        return map ? `${map.value}` : undefined;
+        return map?.value;
     }
 }

@@ -9,7 +9,13 @@
       "Bash(# Try to find any java binary on the system find / -name \"\"keytool\"\" -type f)",
       "Bash(JAVA_HOME=\"\" ./gradlew:*)",
       "Bash(npx cap sync:*)",
-      "Bash(npx ng build:*)"
+      "Bash(npx ng build:*)",
+      "Bash(npx ng test:*)",
+      "Bash(CHROME_BIN=/opt/google/chrome/google-chrome npx ng test:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(done)",
+      "Bash(git add:*)",
+      "Bash(tail:*)"
     ]
   }
 }

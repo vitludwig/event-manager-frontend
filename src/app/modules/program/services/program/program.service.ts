@@ -28,7 +28,12 @@ export class ProgramService {
 
 	public set userFilterOptions(value: IProgramFilterOptions) {
 		this.#userFilterOptions = value;
-		this.activeFiltersCount = Object.values(value).filter((v) => !!v).length;
+		this.activeFiltersCount = Object.values(value).filter((v) => {
+			if(Array.isArray(v)) {
+				return v?.length > 0;
+			}
+			return !!v;
+		}).length;
 		localStorage.setItem('userFilterOptions', JSON.stringify(value));
 	}
 

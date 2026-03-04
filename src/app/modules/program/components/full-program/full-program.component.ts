@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, Renderer2, Signal, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, Renderer2, Signal, signal, ViewChild, WritableSignal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {IEvent} from '../../types/IEvent';
@@ -58,12 +58,15 @@ import {MatBadge} from "@angular/material/badge";
     styleUrls: ['./full-program.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FullProgramComponent {
+export class FullProgramComponent implements AfterViewInit {
 	@ViewChild('secondaryToolbar')
 	public secondaryToolbar: ElementRef;
 
 	@ViewChild(ListTimelineComponent)
 	public timeline: ListTimelineComponent;
+
+	@ViewChild('programList')
+	private programListRef: ElementRef<HTMLDivElement>;
 
 	protected selectedEvent: IProgramEvent | null = null;
 
@@ -77,6 +80,13 @@ export class FullProgramComponent {
 	private readonly renderer: Renderer2 = inject(Renderer2);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 	private readonly destroyRef: DestroyRef = inject(DestroyRef);
+
+	protected readonly zoomLevel: WritableSignal<number> = signal(1.0);
+	private readonly MIN_ZOOM = 0.4;
+	private readonly MAX_ZOOM = 1.0;
+	private pinchStartDistance: number | null = null;
+	private pinchStartZoom: number = 1.0;
+	private readonly boundTouchMove = (e: TouchEvent) => this.onTouchMove(e);
 
 	protected readonly days: Signal<IProgramDay[]> = computed(() => {
 		return this.getParsedDays(this.programService.days());
@@ -198,6 +208,13 @@ export class FullProgramComponent {
 	constructor() {
 	}
 
+	public ngAfterViewInit(): void {
+		this.programListRef?.nativeElement.addEventListener('touchmove', this.boundTouchMove, { passive: false });
+		this.destroyRef.onDestroy(() => {
+			this.programListRef?.nativeElement.removeEventListener('touchmove', this.boundTouchMove);
+		});
+	}
+
 	protected showEventDetail(event: IProgramEvent, place: IProgramPlace): void {
 		this.bottomSheet.open(EventDetailPreviewComponent, {
 			data: {
@@ -299,5 +316,33 @@ export class FullProgramComponent {
 			const isSelectedDayEvent = eventStart.isSame(day, 'day') && eventStart.get('hour') > ProgramConfig.eventStartHourThreshold;
 			return isSelectedDayEvent || isEarlyNextDayEvent;
 		});
+	}
+
+	protected onTouchStart(event: TouchEvent): void {
+		if (event.touches.length === 2) {
+			this.pinchStartDistance = this.getTouchDistance(event.touches);
+			this.pinchStartZoom = this.zoomLevel();
+		}
+	}
+
+	protected onTouchMove(event: TouchEvent): void {
+		if (event.touches.length === 2 && this.pinchStartDistance !== null) {
+			event.preventDefault();
+			const currentDistance = this.getTouchDistance(event.touches);
+			const scale = currentDistance / this.pinchStartDistance;
+			this.zoomLevel.set(Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, this.pinchStartZoom * scale)));
+		}
+	}
+
+	protected onTouchEnd(event: TouchEvent): void {
+		if (event.touches.length < 2) {
+			this.pinchStartDistance = null;
+		}
+	}
+
+	private getTouchDistance(touches: TouchList): number {
+		const dx = touches[0].clientX - touches[1].clientX;
+		const dy = touches[0].clientY - touches[1].clientY;
+		return Math.sqrt(dx * dx + dy * dy);
 	}
 }

@@ -107,6 +107,9 @@ export class NotificationService {
 	}
 
 	private initOneSignal() {
+		if(!Capacitor.isNativePlatform()) {
+			return;
+		}
 		// TODO: remove verbose logging in production
 		//OneSignal.Debug.setLogLevel(6);
 		OneSignal.initialize(environment.oneSignalAppId);

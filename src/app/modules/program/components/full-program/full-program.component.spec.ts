@@ -377,12 +377,6 @@ describe('FullProgramComponent', () => {
 				start: baseDay.hour(14).toISOString(),
 				end: baseDay.hour(15).toISOString(),
 			});
-			const nonFavoriteEvent = createMockEvent({
-				id: 'e2',
-				favorite: false,
-				start: baseDay.hour(16).toISOString(),
-				end: baseDay.hour(17).toISOString(),
-			});
 
 			// Simulate service returning only favorites after filterEvents
 			mockProgramService.events.set([favoriteEvent]);
@@ -394,6 +388,96 @@ describe('FullProgramComponent', () => {
 			expect(filtered.length).toBe(1);
 			expect(filtered[0].id).toBe('e1');
 			expect(filtered[0].favorite).toBeTrue();
+		});
+	});
+
+	describe('pinch-to-zoom', () => {
+		function createTouchEvent(points: { clientX: number; clientY: number }[]): TouchEvent {
+			const touchList = {
+				length: points.length,
+				item: (i: number) => points[i] as Touch,
+				...points.reduce((acc, p, i) => ({ ...acc, [i]: p as Touch }), {}),
+			} as TouchList;
+			return { touches: touchList, preventDefault: jasmine.createSpy('preventDefault') } as unknown as TouchEvent;
+		}
+
+		it('should initialise zoomLevel to 1.0', () => {
+			expect((component as any).zoomLevel()).toBe(1.0);
+		});
+
+		it('should record start distance and zoom on two-finger touchstart', () => {
+			const event = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
+			(component as any).onTouchStart(event);
+			expect((component as any).pinchStartDistance).toBeCloseTo(100, 1);
+			expect((component as any).pinchStartZoom).toBe(1.0);
+		});
+
+		it('should not set pinchStartDistance for single-finger touchstart', () => {
+			const event = createTouchEvent([{ clientX: 0, clientY: 0 }]);
+			(component as any).onTouchStart(event);
+			expect((component as any).pinchStartDistance).toBeNull();
+		});
+
+		it('should zoom out when fingers move closer together (pinch-in = zoom out)', () => {
+			// Start at distance 100, move to 50 → scale 0.5, new zoom = 1.0 * 0.5 = 0.5
+			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
+			(component as any).onTouchStart(start);
+
+			const move = createTouchEvent([{ clientX: 25, clientY: 0 }, { clientX: 75, clientY: 0 }]);
+			(component as any).onTouchMove(move);
+
+			expect((component as any).zoomLevel()).toBeCloseTo(0.5, 1);
+		});
+
+		it('should clamp zoomLevel to MIN_ZOOM (0.4) when pinch would go lower', () => {
+			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
+			(component as any).onTouchStart(start);
+
+			// Scale would be 0.1, clamped to 0.4
+			const move = createTouchEvent([{ clientX: 45, clientY: 0 }, { clientX: 55, clientY: 0 }]);
+			(component as any).onTouchMove(move);
+
+			expect((component as any).zoomLevel()).toBe(0.4);
+		});
+
+		it('should clamp zoomLevel to MAX_ZOOM (1.0) when scale > 1', () => {
+			// Set zoom to 0.6 first
+			(component as any).zoomLevel.set(0.6);
+			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
+			(component as any).onTouchStart(start);
+
+			// Scale 3.0 → 0.6 * 3.0 = 1.8, clamped to 1.0
+			const move = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 300, clientY: 0 }]);
+			(component as any).onTouchMove(move);
+
+			expect((component as any).zoomLevel()).toBe(1.0);
+		});
+
+		it('should not change zoomLevel on touchmove without prior touchstart', () => {
+			(component as any).zoomLevel.set(0.7);
+			const move = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 200, clientY: 0 }]);
+			(component as any).onTouchMove(move);
+			expect((component as any).zoomLevel()).toBe(0.7);
+		});
+
+		it('should reset pinchStartDistance on touchend', () => {
+			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
+			(component as any).onTouchStart(start);
+			expect((component as any).pinchStartDistance).not.toBeNull();
+
+			const end = createTouchEvent([{ clientX: 0, clientY: 0 }]); // one finger lifted
+			(component as any).onTouchEnd(end);
+			expect((component as any).pinchStartDistance).toBeNull();
+		});
+
+		it('should reset pinchStartDistance on touchcancel', () => {
+			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
+			(component as any).onTouchStart(start);
+			expect((component as any).pinchStartDistance).not.toBeNull();
+
+			const cancel = createTouchEvent([]);
+			(component as any).onTouchEnd(cancel); // touchcancel reuses onTouchEnd
+			expect((component as any).pinchStartDistance).toBeNull();
 		});
 	});
 });
