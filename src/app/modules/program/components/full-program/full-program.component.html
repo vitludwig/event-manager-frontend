@@ -1,13 +1,15 @@
 <div class="full-program">
     <div class="toolbar-wrapper">
         <mat-toolbar class="full-program__toolbar">
-            <object data="/public/themes/logo.png" type="image/png" class="program-logo">
+            @if (logoUrl) {
+                <img [src]="logoUrl" class="program-logo" alt="Logo">
+            } @else {
                 <h3 class="program-heading">{{ 'Program' | translate }}</h3>
-            </object>
+            }
 
             <div class="full-program__toolbar__actions">
                 @if (settingsService.device() !== EDisplayDevice.INFO_PANEL) {
-                    @if (environment.festivalId === EFestivalID.RUSTHAVEN) {
+                    @if (festivalId === 'RUSTHAVEN') {
                         <app-user-info></app-user-info>
                     }
 

@@ -1,12 +1,14 @@
 [
     {
         "id": "tag1",
-        "name": "Pro začátečníky",
-        "name_EN": "For Beginners"
+        "nameCs": "Pro začátečníky",
+        "nameEn": "For Beginners",
+        "color": "#FFC107"
     },
     {
         "id": "tag2",
-        "name": "Hudba",
-        "name_EN": "Music"
+        "nameCs": "Hudba",
+        "nameEn": "Music",
+        "color": "#2196F3"
     }
 ]

@@ -16,9 +16,9 @@ describe('ListFilterComponent', () => {
 		places: signal([]),
 		days: signal({}),
 		selectedDay: signal(undefined),
-		eventTypes: [{id: 'concert', name: 'Concert', name_EN: 'Concert', color: '#f00'}],
-		tags: [{id: 'rock', name: 'Rock', name_EN: 'Rock'}],
-		allPlaces: [{id: 'p1', name: 'Main Stage', color: '#000'}],
+		eventTypes: [{id: 'concert', name: 'Concert', color: '#f00'}],
+		tags: [{id: 'rock', nameCs: 'Rock', nameEn: 'Rock', color: '#f00'}],
+		allPlaces: [{id: 'p1', name: 'Main Stage'}],
 		userFilterOptions: {},
 		filterEvents: jasmine.createSpy('filterEvents'),
 		filterPlaces: jasmine.createSpy('filterPlaces'),
@@ -54,13 +54,13 @@ describe('ListFilterComponent', () => {
 	it('should initialize from provided filter options', () => {
 		createComponent({
 			eventType: ['concert'],
-			placeId: ['p1'],
+			locationId: ['p1'],
 			onlyFavorite: true,
 			tags: ['rock'],
 		});
 
 		expect((component as any).selectedEventType).toEqual(['concert']);
-		expect((component as any).placeId).toEqual(['p1']);
+		expect((component as any).locationId).toEqual(['p1']);
 		expect((component as any).onlyFavorite).toBeTrue();
 		expect((component as any).selectedTags).toEqual(['rock']);
 	});
@@ -87,7 +87,7 @@ describe('ListFilterComponent', () => {
 
 			expect(mockDialogRef.close).toHaveBeenCalledWith({
 				eventType: ['concert'],
-				placeId: undefined,
+				locationId: undefined,
 				onlyFavorite: true,
 				tags: undefined,
 			});
@@ -96,14 +96,14 @@ describe('ListFilterComponent', () => {
 		it('should clear empty arrays to undefined', () => {
 			createComponent();
 			(component as any).selectedEventType = [];
-			(component as any).placeId = [];
+			(component as any).locationId = [];
 
 			(component as any).applyFilters();
 
 			expect(mockDialogRef.close).toHaveBeenCalledWith(
 				jasmine.objectContaining({
 					eventType: undefined,
-					placeId: undefined,
+					locationId: undefined,
 				})
 			);
 		});
@@ -113,7 +113,7 @@ describe('ListFilterComponent', () => {
 		it('should clear all filters and close dialog', () => {
 			createComponent({
 				eventType: ['concert'],
-				placeId: ['p1'],
+				locationId: ['p1'],
 				onlyFavorite: true,
 				tags: ['rock'],
 			});
@@ -122,7 +122,7 @@ describe('ListFilterComponent', () => {
 
 			expect(mockDialogRef.close).toHaveBeenCalledWith({
 				eventType: undefined,
-				placeId: undefined,
+				locationId: undefined,
 				onlyFavorite: false,
 				tags: undefined,
 			});

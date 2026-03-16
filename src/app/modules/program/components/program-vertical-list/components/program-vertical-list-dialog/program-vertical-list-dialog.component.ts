@@ -46,7 +46,7 @@ export class ProgramVerticalListDialogComponent {
 		if(searchTerm) {
 			const normalized = Utils.replaceCzechAccentSymbols(searchTerm.toLowerCase().trim());
 			events = events.filter((event: IProgramEvent) =>
-				Utils.replaceCzechAccentSymbols(event.name.toLowerCase().trim()).includes(normalized)
+				Utils.replaceCzechAccentSymbols(event.nameCs.toLowerCase().trim()).includes(normalized)
 			);
 		}
 

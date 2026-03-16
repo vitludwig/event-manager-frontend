@@ -90,8 +90,6 @@ export class ProgramService {
 
 	public async loadCachedData(): Promise<void> {
 		try {
-			await this.checkCacheValidity();
-
 			const localPlaces = localStorage.getItem('places');
 			const localEvents = localStorage.getItem('events');
 			if (localPlaces && localEvents) {
@@ -123,20 +121,29 @@ export class ProgramService {
 	}
 
 	private registerWebsocketHandlers(): void {
-		this.eventService.off('newEvent');
-		this.eventService.off('updateEvent');
+		this.eventService.off('eventCreated');
+		this.eventService.off('eventUpdated');
+		this.eventService.off('eventDeleted');
 
-		this.eventService.on<IEvent>('newEvent', (data) => {
+		this.eventService.on<IEvent>('eventCreated', (data) => {
 			this.#allEvents = [...this.#allEvents, data];
 			this.propagateEventUpdate();
 		});
 
-		this.eventService.on<IEvent>('updateEvent', (data) => {
+		this.eventService.on<IEvent>('eventUpdated', (data) => {
 			const index = this.#allEvents.findIndex((event) => event.id === data.id);
 			if (index === -1) {
 				return;
 			}
 			this.#allEvents = [...this.#allEvents.slice(0, index), data, ...this.#allEvents.slice(index + 1)];
+			localStorage.setItem('events', JSON.stringify(this.#allEvents));
+
+			this.updateFavorites();
+			this.propagateEventUpdate();
+		});
+
+		this.eventService.on<string>('eventDeleted', (eventId) => {
+			this.#allEvents = this.#allEvents.filter((event) => event.id !== eventId);
 			localStorage.setItem('events', JSON.stringify(this.#allEvents));
 
 			this.updateFavorites();
@@ -159,7 +166,7 @@ export class ProgramService {
 		this.autoSelectDay();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
 		await this.loadEventTypes();
-		await this.loadTags();
+		this.extractTags();
 	}
 
 	public getEvent(id: string): IEvent | undefined {
@@ -230,11 +237,22 @@ export class ProgramService {
 	}
 
 	public async loadEventTypes(): Promise<void> {
-		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/eventTypes`));
+		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`));
 	}
 
-	public async loadTags(): Promise<void> {
-		this.tags = await firstValueFrom(this.http.get<IEventTag[]>(`${environment.apiUrl}/tags`));
+	/**
+	 * Extract unique tags from loaded events (no standalone public tags endpoint)
+	 */
+	private extractTags(): void {
+		const tagMap = new Map<string, IEventTag>();
+		for (const event of this.#allEvents) {
+			for (const tag of event.tags) {
+				if (!tagMap.has(tag.id)) {
+					tagMap.set(tag.id, tag);
+				}
+			}
+		}
+		this.tags = Array.from(tagMap.values());
 	}
 
 	private propagateEventUpdate(): void {
@@ -248,14 +266,14 @@ export class ProgramService {
 		}
 
 		return events.filter((event) => {
-			if (filterOptions.placeId !== undefined && filterOptions.placeId.length > 0) {
-				if (!filterOptions.placeId.includes(event.placeId)) {
+			if (filterOptions.locationId !== undefined && filterOptions.locationId.length > 0) {
+				if (!filterOptions.locationId.includes(event.locationId)) {
 					return false;
 				}
 			}
 
 			if (filterOptions.eventType !== undefined && filterOptions.eventType.length > 0) {
-				if (!filterOptions.eventType.includes(event.type.id)) {
+				if (!filterOptions.eventType.includes(event.eventType.id)) {
 					return false;
 				}
 			}
@@ -294,8 +312,8 @@ export class ProgramService {
 	private loadDays(): void {
 		const days = { ...this.#days() };
 		for (const event of this.#allEvents) {
-			const startDate = dayjs(event.start).startOf('day').valueOf();
-			const endDate = dayjs(event.end);
+			const startDate = dayjs(event.startAt).startOf('day').valueOf();
+			const endDate = dayjs(event.endAt);
 
 			if (Object.values(days).length > 0 && endDate.get('hour') <= ProgramConfig.eventEndHourThreshold) {
 				continue;
@@ -309,32 +327,11 @@ export class ProgramService {
 		this.#days.set(days);
 	}
 
-	private readonly programCacheKeys = ['events', 'places', 'favorites', 'userFilterOptions', 'showEventDetails', 'appEventId'];
+	private readonly programCacheKeys = ['events', 'places', 'favorites', 'userFilterOptions', 'showEventDetails'];
 
 	private clearProgramCache(): void {
 		for (const key of this.programCacheKeys) {
 			localStorage.removeItem(key);
 		}
-	}
-
-	private async checkCacheValidity(): Promise<void> {
-		try {
-			const appEventIdStored = localStorage.getItem('appEventId');
-			const appEventId = await this.getAppEventId();
-			if (appEventIdStored !== appEventId) {
-				this.clearProgramCache();
-				localStorage.setItem('appEventId', appEventId);
-			}
-		} catch (e) {
-			this.clearProgramCache();
-		}
-	}
-
-	/**
-	 * Used to invalidate events in local storage from another event
-	 * @private
-	 */
-	private getAppEventId(): Promise<string> {
-		return firstValueFrom(this.http.get(`${environment.signalrUrl}/public/appEventId.txt`, { responseType: 'text' }));
 	}
 }

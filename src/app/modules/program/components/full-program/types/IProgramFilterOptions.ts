@@ -1,6 +1,6 @@
 export interface IProgramFilterOptions {
 	eventType?: string[];
-	placeId?: string[];
+	locationId?: string[];
 	onlyFavorite?: boolean;
 	tags?: string[];
 }

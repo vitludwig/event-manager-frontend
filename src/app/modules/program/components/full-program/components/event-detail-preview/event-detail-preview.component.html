@@ -6,14 +6,10 @@
 			<div class="event-detail__content__title__info">
 				<h4>{{ data.event | translateEventProperty: 'name' }}</h4>
 				<h6>
-                    @if(translate.currentLang === 'cs') {
-                        {{ data.event.type.name }}
-                    } @else {
-                        {{ data.event.type.name_EN }}
-                    }
+                    {{ data.event.eventType.name }}
                 </h6>
 				<div style="display: flex; justify-content: space-between; align-items: center">
-                    <div>{{ data.event.start | date: 'HH:mm' }} - {{ data.event.end | date: 'HH:mm' }}</div>
+                    <div>{{ data.event.startAt | date: 'HH:mm' }} - {{ data.event.endAt | date: 'HH:mm' }}</div>
                     <app-event-tags [event]="data.event" />
                 </div>
 			</div>

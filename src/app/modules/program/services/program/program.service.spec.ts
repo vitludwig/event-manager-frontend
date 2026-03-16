@@ -11,27 +11,27 @@ import {environment} from '../../../../../environments/environment';
 import dayjs from 'dayjs';
 
 function createMockPlace(id: string, name: string = `Place ${id}`): IProgramPlace {
-	return {id, name, color: '#000'};
+	return {id, name};
 }
 
 function createMockEventType(id: string = 'type1'): IEventType {
-	return {id, name: 'Concert', name_EN: 'Concert', color: '#f00'};
+	return {id, name: 'Concert', color: '#f00'};
 }
 
 function createMockEvent(overrides: Partial<IEvent> = {}): IEvent {
-	const place = createMockPlace('place1');
+	const location = createMockPlace('place1');
 	return {
 		id: 'event1',
-		name: 'Test Event',
-		name_EN: 'Test Event EN',
-		description: '',
-		description_EN: '',
-		start: '2025-07-10T14:00:00Z',
-		end: '2025-07-10T16:00:00Z',
-		placeId: 'place1',
-		place,
+		nameCs: 'Test Event',
+		nameEn: 'Test Event EN',
+		descriptionCs: '',
+		descriptionEn: '',
+		startAt: '2025-07-10T14:00:00Z',
+		endAt: '2025-07-10T16:00:00Z',
+		locationId: 'place1',
+		location,
 		favorite: false,
-		type: createMockEventType(),
+		eventType: createMockEventType(),
 		tags: [],
 		...overrides,
 	};
@@ -48,9 +48,7 @@ function loadAndFlush(
 ): void {
 	service.loadProgramData(places, events);
 	tick();
-	httpTesting.expectOne(`${environment.apiUrl}/eventTypes`).flush([]);
-	tick();
-	httpTesting.expectOne(`${environment.apiUrl}/tags`).flush([]);
+	httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([]);
 	tick();
 }
 
@@ -107,7 +105,7 @@ describe('ProgramService', () => {
 	describe('loadProgramData', () => {
 		it('should populate places signal with provided places', fakeAsync(() => {
 			const places = [createMockPlace('p1'), createMockPlace('p2')];
-			const events = [createMockEvent({id: 'e1', placeId: 'p1'})];
+			const events = [createMockEvent({id: 'e1', locationId: 'p1'})];
 
 			loadAndFlush(service, httpTesting, places, events);
 
@@ -117,8 +115,8 @@ describe('ProgramService', () => {
 
 		it('should compute days from events', fakeAsync(() => {
 			const events = [
-				createMockEvent({id: 'e1', start: '2025-07-10T14:00:00Z', end: '2025-07-10T16:00:00Z'}),
-				createMockEvent({id: 'e2', start: '2025-07-11T10:00:00Z', end: '2025-07-11T12:00:00Z'}),
+				createMockEvent({id: 'e1', startAt: '2025-07-10T14:00:00Z', endAt: '2025-07-10T16:00:00Z'}),
+				createMockEvent({id: 'e2', startAt: '2025-07-11T10:00:00Z', endAt: '2025-07-11T12:00:00Z'}),
 			];
 
 			loadAndFlush(service, httpTesting, [], events);
@@ -140,26 +138,23 @@ describe('ProgramService', () => {
 			]));
 		}));
 
-		it('should load event types and tags from API', fakeAsync(() => {
+		it('should load event types from API', fakeAsync(() => {
 			const eventTypes: IEventType[] = [createMockEventType('t1')];
 
 			service.loadProgramData([], []);
 			tick();
-			httpTesting.expectOne(`${environment.apiUrl}/eventTypes`).flush(eventTypes);
-			tick();
-			httpTesting.expectOne(`${environment.apiUrl}/tags`).flush([{id: 'tag1', name: 'Rock', name_EN: 'Rock'}]);
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush(eventTypes);
 			tick();
 
 			expect(service.eventTypes).toEqual(eventTypes);
-			expect(service.tags.length).toBe(1);
 		}));
 	});
 
 	describe('autoSelectDay', () => {
 		it('should auto-select first day when days are loaded and no day is selected', fakeAsync(() => {
 			const events = [
-				createMockEvent({id: 'e1', start: '2025-07-10T14:00:00Z', end: '2025-07-10T16:00:00Z'}),
-				createMockEvent({id: 'e2', start: '2025-07-11T10:00:00Z', end: '2025-07-11T12:00:00Z'}),
+				createMockEvent({id: 'e1', startAt: '2025-07-10T14:00:00Z', endAt: '2025-07-10T16:00:00Z'}),
+				createMockEvent({id: 'e2', startAt: '2025-07-11T10:00:00Z', endAt: '2025-07-11T12:00:00Z'}),
 			];
 
 			loadAndFlush(service, httpTesting, [], events);
@@ -170,7 +165,7 @@ describe('ProgramService', () => {
 		it('should not override selectedDay if already set', fakeAsync(() => {
 			service.selectedDay.set(999);
 			const events = [
-				createMockEvent({id: 'e1', start: '2025-07-10T14:00:00Z', end: '2025-07-10T16:00:00Z'}),
+				createMockEvent({id: 'e1', startAt: '2025-07-10T14:00:00Z', endAt: '2025-07-10T16:00:00Z'}),
 			];
 
 			loadAndFlush(service, httpTesting, [], events);
@@ -187,8 +182,8 @@ describe('ProgramService', () => {
 		it('should auto-select today if it exists in days', fakeAsync(() => {
 			const today = dayjs();
 			const events = [
-				createMockEvent({id: 'e1', start: today.hour(14).toISOString(), end: today.hour(16).toISOString()}),
-				createMockEvent({id: 'e2', start: '2025-01-15T10:00:00Z', end: '2025-01-15T12:00:00Z'}),
+				createMockEvent({id: 'e1', startAt: today.hour(14).toISOString(), endAt: today.hour(16).toISOString()}),
+				createMockEvent({id: 'e2', startAt: '2025-01-15T10:00:00Z', endAt: '2025-01-15T12:00:00Z'}),
 			];
 
 			loadAndFlush(service, httpTesting, [], events);
@@ -201,9 +196,9 @@ describe('ProgramService', () => {
 	describe('filterEvents', () => {
 		beforeEach(fakeAsync(() => {
 			const events = [
-				createMockEvent({id: 'e1', placeId: 'p1', type: createMockEventType('concert')}),
-				createMockEvent({id: 'e2', placeId: 'p2', type: createMockEventType('workshop')}),
-				createMockEvent({id: 'e3', placeId: 'p1', type: createMockEventType('concert')}),
+				createMockEvent({id: 'e1', locationId: 'p1', eventType: createMockEventType('concert')}),
+				createMockEvent({id: 'e2', locationId: 'p2', eventType: createMockEventType('workshop')}),
+				createMockEvent({id: 'e3', locationId: 'p1', eventType: createMockEventType('concert')}),
 			];
 
 			// Pre-set favorites in localStorage so loadProgramData marks e3 as favorite
@@ -215,7 +210,7 @@ describe('ProgramService', () => {
 			service.filterEvents({eventType: ['concert']});
 			const filtered = service.events();
 			expect(filtered.length).toBe(2);
-			expect(filtered.every(e => e.type.id === 'concert')).toBeTrue();
+			expect(filtered.every(e => e.eventType.id === 'concert')).toBeTrue();
 		});
 
 		it('should filter events by favorites only', () => {
@@ -233,21 +228,21 @@ describe('ProgramService', () => {
 		});
 
 		it('should filter events by place', () => {
-			service.filterEvents({placeId: ['p1']});
+			service.filterEvents({locationId: ['p1']});
 			const filtered = service.events();
 			expect(filtered.length).toBe(2);
-			expect(filtered.every(e => e.placeId === 'p1')).toBeTrue();
+			expect(filtered.every(e => e.locationId === 'p1')).toBeTrue();
 		});
 
 		it('should combine place and event type filters', () => {
-			service.filterEvents({placeId: ['p2'], eventType: ['workshop']});
+			service.filterEvents({locationId: ['p2'], eventType: ['workshop']});
 			const filtered = service.events();
 			expect(filtered.length).toBe(1);
 			expect(filtered[0].id).toBe('e2');
 		});
 
 		it('should return no events when filters have no match', () => {
-			service.filterEvents({placeId: ['p2'], eventType: ['concert']});
+			service.filterEvents({locationId: ['p2'], eventType: ['concert']});
 			const filtered = service.events();
 			expect(filtered.length).toBe(0);
 		});
@@ -268,7 +263,7 @@ describe('ProgramService', () => {
 		});
 
 		it('should ignore empty arrays in filter options', () => {
-			service.filterEvents({placeId: [], eventType: [], tags: []});
+			service.filterEvents({locationId: [], eventType: [], tags: []});
 			expect(service.events().length).toBe(3);
 		});
 	});
@@ -348,9 +343,9 @@ describe('ProgramService', () => {
 
 		it('should propagate update to events signal', () => {
 			const event = service.getEvent('e1')!;
-			service.updateEvent(event, 'name', 'Updated Name');
+			service.updateEvent(event, 'nameCs', 'Updated Name');
 			const signalEvents = service.events();
-			expect(signalEvents.find(e => e.id === 'e1')!.name).toBe('Updated Name');
+			expect(signalEvents.find(e => e.id === 'e1')!.nameCs).toBe('Updated Name');
 		});
 	});
 

@@ -11,16 +11,16 @@ import {IProgramEvent} from '../../../../types/IProgramPlace';
 function createMockEvent(overrides: Partial<IProgramEvent> = {}): IProgramEvent {
 	return {
 		id: 'e1',
-		name: 'Test Event',
-		name_EN: 'Test Event EN',
-		description: '',
-		description_EN: '',
-		start: '2025-07-10T14:00:00Z',
-		end: '2025-07-10T15:00:00Z',
-		placeId: 'p1',
-		place: {id: 'p1', name: 'Place 1', color: '#000'},
+		nameCs: 'Test Event',
+		nameEn: 'Test Event EN',
+		descriptionCs: '',
+		descriptionEn: '',
+		startAt: '2025-07-10T14:00:00Z',
+		endAt: '2025-07-10T15:00:00Z',
+		locationId: 'p1',
+		location: {id: 'p1', name: 'Place 1'},
 		favorite: false,
-		type: {id: 't1', name: 'Concert', name_EN: 'Concert', color: '#f00'},
+		eventType: {id: 't1', name: 'Concert', color: '#f00'},
 		tags: [],
 		startSegment: 0,
 		segmentCount: 4,
@@ -51,9 +51,9 @@ describe('ProgramVerticalListDialogComponent', () => {
 
 	beforeEach(() => {
 		mockEvents = [
-			createMockEvent({id: 'e1', name: 'Rock Festival', favorite: true}),
-			createMockEvent({id: 'e2', name: 'Jazz Night', favorite: false}),
-			createMockEvent({id: 'e3', name: 'Rockový Koncert', favorite: true}),
+			createMockEvent({id: 'e1', nameCs: 'Rock Festival', favorite: true}),
+			createMockEvent({id: 'e2', nameCs: 'Jazz Night', favorite: false}),
+			createMockEvent({id: 'e3', nameCs: 'Rockový Koncert', favorite: true}),
 		];
 
 		TestBed.configureTestingModule({

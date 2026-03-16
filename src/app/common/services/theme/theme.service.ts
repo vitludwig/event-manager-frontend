@@ -1,38 +1,29 @@
 import { Injectable, inject, DOCUMENT } from '@angular/core';
+import { CustomizationService } from '../customization/customization.service';
 
-import {HttpClient} from "@angular/common/http";
-import {firstValueFrom} from "rxjs";
-import {environment} from "../../../../environments/environment";
+const DEFAULT_THEME_URL = '/assets/themes/rzb-theme.css';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
     private document = inject(DOCUMENT);
-    private http = inject(HttpClient);
+    private customizationService = inject(CustomizationService);
 
     async loadThemeBundle(): Promise<void> {
-        const head = this.document.getElementsByTagName('head')[0];
-        let activeTheme;
-        let activeThemeVersion;
-        try {
-            activeTheme = await firstValueFrom(this.http.get(`${environment.signalrUrl}/public/themes/active-theme.txt`, {responseType: 'text'}));
-            activeThemeVersion = await firstValueFrom(this.http.get(`${environment.signalrUrl}/public/themes/active-theme-version.txt`, {responseType: 'text'}));
-        } catch(e) {
-            activeTheme = 'rzb-theme';
+        let themeCssUrl = this.customizationService.themeCssUrl;
+        if (!themeCssUrl) {
+            themeCssUrl = DEFAULT_THEME_URL;
         }
 
-        if(!activeTheme) {
-            activeTheme = 'rzb-theme';
-        }
+        const head = this.document.getElementsByTagName('head')[0];
         const style = this.document.createElement('link');
         style.id = 'client-theme';
         style.rel = 'stylesheet';
-        style.href = `${environment.signalrUrl}/public/themes/${activeTheme}.css?v=${activeThemeVersion}`;
+        style.href = themeCssUrl;
         style.onerror = () => {
             style.onerror = null;
-            style.href = '/assets/themes/rzb-theme.css';
+            style.href = DEFAULT_THEME_URL;
         }
 
         head.appendChild(style);
-
     }
 }

@@ -117,10 +117,14 @@ export class AppComponent implements OnInit {
 					continue;
 				}
 
-				const diff = Math.abs(now.diff(dayjs(event.start), 'minutes'));
+				const diff = Math.abs(now.diff(dayjs(event.startAt), 'minutes'));
 				const isInRange = diff >= 9 && diff <= 11;
 				if(!this.#alreadyNotified.includes(favorite.id) && isInRange) {
-					this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`,
+					const isCs = this.translate.currentLang === 'cs';
+					const eventName = isCs ? favorite.nameCs : favorite.nameEn;
+					const title = isCs ? 'Nadcházející akce' : 'Upcoming event';
+					const body = isCs ? `${eventName} začíná za 10 minut!` : `${eventName} starts in 10 minutes!`;
+					this.notificationService.showLocalNotification(title, body,
 						{
 							actionId: ELocalNotificationAction.NAVIGATE_TO,
 							value: `/event-detail/${favorite.id}`

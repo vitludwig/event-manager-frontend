@@ -14,8 +14,8 @@ describe('EventTagsComponent', () => {
 		const fixture = TestBed.createComponent(EventTagsComponent);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('event', {
-			id: 'e1', name: 'Test', name_EN: 'Test EN',
-			tags: [{id: 't1', name: 'Rock', name_EN: 'Rock'}],
+			id: 'e1', nameCs: 'Test', nameEn: 'Test EN',
+			tags: [{id: 't1', nameCs: 'Rock', nameEn: 'Rock', color: '#f00'}],
 		});
 		fixture.detectChanges();
 	});

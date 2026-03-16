@@ -14,27 +14,27 @@ import {IEventType} from '../../types/IEventType';
 import dayjs from 'dayjs';
 
 function createMockPlace(id: string, name: string = `Place ${id}`): IProgramPlace {
-	return {id, name, color: '#000'};
+	return {id, name};
 }
 
 function createMockEventType(id: string = 'type1'): IEventType {
-	return {id, name: 'Concert', name_EN: 'Concert', color: '#f00'};
+	return {id, name: 'Concert', color: '#f00'};
 }
 
 function createMockEvent(overrides: Partial<IEvent> = {}): IEvent {
-	const place = createMockPlace('place1');
+	const location = createMockPlace('place1');
 	return {
 		id: 'event1',
-		name: 'Test Event',
-		name_EN: 'Test Event EN',
-		description: '',
-		description_EN: '',
-		start: '2025-07-10T14:00:00Z',
-		end: '2025-07-10T15:00:00Z',
-		placeId: 'place1',
-		place,
+		nameCs: 'Test Event',
+		nameEn: 'Test Event EN',
+		descriptionCs: '',
+		descriptionEn: '',
+		startAt: '2025-07-10T14:00:00Z',
+		endAt: '2025-07-10T15:00:00Z',
+		locationId: 'place1',
+		location,
 		favorite: false,
-		type: createMockEventType(),
+		eventType: createMockEventType(),
 		tags: [],
 		...overrides,
 	};
@@ -140,8 +140,8 @@ describe('FullProgramComponent', () => {
 			const nextDay = dayjs('2025-07-11');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', start: baseDay.hour(14).toISOString(), end: baseDay.hour(15).toISOString()}),
-				createMockEvent({id: 'e2', start: nextDay.hour(10).toISOString(), end: nextDay.hour(12).toISOString()}),
+				createMockEvent({id: 'e1', startAt: baseDay.hour(14).toISOString(), endAt: baseDay.hour(15).toISOString()}),
+				createMockEvent({id: 'e2', startAt: nextDay.hour(10).toISOString(), endAt: nextDay.hour(12).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -158,8 +158,8 @@ describe('FullProgramComponent', () => {
 			const nextDay = dayjs('2025-07-11');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', start: baseDay.hour(20).toISOString(), end: baseDay.hour(22).toISOString()}),
-				createMockEvent({id: 'e2', start: nextDay.hour(2).toISOString(), end: nextDay.hour(4).toISOString()}),
+				createMockEvent({id: 'e1', startAt: baseDay.hour(20).toISOString(), endAt: baseDay.hour(22).toISOString()}),
+				createMockEvent({id: 'e2', startAt: nextDay.hour(2).toISOString(), endAt: nextDay.hour(4).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -174,7 +174,7 @@ describe('FullProgramComponent', () => {
 			const baseDay = dayjs('2025-07-10');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', start: baseDay.hour(7).toISOString(), end: baseDay.hour(8).toISOString()}),
+				createMockEvent({id: 'e1', startAt: baseDay.hour(7).toISOString(), endAt: baseDay.hour(8).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -191,7 +191,7 @@ describe('FullProgramComponent', () => {
 			const nextDay = dayjs('2025-07-11');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', start: nextDay.hour(6).toISOString(), end: nextDay.hour(8).toISOString()}),
+				createMockEvent({id: 'e1', startAt: nextDay.hour(6).toISOString(), endAt: nextDay.hour(8).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -207,7 +207,7 @@ describe('FullProgramComponent', () => {
 			const baseDay = dayjs('2025-07-10');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', start: baseDay.hour(5).toISOString(), end: baseDay.hour(6).toISOString()}),
+				createMockEvent({id: 'e1', startAt: baseDay.hour(5).toISOString(), endAt: baseDay.hour(6).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -223,8 +223,8 @@ describe('FullProgramComponent', () => {
 			const nextDay = dayjs('2025-07-11');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', favorite: true, start: baseDay.hour(22).toISOString(), end: nextDay.hour(2).toISOString()}),
-				createMockEvent({id: 'e2', favorite: true, start: nextDay.hour(1).toISOString(), end: nextDay.hour(3).toISOString()}),
+				createMockEvent({id: 'e1', favorite: true, startAt: baseDay.hour(22).toISOString(), endAt: nextDay.hour(2).toISOString()}),
+				createMockEvent({id: 'e2', favorite: true, startAt: nextDay.hour(1).toISOString(), endAt: nextDay.hour(3).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -244,7 +244,6 @@ describe('FullProgramComponent', () => {
 		});
 
 		it('should compute segments from events', () => {
-			// Use local time to avoid timezone issues in filterEventsByDay
 			const baseDay = dayjs('2025-07-10');
 			const day = baseDay.startOf('day').valueOf();
 			const startTime = baseDay.hour(10).minute(0).second(0).toISOString();
@@ -252,8 +251,8 @@ describe('FullProgramComponent', () => {
 			const events = [
 				createMockEvent({
 					id: 'e1',
-					start: startTime,
-					end: endTime,
+					startAt: startTime,
+					endAt: endTime,
 				}),
 			];
 			mockProgramService.events.set(events);
@@ -263,7 +262,6 @@ describe('FullProgramComponent', () => {
 
 			const segments = (component as any).allSegments();
 			expect(segments.length).toBeGreaterThan(0);
-			// 1 hour = 4 segments of 15 minutes
 			expect(segments.length).toBe(4);
 			expect(segments[0].isWholeHour).toBeTrue();
 			expect(segments[0].index).toBe(0);
@@ -277,8 +275,8 @@ describe('FullProgramComponent', () => {
 			const events = [
 				createMockEvent({
 					id: 'e1',
-					start: startTime,
-					end: endTime,
+					startAt: startTime,
+					endAt: endTime,
 				}),
 			];
 			mockProgramService.events.set(events);
@@ -300,12 +298,12 @@ describe('FullProgramComponent', () => {
 			expect((component as any).eventsByPlaces()).toEqual({});
 		});
 
-		it('should group events by placeId', () => {
+		it('should group events by locationId', () => {
 			const baseDay = dayjs('2025-07-10');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
-				createMockEvent({id: 'e1', placeId: 'p1', start: baseDay.hour(10).toISOString(), end: baseDay.hour(11).toISOString()}),
-				createMockEvent({id: 'e2', placeId: 'p2', start: baseDay.hour(10).toISOString(), end: baseDay.hour(11).minute(30).toISOString()}),
+				createMockEvent({id: 'e1', locationId: 'p1', startAt: baseDay.hour(10).toISOString(), endAt: baseDay.hour(11).toISOString()}),
+				createMockEvent({id: 'e2', locationId: 'p2', startAt: baseDay.hour(10).toISOString(), endAt: baseDay.hour(11).minute(30).toISOString()}),
 			];
 			mockProgramService.events.set(events);
 			mockProgramService.selectedDay.set(day);
@@ -323,9 +321,9 @@ describe('FullProgramComponent', () => {
 			const events = [
 				createMockEvent({
 					id: 'e1',
-					placeId: 'p1',
-					start: baseDay.hour(10).toISOString(),
-					end: baseDay.hour(11).toISOString(),
+					locationId: 'p1',
+					startAt: baseDay.hour(10).toISOString(),
+					endAt: baseDay.hour(11).toISOString(),
 				}),
 			];
 			mockProgramService.events.set(events);
@@ -339,7 +337,7 @@ describe('FullProgramComponent', () => {
 
 			const eventValues = Object.values(placeEvents) as any[];
 			expect(eventValues.length).toBe(1);
-			expect(eventValues[0].segmentCount).toBe(4); // 1 hour = 4 x 15min segments
+			expect(eventValues[0].segmentCount).toBe(4);
 		});
 	});
 
@@ -356,7 +354,7 @@ describe('FullProgramComponent', () => {
 
 	describe('applyFilters (only favorites integration)', () => {
 		it('should call filterEvents with onlyFavorite from filter dialog result', () => {
-			const filterOptions = {onlyFavorite: true, placeId: undefined, eventType: undefined, tags: undefined};
+			const filterOptions = {onlyFavorite: true, locationId: undefined, eventType: undefined, tags: undefined};
 
 			(component as any).applyFilters(filterOptions);
 
@@ -374,11 +372,10 @@ describe('FullProgramComponent', () => {
 			const favoriteEvent = createMockEvent({
 				id: 'e1',
 				favorite: true,
-				start: baseDay.hour(14).toISOString(),
-				end: baseDay.hour(15).toISOString(),
+				startAt: baseDay.hour(14).toISOString(),
+				endAt: baseDay.hour(15).toISOString(),
 			});
 
-			// Simulate service returning only favorites after filterEvents
 			mockProgramService.events.set([favoriteEvent]);
 			mockProgramService.selectedDay.set(day);
 
@@ -419,7 +416,6 @@ describe('FullProgramComponent', () => {
 		});
 
 		it('should zoom out when fingers move closer together (pinch-in = zoom out)', () => {
-			// Start at distance 100, move to 50 → scale 0.5, new zoom = 1.0 * 0.5 = 0.5
 			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
 			(component as any).onTouchStart(start);
 
@@ -433,7 +429,6 @@ describe('FullProgramComponent', () => {
 			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
 			(component as any).onTouchStart(start);
 
-			// Scale would be 0.1, clamped to 0.4
 			const move = createTouchEvent([{ clientX: 45, clientY: 0 }, { clientX: 55, clientY: 0 }]);
 			(component as any).onTouchMove(move);
 
@@ -441,12 +436,10 @@ describe('FullProgramComponent', () => {
 		});
 
 		it('should clamp zoomLevel to MAX_ZOOM (1.0) when scale > 1', () => {
-			// Set zoom to 0.6 first
 			(component as any).zoomLevel.set(0.6);
 			const start = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 100, clientY: 0 }]);
 			(component as any).onTouchStart(start);
 
-			// Scale 3.0 → 0.6 * 3.0 = 1.8, clamped to 1.0
 			const move = createTouchEvent([{ clientX: 0, clientY: 0 }, { clientX: 300, clientY: 0 }]);
 			(component as any).onTouchMove(move);
 
@@ -465,7 +458,7 @@ describe('FullProgramComponent', () => {
 			(component as any).onTouchStart(start);
 			expect((component as any).pinchStartDistance).not.toBeNull();
 
-			const end = createTouchEvent([{ clientX: 0, clientY: 0 }]); // one finger lifted
+			const end = createTouchEvent([{ clientX: 0, clientY: 0 }]);
 			(component as any).onTouchEnd(end);
 			expect((component as any).pinchStartDistance).toBeNull();
 		});
@@ -476,7 +469,7 @@ describe('FullProgramComponent', () => {
 			expect((component as any).pinchStartDistance).not.toBeNull();
 
 			const cancel = createTouchEvent([]);
-			(component as any).onTouchEnd(cancel); // touchcancel reuses onTouchEnd
+			(component as any).onTouchEnd(cancel);
 			expect((component as any).pinchStartDistance).toBeNull();
 		});
 	});

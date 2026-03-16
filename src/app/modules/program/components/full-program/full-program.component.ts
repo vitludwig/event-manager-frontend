@@ -31,9 +31,8 @@ import {UserInfoComponent} from '../../../../common/components/user-info/user-in
 import {SettingsService} from "../../../../common/services/settings/settings.service";
 import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
 import ProgramConfig from "../../config/ProgramConfig";
-import {environment} from "../../../../../environments/environment";
-import {EFestivalID} from "../../../../common/types/EFestivalID";
 import {MatBadge} from "@angular/material/badge";
+import {CustomizationService} from "../../../../common/services/customization/customization.service";
 
 
 @Component({
@@ -71,10 +70,12 @@ export class FullProgramComponent implements AfterViewInit {
 	protected selectedEvent: IProgramEvent | null = null;
 
 	protected readonly EDisplayDevice = EDisplayDevice;
-	protected readonly environment = environment;
-	protected readonly EFestivalID = EFestivalID;
 
 	protected readonly programService: ProgramService = inject(ProgramService);
+	private readonly customizationService: CustomizationService = inject(CustomizationService);
+
+	protected get logoUrl(): string | undefined { return this.customizationService.logoUrl; }
+	protected get festivalId(): string | undefined { return this.customizationService.festivalId; }
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
@@ -125,9 +126,9 @@ export class FullProgramComponent implements AfterViewInit {
 			return [];
 		}
 
-		const placeFilter = this.programService.userFilterOptions.placeId;
+		const placeFilter = this.programService.userFilterOptions.locationId;
 		if(Array.isArray(placeFilter) && placeFilter.length > 0) {
-			return events.filter((event) => placeFilter.includes(event.placeId));
+			return events.filter((event) => placeFilter.includes(event.locationId));
 		}
 		return events;
 	});
@@ -137,7 +138,7 @@ export class FullProgramComponent implements AfterViewInit {
 		if(events.length === 0) {
 			return null;
 		}
-		const allStarts = events.map((event) => event.start);
+		const allStarts = events.map((event) => event.startAt);
 		const firstEventAt = allStarts.reduce((prev, curr) => prev < curr ? prev : curr);
 		return dayjs(firstEventAt).set('minutes', 0);
 	});
@@ -149,7 +150,7 @@ export class FullProgramComponent implements AfterViewInit {
 			return [];
 		}
 
-		const allEnds = events.map((event) => event.end);
+		const allEnds = events.map((event) => event.endAt);
 		const lastEventAt = allEnds.reduce((prev, curr) => prev > curr ? prev : curr);
 		const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(firstEventAt.diff(dayjs(lastEventAt))));
 
@@ -185,17 +186,17 @@ export class FullProgramComponent implements AfterViewInit {
 
 		for(const event of allEvents) {
 			const selectedDayJs = dayjs(selectedDay);
-			const eventStart = dayjs(event.start);
-			const eventEnd = dayjs(event.end);
+			const eventStart = dayjs(event.startAt);
+			const eventEnd = dayjs(event.endAt);
 			const dayStart = eventStart.set('hour', firstEventAt.hour()).set('minutes', firstEventAt.minute()).set('date', selectedDayJs.get('date'));
 			const startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
 			const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
 
-			if(!result[event.placeId]) {
-				result[event.placeId] = {};
+			if(!result[event.locationId]) {
+				result[event.locationId] = {};
 			}
 
-			result[event.placeId][startSegment] = {
+			result[event.locationId][startSegment] = {
 				...event,
 				startSegment,
 				segmentCount
@@ -281,7 +282,7 @@ export class FullProgramComponent implements AfterViewInit {
 			return;
 		}
 
-		this.programService.filterPlaces(options.placeId);
+		this.programService.filterPlaces(options.locationId);
 		this.programService.filterEvents({
 			eventType: options.eventType,
 			onlyFavorite: options.onlyFavorite,
@@ -310,7 +311,7 @@ export class FullProgramComponent implements AfterViewInit {
 
 	private filterEventsByDay(events: IEvent[], day?: number): IEvent[] {
 		return events.filter((event) => {
-			const eventStart = dayjs(event.start);
+			const eventStart = dayjs(event.startAt);
 			const nextDay = dayjs(day).add(1, 'day');
 			const isEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
 			const isSelectedDayEvent = eventStart.isSame(day, 'day') && eventStart.get('hour') > ProgramConfig.eventStartHourThreshold;

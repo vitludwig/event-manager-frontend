@@ -1,1 +1,1 @@
-export type TEventMethodName = 'newEvent' | 'updateEvent';
+export type TEventMethodName = 'eventCreated' | 'eventUpdated' | 'eventDeleted';

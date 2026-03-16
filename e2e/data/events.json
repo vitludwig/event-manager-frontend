@@ -1,75 +1,64 @@
 [
     {
         "id": "event1",
-        "name": "Opening Ceremony",
-        "name_EN": "Opening Ceremony",
-        "description": "Start of the festival",
-        "description_EN": "Start of the festival",
-        "start": "2023-01-01T10:00:00.000Z",
-        "end": "2023-01-01T11:00:00.000Z",
-        "placeId": "place1",
-        "place": {
-            "id": "place1",
-            "name": "Main Stage",
-            "color": "#ff0000"
+        "nameCs": "Zahajovací ceremoniál",
+        "nameEn": "Opening Ceremony",
+        "descriptionCs": "Začátek festivalu",
+        "descriptionEn": "Start of the festival",
+        "startAt": "2023-01-01T10:00:00.000Z",
+        "endAt": "2023-01-01T11:00:00.000Z",
+        "locationId": "place1",
+        "location": {
+            "name": "Main Stage"
         },
         "favorite": false,
-        "type": {
-            "id": "type1",
+        "eventType": {
             "name": "Ceremony",
-            "name_EN": "Ceremony",
             "color": "#ff0000"
         },
         "tags": []
     },
     {
         "id": "event2",
-        "name": "Workshop 1",
-        "name_EN": "Workshop 1",
-        "description": "Learn something new",
-        "description_EN": "Learn something new",
-        "start": "2023-01-01T12:00:00.000Z",
-        "end": "2023-01-01T13:00:00.000Z",
-        "placeId": "place2",
-        "place": {
-            "id": "place2",
-            "name": "Workshop Tent",
-            "color": "#00ff00"
+        "nameCs": "Workshop 1",
+        "nameEn": "Workshop 1",
+        "descriptionCs": "Nauč se něco nového",
+        "descriptionEn": "Learn something new",
+        "startAt": "2023-01-01T12:00:00.000Z",
+        "endAt": "2023-01-01T13:00:00.000Z",
+        "locationId": "place2",
+        "location": {
+            "name": "Workshop Tent"
         },
         "favorite": false,
-        "type": {
-            "id": "type2",
+        "eventType": {
             "name": "Workshop",
-            "name_EN": "Workshop",
             "color": "#00ff00"
         },
         "tags": [
             {
                 "id": "tag1",
-                "name": "Pro začátečníky",
-                "name_EN": "For Beginners"
+                "nameCs": "Pro začátečníky",
+                "nameEn": "For Beginners",
+                "color": "#FFC107"
             }
         ]
     },
     {
         "id": "event3",
-        "name": "Concert",
-        "name_EN": "Concert",
-        "description": "Live music",
-        "description_EN": "Live music",
-        "start": "2023-01-02T20:00:00.000Z",
-        "end": "2023-01-02T22:00:00.000Z",
-        "placeId": "place1",
-        "place": {
-            "id": "place1",
-            "name": "Main Stage",
-            "color": "#ff0000"
+        "nameCs": "Koncert",
+        "nameEn": "Concert",
+        "descriptionCs": "Živá hudba",
+        "descriptionEn": "Live music",
+        "startAt": "2023-01-02T20:00:00.000Z",
+        "endAt": "2023-01-02T22:00:00.000Z",
+        "locationId": "place1",
+        "location": {
+            "name": "Main Stage"
         },
         "favorite": false,
-        "type": {
-            "id": "type3",
+        "eventType": {
             "name": "Concert",
-            "name_EN": "Concert",
             "color": "#0000ff"
         },
         "tags": []

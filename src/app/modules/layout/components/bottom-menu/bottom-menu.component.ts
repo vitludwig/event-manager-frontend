@@ -9,8 +9,7 @@ import {ERoute} from '../../../../common/types/ERoute';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {SettingsService} from "../../../../common/services/settings/settings.service";
 import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
-import {environment} from "../../../../../environments/environment";
-import {EFestivalID} from "../../../../common/types/EFestivalID";
+import {CustomizationService} from "../../../../common/services/customization/customization.service";
 
 @Component({
     selector: 'app-bottom-menu',
@@ -29,17 +28,16 @@ export class BottomMenuComponent {
 	protected readonly ERoute = ERoute;
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 	private readonly translate: TranslateService = inject(TranslateService);
+	private readonly customizationService = inject(CustomizationService);
 
 	protected EDisplayDevice = EDisplayDevice;
 
 	protected openFAQ(): void {
-		if(this.translate.currentLang === 'cs') {
-			window.open(environment.faqUrl_CS, '_blank');
-		} else {
-			window.open(environment.faqUrl_EN, '_blank');
+		const url = this.translate.currentLang === 'cs'
+			? this.customizationService.faqUrlCs
+			: this.customizationService.faqUrlEn;
+		if (url) {
+			window.open(url, '_blank');
 		}
 	}
-
-	protected readonly environment = environment;
-	protected readonly EFestivalID = EFestivalID;
 }

@@ -11,8 +11,8 @@
           >
           @for (event of day.value; track event) {
             <div
-              (click)="openFullDetail(event, event.place)"
-              [style.border-left]="'8px solid ' + event.type.color"
+              (click)="openFullDetail(event, event.location)"
+              [style.border-left]="'8px solid ' + event.eventType.color"
               matRipple
               role="listitem"
               class="list-vertical__event"
@@ -20,21 +20,17 @@
               <div class="list-vertical__event__content">
                 <span class="list-vertical__event__content__time">
                   <small>
-                    <div>{{ event.start | date: 'HH:mm' }}</div>
-                    <div>{{ event.end | date: 'HH:mm' }}</div>
+                    <div>{{ event.startAt | date: 'HH:mm' }}</div>
+                    <div>{{ event.endAt | date: 'HH:mm' }}</div>
                   </small>
                 </span>
                 <div class="d-flex align-items-center">
                   <span class="list-vertical__event__content__title">
                     <span class="event-title">{{ event | translateEventProperty: 'name' }}</span>
                     <small>
-                      @if(translate.currentLang === 'cs') {
-                        {{ event.type.name }}
-                      } @else {
-                        {{ event.type.name_EN }}
-                      }
+                      {{ event.eventType.name }}
                     </small>
-                    <small>{{event.place.name }}</small>
+                    <small>{{event.location.name }}</small>
                   </span>
                 </div>
               </div>

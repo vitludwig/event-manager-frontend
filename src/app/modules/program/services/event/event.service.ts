@@ -1,31 +1,34 @@
-import {Injectable} from '@angular/core';
-import {HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel} from '@microsoft/signalr';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {TEventMethodName} from './types/TEventMethodName';
 import {IEvent} from '../../types/IEvent';
 import {environment} from "../../../../../environments/environment";
+import {firstValueFrom} from 'rxjs';
+import {io, Socket} from 'socket.io-client';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class EventService {
-	private connection!: HubConnection;
+	private socket: Socket | null = null;
 	private reconnectedCallback: (() => void) | null = null;
+	private readonly http: HttpClient = inject(HttpClient);
 
 	public on<T>(name: TEventMethodName, callback: (args: T) => void): void {
-		if(!this.connection) {
+		if (!this.socket) {
 			return;
 		}
-		this.connection.on(name, (data) => {
+		this.socket.on(name, (data: T) => {
 			callback(data);
 		});
 	}
 
 	public off(name: TEventMethodName): void {
-		if(!this.connection) {
+		if (!this.socket) {
 			return;
 		}
-		this.connection.off(name);
+		this.socket.off(name);
 	}
 
 	public onReconnected(callback: () => void): void {
@@ -33,32 +36,53 @@ export class EventService {
 	}
 
 	public get isConnected(): boolean {
-		return this.connection?.state === HubConnectionState.Connected;
+		return this.socket?.connected ?? false;
 	}
 
 	public async initWebsocket(): Promise<void> {
-		this.connection = new HubConnectionBuilder()
-			.configureLogging(LogLevel.Warning)
-			.withUrl(`${environment.signalrUrl}/signalr/events`)
-			.withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-			.build();
+		this.socket = io(environment.apiUrl, {
+			transports: ['websocket', 'polling'],
+			reconnection: true,
+			reconnectionAttempts: Infinity,
+			reconnectionDelay: 2000,
+			reconnectionDelayMax: 30000,
+		});
 
-		this.connection.onreconnected(() => {
+		this.socket.on('connect', () => {
+			console.log('Socket.IO connected');
+		});
+
+		this.socket.on('reconnect', () => {
 			this.reconnectedCallback?.();
 		});
 
-		this.connection.onclose((error) => {
-			console.error('SignalR connection closed permanently: ', error);
+		this.socket.on('disconnect', (reason) => {
+			console.error('Socket.IO disconnected: ', reason);
 		});
 
-		await this.connection.start();
+		return new Promise<void>((resolve, reject) => {
+			const timeout = setTimeout(() => {
+				resolve(); // Don't block app init if WebSocket fails
+			}, 5000);
+
+			this.socket!.on('connect', () => {
+				clearTimeout(timeout);
+				resolve();
+			});
+
+			this.socket!.on('connect_error', (error) => {
+				console.error('Socket.IO connection error: ', error);
+				clearTimeout(timeout);
+				resolve(); // Don't block app init
+			});
+		});
 	}
 
-	public getEvents(): Promise<IEvent[]> {
-		return this.connection.invoke('getEvents');
+	public async getEvents(): Promise<IEvent[]> {
+		return firstValueFrom(this.http.get<IEvent[]>(`${environment.apiUrl}/public/events`));
 	}
 
-	public getPlaces(): Promise<IProgramPlace[]> {
-		return this.connection.invoke('getPlaces');
+	public async getPlaces(): Promise<IProgramPlace[]> {
+		return firstValueFrom(this.http.get<IProgramPlace[]>(`${environment.apiUrl}/public/locations`));
 	}
 }

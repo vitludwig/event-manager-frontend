@@ -82,7 +82,7 @@ export class ProgramVerticalListComponent {
 		const result: Record<number, IEvent[]> = {};
 
 		for(const event of events) {
-			const eventDayStart = dayjs(event.start).startOf('day').valueOf();
+			const eventDayStart = dayjs(event.startAt).startOf('day').valueOf();
 			const day = days.find(day => day === eventDayStart);
 
 			if(day) {
@@ -95,7 +95,7 @@ export class ProgramVerticalListComponent {
 
 		for(const [day, events] of Object.entries(result)) {
 			// @ts-ignore
-			result[day] = events.sort((prev, next) =>  new Date(prev.start).valueOf() - new Date(next.start).valueOf());
+			result[day] = events.sort((prev, next) =>  new Date(prev.startAt).valueOf() - new Date(next.startAt).valueOf());
 		}
 
 		return result;

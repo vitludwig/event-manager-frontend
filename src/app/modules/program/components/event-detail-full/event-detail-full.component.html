@@ -7,24 +7,15 @@
       >
       <mat-icon>keyboard_backspace</mat-icon>
     </button>
-    <!--			<div class="event-detail__image">-->
-    <!--				<img [src]="'/assets/icons/icon-192x192.png'"-->
-    <!--					alt="Event image"-->
-    <!--				>-->
-  <!--			</div>-->
   <div class="event-detail__content--wrapper">
     <div class="event-detail__content">
       <div class="event-detail__content__title">
         <h3>{{ event | translateEventProperty: 'name' }}</h3>
         <div>
-          @if(translate.currentLang === 'cs') {
-            {{ event.type.name }}
-          } @else {
-            {{ event.type.name_EN }}
-          }
+          {{ event.eventType.name }}
         </div>
         <div style="display: flex; justify-content: center"><app-event-tags [event]="event" /></div>
-        <div>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</div>
+        <div>{{ event.startAt | date: 'HH:mm' }} - {{ event.endAt | date: 'HH:mm' }}</div>
         <div>{{ place.name }}</div>
       </div>
       <mat-divider></mat-divider>

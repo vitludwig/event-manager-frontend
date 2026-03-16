@@ -38,18 +38,18 @@ export class ListFilterComponent {
 
 	protected eventTypes: IEventType[] = this.programService.eventTypes;
 	protected tags: IEventTag[] = this.programService.tags;
-	protected placeId: string[] | undefined = this.#data.options.placeId ?? undefined;
+	protected locationId: string[] | undefined = this.#data.options.locationId ?? undefined;
 	protected selectedEventType: string[] | undefined = this.#data.options.eventType ?? undefined;
 	protected selectedTags: string[] | undefined = this.#data.options.tags ?? undefined;
 	protected onlyFavorite: boolean = this.#data.options.onlyFavorite ?? false;
 
 	protected applyFilters(): void {
 		this.selectedEventType = this.selectedEventType?.length ? this.selectedEventType : undefined;
-		this.placeId = this.placeId?.length ? this.placeId : undefined;
+		this.locationId = this.locationId?.length ? this.locationId : undefined;
 
 		this.#dialogRef.close({
 			eventType: this.selectedEventType,
-			placeId: this.placeId,
+			locationId: this.locationId,
 			onlyFavorite: this.onlyFavorite,
 			tags: this.selectedTags,
 		});
@@ -57,7 +57,7 @@ export class ListFilterComponent {
 
 	protected resetFilters(): void {
 		this.selectedEventType = undefined;
-		this.placeId = undefined;
+		this.locationId = undefined;
 		this.onlyFavorite = false;
 		this.selectedTags = undefined;
 

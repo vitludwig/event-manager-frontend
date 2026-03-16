@@ -22,19 +22,19 @@ describe('EventDetailFullComponent', () => {
 	};
 
 	beforeEach(() => {
-		mockPlace = {id: 'p1', name: 'Main Stage', color: '#000'};
+		mockPlace = {id: 'p1', name: 'Main Stage'};
 		mockEvent = {
 			id: 'e1',
-			name: 'Test Event',
-			name_EN: 'Test Event EN',
-			description: 'Description',
-			description_EN: 'Description EN',
-			start: '2025-07-10T14:00:00Z',
-			end: '2025-07-10T15:00:00Z',
-			placeId: 'p1',
-			place: mockPlace,
+			nameCs: 'Test Event',
+			nameEn: 'Test Event EN',
+			descriptionCs: 'Description',
+			descriptionEn: 'Description EN',
+			startAt: '2025-07-10T14:00:00Z',
+			endAt: '2025-07-10T15:00:00Z',
+			locationId: 'p1',
+			location: mockPlace,
 			favorite: false,
-			type: {id: 't1', name: 'Concert', name_EN: 'Concert', color: '#f00'},
+			eventType: {id: 't1', name: 'Concert', color: '#f00'},
 			tags: [],
 			startSegment: 0,
 			segmentCount: 4,

@@ -2,35 +2,49 @@ import { test, expect } from '@playwright/test';
 import events from './data/events.json';
 import places from './data/places.json';
 import eventTypes from './data/eventTypes.json';
-import tags from './data/tags.json';
 
 test.describe('Program Module', () => {
     test.beforeEach(async ({ page }) => {
         // Enable console logging from the browser
         page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-        // Mock the appEventId endpoint to match localStorage
-        await page.route(/.*appEventId\.txt/, route => route.fulfill({
+        // Mock customization endpoint
+        await page.route(/.*\/public\/customization/, route => route.fulfill({
             status: 200,
-            contentType: 'text/plain',
-            body: 'test-event-id'
+            contentType: 'application/json',
+            body: JSON.stringify({})
         }));
 
         // Mock API endpoints to return meaningful data
-        await page.route(/.*\/api\/v1\/eventTypes/, route => route.fulfill({
+        await page.route(/.*\/public\/event-types/, route => route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify(eventTypes)
         }));
-        await page.route(/.*\/api\/v1\/tags/, route => route.fulfill({
+
+        // Mock public events endpoint (used by EventService.getEvents)
+        await page.route(/.*\/public\/events/, route => route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify(tags)
+            body: JSON.stringify(events)
         }));
 
-        // Block SignalR negotiate endpoint to prevent the WebSocket connection
-        // from succeeding (via Long Polling fallback) and overwriting mock localStorage data
-        await page.route(/.*\/signalr\/events\/negotiate/, route => route.abort());
+        // Mock public locations endpoint (used by EventService.getPlaces)
+        await page.route(/.*\/public\/locations/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(places)
+        }));
+
+        // Block Socket.IO to prevent WebSocket connection
+        await page.route(/.*\/socket\.io/, route => route.abort());
+
+        // Mock notification endpoint
+        await page.route(/.*\/notification/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ notifications: [] })
+        }));
 
         // Mock time to match event dates (Jan 1, 2023)
         await page.clock.install({ time: new Date('2023-01-01T10:00:00.000Z') });
@@ -43,7 +57,7 @@ test.describe('Program Module', () => {
             // Compute days from events (mimic ProgramService logic)
             const days: Record<number, number> = {};
             events.forEach((event: any) => {
-                const date = new Date(event.start);
+                const date = new Date(event.startAt);
                 const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
                 if (!days[startOfDay]) {
                     days[startOfDay] = startOfDay;
@@ -52,7 +66,6 @@ test.describe('Program Module', () => {
             localStorage.setItem('days', JSON.stringify(days));
 
             localStorage.setItem('language', 'en');
-            localStorage.setItem('appEventId', 'test-event-id');
         }, { events, places });
 
         // Navigate to app

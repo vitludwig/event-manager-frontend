@@ -2,19 +2,24 @@ import {IProgramPlace} from './IProgramPlace';
 import {IEventType} from "./IEventType";
 import {IEventTag} from "./IEventTag";
 
+export interface IEventAttribute {
+	name: string;
+	type: string;
+	value: string | boolean | Date | null;
+}
+
 export interface IEvent {
 	id: string;
-	name: string;
-	name_EN: string;
-	name_Secondary?: string;
-	description: string;
-	description_EN: string;
-	image?: string;
-	start: string;
-	end: string;
-	placeId: string;
-	place: IProgramPlace;
+	nameCs: string;
+	nameEn: string;
+	descriptionCs: string;
+	descriptionEn: string;
+	startAt: string;
+	endAt: string;
+	locationId: string;
+	location: IProgramPlace;
 	favorite: boolean;
-	type: IEventType;
+	eventType: IEventType;
 	tags: IEventTag[];
+	attributes?: IEventAttribute[];
 }

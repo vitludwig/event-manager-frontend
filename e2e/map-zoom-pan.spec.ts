@@ -58,31 +58,44 @@ async function zoomIn(page: Page, element: { x: number; y: number; width: number
 
 test.describe('Map Module - Zoom and Pan', () => {
     test.beforeEach(async ({ page }) => {
-        await page.route(/.*appEventId\.txt/, route =>
-            route.fulfill({ status: 200, contentType: 'text/plain', body: 'test-event-id' }),
-        );
-
-        await page.route(/.*\/api\/v1\/maps/, route =>
-            route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify([{ name: 'map1', value: TEST_MAP_DATA_URI }]),
+        // Mock customization endpoint - maps come from customization now
+        await page.route(/.*\/public\/customization/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                maps: [{ name: 'map1', value: TEST_MAP_DATA_URI }],
             }),
-        );
+        }));
 
-        // Return 404 for competitions/tribes so only the main map tab shows
-        await page.route(/.*\/public\/competitions-info\.json/, route =>
-            route.fulfill({ status: 404 }),
-        );
-        await page.route(/.*\/public\/tribe-info\.json/, route =>
-            route.fulfill({ status: 404 }),
-        );
+        // Mock other public endpoints
+        await page.route(/.*\/public\/events/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([]),
+        }));
+        await page.route(/.*\/public\/locations/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([]),
+        }));
+        await page.route(/.*\/public\/event-types/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify([]),
+        }));
 
-        await page.route(/.*\/signalr/, route => route.abort());
+        // Block Socket.IO
+        await page.route(/.*\/socket\.io/, route => route.abort());
+
+        // Mock notification endpoint
+        await page.route(/.*\/notification/, route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ notifications: [] }),
+        }));
 
         await page.addInitScript(() => {
             localStorage.setItem('language', 'en');
-            localStorage.setItem('appEventId', 'test-event-id');
         });
 
         await page.goto('/map');

@@ -2,6 +2,9 @@ import {inject, Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {IUserInfo} from '../../components/user-info/types/IUserInfo';
+import {CustomizationService} from '../customization/customization.service';
+
+const DEFAULT_WALLET_API_URL = 'https://cybertown-kredsys.eu/kredsys-api/userInfo';
 
 @Injectable({
 	providedIn: 'root'
@@ -43,12 +46,14 @@ export class UserService {
 	}
 
 	private readonly http: HttpClient = inject(HttpClient);
+	private readonly customizationService: CustomizationService = inject(CustomizationService);
 
 	#token: string | undefined;
 	#userId: number | undefined;
 	#lastChecked: string;
 
 	public getUserInfo(userId: number, token: string): Promise<IUserInfo> {
-		return firstValueFrom(this.http.get<IUserInfo>(`https://cybertown-kredsys.eu/kredsys-api/userInfo/${userId}/${token}`));
+		const baseUrl = this.customizationService.walletApiUrl ?? DEFAULT_WALLET_API_URL;
+		return firstValueFrom(this.http.get<IUserInfo>(`${baseUrl}/${userId}/${token}`));
 	}
 }

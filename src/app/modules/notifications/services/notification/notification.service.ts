@@ -9,6 +9,7 @@ import {Capacitor} from "@capacitor/core";
 import {ELocalNotificationAction, ILocalNotificationPayload} from "../../types/ILocalNotificationPayload";
 import {Router} from "@angular/router";
 import {ERoute} from "../../../../common/types/ERoute";
+import {CustomizationService} from "../../../../common/services/customization/customization.service";
 
 @Injectable({
 	providedIn: 'root'
@@ -26,6 +27,7 @@ export class NotificationService {
 	}
 
 	private readonly http = inject(HttpClient);
+	private readonly customizationService = inject(CustomizationService);
 
 	private readonly defaultChannelId = 'local_notification_channel';
 
@@ -112,11 +114,13 @@ export class NotificationService {
 		}
 
 		try {
-			const config = await firstValueFrom(
-				this.http.get<{oneSignalAppId: string}>(`${environment.apiUrl}/notification/config`)
-			);
+			const oneSignalAppId = this.customizationService.oneSignalAppId;
+			if (!oneSignalAppId) {
+				console.warn('OneSignal app ID not configured');
+				return;
+			}
 
-			OneSignal.initialize(config.oneSignalAppId);
+			OneSignal.initialize(oneSignalAppId);
 			OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
 				console.log("User accepted notifications: " + accepted);
 			});

@@ -2,19 +2,16 @@
     {
         "id": "type1",
         "name": "Ceremony",
-        "name_EN": "Ceremony",
         "color": "#ff0000"
     },
     {
         "id": "type2",
         "name": "Workshop",
-        "name_EN": "Workshop",
         "color": "#00ff00"
     },
     {
         "id": "type3",
         "name": "Concert",
-        "name_EN": "Concert",
         "color": "#0000ff"
     }
 ]

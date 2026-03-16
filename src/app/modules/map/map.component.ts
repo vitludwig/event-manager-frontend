@@ -1,17 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {map} from 'rxjs';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {TranslateModule} from '@ngx-translate/core';
-import {rxResource} from '@angular/core/rxjs-interop';
 import {TribesInfoComponent} from './components/tribes-info/tribes-info.component';
 import {CompetitionsInfoComponent} from './components/competitions-info/competitions-info.component';
-import {environment} from "../../../environments/environment";
-import {IMapImage, MapService} from "./services/map.service";
-import {ICompetitionInfo} from "./types/ICompetitionInfo";
-import {ITribeInfo} from "./types/ITribeInfo";
 import {PinchZoomComponent} from "@meddv/ngx-pinch-zoom";
+import {CustomizationService} from "../../common/services/customization/customization.service";
 
 @Component({
     selector: 'app-map',
@@ -21,30 +15,30 @@ import {PinchZoomComponent} from "@meddv/ngx-pinch-zoom";
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapComponent {
-    protected readonly environment = environment;
-    private readonly mapService = inject(MapService);
-    private readonly http = inject(HttpClient);
+    private readonly customizationService = inject(CustomizationService);
 
-    protected readonly mapsResource = rxResource({
-        stream: () => this.mapService.getMaps().pipe(
-            map(maps => ({
-                festivalMap: this.getMapContent(maps, 'map1'),
-                competitionMap: this.getMapContent(maps, 'map2'),
-                tribesMap: this.getMapContent(maps, 'map3'),
-            }))
-        ),
-    });
+    protected get festivalMap(): string | undefined {
+        return this.getMapContent('map1');
+    }
 
-    protected readonly competitionsInfo = rxResource({
-        stream: () => this.http.get<ICompetitionInfo[]>(`${environment.signalrUrl}/public/competitions-info.json`),
-    });
+    protected get competitionMap(): string | undefined {
+        return this.getMapContent('map2');
+    }
 
-    protected readonly tribesInfo = rxResource({
-        stream: () => this.http.get<ITribeInfo[]>(`${environment.signalrUrl}/public/tribe-info.json`),
-    });
+    protected get tribesMap(): string | undefined {
+        return this.getMapContent('map3');
+    }
 
-    private getMapContent(maps: IMapImage[], name: string): string | undefined {
-        const map = maps.find(m => m.name === name);
+    protected get competitionsInfo() {
+        return this.customizationService.competitionsInfo;
+    }
+
+    protected get tribesInfo() {
+        return this.customizationService.tribesInfo;
+    }
+
+    private getMapContent(name: string): string | undefined {
+        const map = this.customizationService.maps.find(m => m.name === name);
         return map?.value;
     }
 }

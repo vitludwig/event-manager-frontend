@@ -14,7 +14,7 @@
   >
   <mat-form-field class="w-100">
     <mat-label>{{'Místo' | translate}}</mat-label>
-    <mat-select [(ngModel)]="placeId"
+    <mat-select [(ngModel)]="locationId"
       multiple
       >
       @for (place of programService.allPlaces; track place) {
@@ -36,7 +36,7 @@
         <mat-option
           [value]="item.id"
           >
-          {{ translate.currentLang === 'cs' ? item.name : item.name_EN }}
+          {{ item.name }}
         </mat-option>
       }
     </mat-select>
@@ -52,7 +52,7 @@
           <mat-option
             [value]="item.id"
             >
-            {{ translate.currentLang === 'cs' ? item.name : item.name_EN }}
+            {{ translate.currentLang === 'cs' ? item.nameCs : item.nameEn }}
           </mat-option>
         }
       </mat-select>
