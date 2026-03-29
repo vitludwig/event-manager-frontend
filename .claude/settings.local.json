@@ -15,7 +15,15 @@
       "Bash(npx playwright test:*)",
       "Bash(done)",
       "Bash(git add:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(dotnet build:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(cd:*)",
+      "Bash(DATABASE_URL=\"postgresql://admin:password@localhost:5432/festival_planner?schema=public\" npx --prefix /home/vitek/Projects/RZB-IT/festival-planner/apps/backend prisma migrate dev --name add-customization 2>&1)",
+      "Bash(ls:*)",
+      "Bash(sudo chown:*)",
+      "Bash(rm:*)"
     ]
   }
 }

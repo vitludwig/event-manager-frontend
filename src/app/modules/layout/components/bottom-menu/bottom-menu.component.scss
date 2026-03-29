@@ -1,6 +1,7 @@
 .bottom-menu {
 	border-top: 1px solid var(--mat-button-toggle-selected-state-background-color);
 	padding: 0;
+	padding-bottom: env(safe-area-inset-bottom);
 
 	&__content {
 		width: 100%;

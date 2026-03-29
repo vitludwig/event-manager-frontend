@@ -1,3 +1,3 @@
 export const environment = {
-	apiUrl: "http://localhost:3001",
+	apiUrl: "https://event-planner.rzbit.cz/api",
 };
