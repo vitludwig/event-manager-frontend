@@ -1,3 +1,3 @@
 export const environment = {
-	apiUrl: "https://program.rusthaven.cz",
+	apiUrl: "https://event-planner.rzbit.cz/api",
 };
