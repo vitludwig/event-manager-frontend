@@ -32,6 +32,10 @@
 	max-width: 100vw !important;
 	max-height: 100vh;
 	width: 100%;
+	margin-top: constant(safe-area-inset-top);
+	margin-top: env(safe-area-inset-top);
+	margin-bottom: constant(safe-area-inset-bottom);
+	margin-bottom: env(safe-area-inset-bottom);
 
 	.mat-mdc-dialog-surface {
 		border-radius: 0;

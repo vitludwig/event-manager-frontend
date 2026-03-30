@@ -14,6 +14,7 @@ import {EDisplayDevice} from "./common/types/EDisplayDevice";
 import {App} from '@capacitor/app';
 import {Capacitor} from '@capacitor/core';
 import {StatusBar, Style} from '@capacitor/status-bar';
+import {Keyboard} from '@capacitor/keyboard';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({
@@ -95,6 +96,7 @@ export class AppComponent implements OnInit {
 
 		await StatusBar.setOverlaysWebView({ overlay: true });
 		await StatusBar.setStyle({ style: Style.Dark });
+		await Keyboard.setAccessoryBarVisible({ isVisible: false });
 	}
 
 	private initHardwareBackButton(): void {
