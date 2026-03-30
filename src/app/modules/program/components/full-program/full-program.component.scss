@@ -6,6 +6,9 @@
 	flex-direction: column;
 
 	&__toolbar {
+		padding-top: constant(safe-area-inset-top);
+		padding-top: env(safe-area-inset-top);
+
 		.program-heading {
 			margin: 0;
 			letter-spacing: 1px;

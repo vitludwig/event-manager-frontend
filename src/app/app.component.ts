@@ -13,6 +13,7 @@ import {SettingsService} from "./common/services/settings/settings.service";
 import {EDisplayDevice} from "./common/types/EDisplayDevice";
 import {App} from '@capacitor/app';
 import {Capacitor} from '@capacitor/core';
+import {StatusBar, Style} from '@capacitor/status-bar';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
 		this.handleLanguage();
 		this.initLocalNotifications();
 		this.initHardwareBackButton();
+		await this.initStatusBar();
 
 		this.handleSubscriptionBtn();
 
@@ -84,6 +86,15 @@ export class AppComponent implements OnInit {
 
 		this.translate.setDefaultLang(language);
 		this.translate.use(language ?? this.translate.defaultLang);
+	}
+
+	private async initStatusBar(): Promise<void> {
+		if (!Capacitor.isNativePlatform()) {
+			return;
+		}
+
+		await StatusBar.setOverlaysWebView({ overlay: true });
+		await StatusBar.setStyle({ style: Style.Dark });
 	}
 
 	private initHardwareBackButton(): void {
