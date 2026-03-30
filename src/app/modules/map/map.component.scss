@@ -6,6 +6,8 @@
 
 mat-tab-group {
 	height: 100%;
+	margin-top: constant(safe-area-inset-top);
+	margin-top: env(safe-area-inset-top);
 }
 
 .img-wrapper {

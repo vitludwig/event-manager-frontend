@@ -60,7 +60,8 @@
 		&__scroll-to-now {
 			position: fixed;
 			right: 25px;
-			bottom: 75px;
+			bottom: calc(75px + constant(safe-area-inset-bottom));
+			bottom: calc(75px + env(safe-area-inset-bottom));
 			z-index: 2
 		}
 	}
