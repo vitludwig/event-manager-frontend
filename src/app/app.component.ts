@@ -96,7 +96,11 @@ export class AppComponent implements OnInit {
 
 		await StatusBar.setOverlaysWebView({ overlay: true });
 		await StatusBar.setStyle({ style: Style.Dark });
-		await Keyboard.setAccessoryBarVisible({ isVisible: false });
+		try {
+			await Keyboard.setAccessoryBarVisible({ isVisible: false });
+		} catch {
+			// Not supported on all platforms
+		}
 	}
 
 	private initHardwareBackButton(): void {

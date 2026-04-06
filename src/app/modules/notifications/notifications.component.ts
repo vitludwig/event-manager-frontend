@@ -9,6 +9,8 @@ import {IEvent} from '../program/types/IEvent';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatDialogModule} from '@angular/material/dialog';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {Capacitor} from '@capacitor/core';
 
 @Component({
     selector: 'app-notifications',
@@ -19,7 +21,8 @@ import {TranslateModule, TranslateService} from '@ngx-translate/core';
         MatRippleModule,
         MatToolbarModule,
         MatDialogModule,
-        TranslateModule
+        TranslateModule,
+        MatSlideToggleModule
     ],
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss']
@@ -36,9 +39,19 @@ export class NotificationsComponent implements OnInit {
 
     protected readonly notificationService: NotificationService = inject(NotificationService);
     protected readonly translate: TranslateService = inject(TranslateService);
+    protected readonly isNativePlatform = Capacitor.isNativePlatform();
     private readonly programService: ProgramService = inject(ProgramService);
 
     public ngOnInit(): void {
         this.notificationService.loadNotifications();
+    }
+
+    protected async onStoryToggle(checked: boolean): Promise<void> {
+        if (checked) {
+            await this.notificationService.subscribeToStories();
+        } else {
+            await this.notificationService.unsubscribeFromStories();
+        }
+        await this.notificationService.loadNotifications();
     }
 }

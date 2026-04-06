@@ -30,7 +30,11 @@ export class NotificationService {
 	private readonly customizationService = inject(CustomizationService);
 
 	private readonly defaultChannelId = 'local_notification_channel';
-
+	private readonly storyTagKey = 'story_notifications';
+	private readonly storyLocalStorageKey = 'storyNotificationsEnabled';
+	private readonly storySegmentName = 'Story Subscribers';
+	public readonly isSubscribedToStories = signal(localStorage.getItem('storyNotificationsEnabled') === 'true');
+	private oneSignalReady = false;
 
 	constructor() {
 		this.initLocalNotifications();
@@ -51,12 +55,8 @@ export class NotificationService {
 					id: notificationId,
 					title: title,
 					body: body,
-					channelId: this.defaultChannelId, // ** Crucial for Android 8+ **
-					smallIcon: 'res://mipmap/ic_launcher', // Default to app icon if not provided
-					// To use a specific icon, place it in android/app/src/main/res/drawable (e.g., my_notif_icon.png)
-					// and refer to it as 'my_notif_icon' (without extension) or 'res://drawable/my_notif_icon'
-					// For Material Design icons, it's often 'ic_stat_icon_name'.
-					// Check Android documentation for status bar icon guidelines (typically white and transparent).
+					channelId: this.defaultChannelId,
+					smallIcon: 'res://mipmap/ic_launcher',
 					sound: 'default',
 					schedule: {
 						at: new Date(Date.now() + 1000),
@@ -69,22 +69,13 @@ export class NotificationService {
 
 		try {
 			await LocalNotifications.schedule(options);
-			console.log(`Local notification scheduled.`);
 		} catch (error) {
-			console.error(`Error scheduling notification:`, error);
+			console.error('Error scheduling notification:', error);
 		}
 	}
 
 	private async initLocalNotifications() {
 		if(Capacitor.getPlatform() === 'android') {
-			// if this is uncommented, then there might be two permission overlays and user cannot click on it
-			// if(!await this.permissionsService.hasLocalNotificationPermissions()) {
-			// 	if(!(await this.permissionsService.requestLocalNotificationPermissions())) {
-			// 		console.error('Local notification permission denied')
-			// 		return;
-			// 	}
-			// }
-
 			await this.createDefaultLocalNotificationChannel();
 		}
 	}
@@ -94,18 +85,16 @@ export class NotificationService {
 			id: 'local_notification_channel',
 			name: 'Local notification channel',
 			description: '',
-			importance: 4, // Corresponds to NotificationManager.IMPORTANCE_DEFAULT or IMPORTANCE_HIGH. 5 is IMPORTANCE_MAX
-			visibility: 1, // Corresponds to NotificationCompat.VISIBILITY_PUBLIC
-			sound: 'default', // Use 'default' or specify a sound file in res/raw
+			importance: 4,
+			visibility: 1,
+			sound: 'default',
 			vibration: true,
 		};
 		try {
 			await LocalNotifications.createChannel(channel);
-			console.log(`Notification channel created or already exists.`);
 		} catch (error) {
-			console.error(`Error creating channel ':`, error);
+			console.error('Error creating channel:', error);
 		}
-
 	}
 
 	private async initOneSignal(): Promise<void> {
@@ -121,13 +110,14 @@ export class NotificationService {
 			}
 
 			OneSignal.initialize(oneSignalAppId);
-			OneSignal.Notifications.requestPermission(false).then((accepted: boolean) => {
-				console.log("User accepted notifications: " + accepted);
-			});
+
+			const accepted = await OneSignal.Notifications.requestPermission(true);
+			console.log('OneSignal: permission accepted:', accepted);
 
 			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
+			this.oneSignalReady = true;
 		} catch(e) {
-			console.error('Cannot initialize OneSignal: ', e);
+			console.error('Cannot initialize OneSignal:', e);
 		}
 	}
 
@@ -137,9 +127,43 @@ export class NotificationService {
 				this.http.get<IOneSignalNotificationsResponse>(`${environment.apiUrl}/notification`)
 			);
 
-			this.notifications.set(notifications.notifications);
+			const filtered = this.isSubscribedToStories()
+				? notifications.notifications
+				: notifications.notifications.filter(
+					n => !(n.included_segments ?? []).includes(this.storySegmentName)
+				);
+
+			this.notifications.set(filtered);
 		} catch(e) {
-			console.error('Cannot load notifications: ', e);
+			console.error('Cannot load notifications:', e);
+		}
+	}
+
+	public async subscribeToStories(): Promise<void> {
+		localStorage.setItem(this.storyLocalStorageKey, 'true');
+		this.isSubscribedToStories.set(true);
+		if (Capacitor.isNativePlatform() && this.oneSignalReady) {
+			try {
+				OneSignal.User.addTag(this.storyTagKey, 'true');
+			} catch (e) {
+				localStorage.setItem(this.storyLocalStorageKey, 'false');
+				this.isSubscribedToStories.set(false);
+				console.error('OneSignal: failed to add tag', e);
+			}
+		}
+	}
+
+	public async unsubscribeFromStories(): Promise<void> {
+		localStorage.setItem(this.storyLocalStorageKey, 'false');
+		this.isSubscribedToStories.set(false);
+		if (Capacitor.isNativePlatform() && this.oneSignalReady) {
+			try {
+				OneSignal.User.removeTag(this.storyTagKey);
+			} catch (e) {
+				localStorage.setItem(this.storyLocalStorageKey, 'true');
+				this.isSubscribedToStories.set(true);
+				console.error('OneSignal: failed to remove tag', e);
+			}
 		}
 	}
 

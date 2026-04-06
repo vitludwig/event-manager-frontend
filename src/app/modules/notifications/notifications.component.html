@@ -1,9 +1,21 @@
 <mat-toolbar class="notifications-toolbar">
   <span style="color: white">{{'Notifikace' | translate}}</span>
   <div class="notifications-toolbar__actions">
-
+    @if (isNativePlatform) {
+      <mat-slide-toggle
+        [checked]="notificationService.isSubscribedToStories()"
+        (change)="onStoryToggle($event.checked)">
+        {{ 'Příběhové notifikace' | translate }}
+      </mat-slide-toggle>
+    }
   </div>
 </mat-toolbar>
+
+@if (notificationService.notifications().length === 0) {
+  <div class="notifications-empty">
+    <p>{{ 'Žádné notifikace' | translate }}</p>
+  </div>
+}
 
 <mat-list class="notifications-list">
   @for (notification of notificationService.notifications(); track notification) {
