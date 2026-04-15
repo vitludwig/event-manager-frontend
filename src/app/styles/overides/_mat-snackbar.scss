@@ -23,3 +23,37 @@
 		font-size: 16px !important
 	}
 }
+
+.mdc-snackbar--warning {
+	.mdc-snackbar__surface {
+		background-color: color-mix(in srgb, var(--mat-button-filled-container-color) 85%, transparent) !important;
+		border-radius: 12px !important;
+	}
+
+	.mdc-snackbar__label {
+		color: var(--mat-button-filled-label-text-color) !important;
+		font-weight: 400 !important;
+		font-size: 14px !important;
+	}
+
+	button,
+	button.mat-mdc-button,
+	button.mdc-button {
+		color: var(--mat-button-filled-label-text-color) !important;
+		background-color: transparent !important;
+		background: transparent !important;
+		border: 1.5px solid var(--mat-button-filled-label-text-color) !important;
+		border-radius: 8px !important;
+		--mdc-text-button-container-color: transparent !important;
+		--mat-text-button-state-layer-color: transparent !important;
+
+		&::before,
+		&::after,
+		.mat-mdc-button-persistent-ripple,
+		.mdc-button__ripple,
+		.mat-mdc-button-ripple {
+			background-color: transparent !important;
+			background: transparent !important;
+		}
+	}
+}

@@ -16,6 +16,7 @@ import {Capacitor} from '@capacitor/core';
 import {StatusBar, Style} from '@capacitor/status-bar';
 import {Keyboard} from '@capacitor/keyboard';
 import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-root',
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit {
 	private readonly destroyRef: DestroyRef = inject(DestroyRef);
 	private readonly ngZone: NgZone = inject(NgZone);
 	private readonly dialog: MatDialog = inject(MatDialog);
+	private readonly snackBar: MatSnackBar = inject(MatSnackBar);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 
 	protected EDisplayDevice = EDisplayDevice;
@@ -48,6 +50,15 @@ export class AppComponent implements OnInit {
 		this.handleSubscriptionBtn();
 
 		await this.programService.initWebsocket();
+
+		if (this.programService.eventsLoadFailed()) {
+			const isCs = this.translate.currentLang === 'cs';
+			this.snackBar.open(
+				isCs ? 'Nepodařilo se připojit k serveru. Zobrazují se poslední uložená data.' : 'Could not connect to server. Showing last saved data.',
+				'OK',
+				{ duration: 8000, verticalPosition: 'top', panelClass: 'mdc-snackbar--warning' }
+			);
+		}
 
 		if(this.settingsService.device() === EDisplayDevice.INFO_PANEL) {
 			document.body.className += ' display-info-panel';

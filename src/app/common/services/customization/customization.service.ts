@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface IMapImage {
@@ -42,7 +42,9 @@ export class CustomizationService {
 			}
 
 			const result = await firstValueFrom(
-				this.http.get<ICustomization>(`${environment.apiUrl}/public/customization`)
+				this.http.get<ICustomization>(`${environment.apiUrl}/public/customization`).pipe(
+					timeout(10_000)
+				)
 			);
 			this.data.set(result);
 			localStorage.setItem('customization', JSON.stringify(result));

@@ -7,6 +7,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BottomMenuComponent} from './modules/layout/components/bottom-menu/bottom-menu.component';
 import {HttpClient, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {appInitializerFactory} from './app-initializer.factory';
@@ -46,6 +47,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
         MatSidenavModule,
         MatIconModule,
         MatButtonModule,
+        MatSnackBarModule,
         BottomMenuComponent,
         TranslateModule.forRoot({
             loader: {

@@ -100,6 +100,9 @@ export class ProgramService {
 		}
 	}
 
+	public readonly eventsLoadFailed = signal(false);
+	public readonly eventsLoading = signal(true);
+
 	public async initWebsocket(): Promise<void> {
 		try {
 			if (window.navigator.onLine) {
@@ -115,8 +118,12 @@ export class ProgramService {
 					}
 				});
 			}
+			this.eventsLoadFailed.set(false);
 		} catch (e) {
 			console.error('Error while initializing websocket communication: ', e);
+			this.eventsLoadFailed.set(true);
+		} finally {
+			this.eventsLoading.set(false);
 		}
 	}
 

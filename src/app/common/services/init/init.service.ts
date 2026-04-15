@@ -14,6 +14,6 @@ export class InitService {
     public async init(): Promise<void> {
         await this.customizationService.load();
         await this.themeService.loadThemeBundle();
-        await this.programService.loadCachedData()
+        await this.programService.loadCachedData();
     }
 }
