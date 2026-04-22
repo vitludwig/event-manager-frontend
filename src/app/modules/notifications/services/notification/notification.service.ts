@@ -116,7 +116,6 @@ export class NotificationService {
 
 			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
 			OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
-				event.preventDefault();
 				event.getNotification().display();
 			});
 			this.oneSignalReady = true;
