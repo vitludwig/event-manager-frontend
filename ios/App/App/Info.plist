@@ -7,7 +7,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>RZB Festival App</string>
 	<key>NSCameraUsageDescription</key>
-	<string>This app uses the camera for QR code scanning and taking photos.</string>
+	<string>The camera is used to scan QR codes for read-only connection to cashless system.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
