@@ -115,6 +115,10 @@ export class NotificationService {
 			console.log('OneSignal: permission accepted:', accepted);
 
 			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
+			OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+				event.preventDefault();
+				event.getNotification().display();
+			});
 			this.oneSignalReady = true;
 		} catch(e) {
 			console.error('Cannot initialize OneSignal:', e);
