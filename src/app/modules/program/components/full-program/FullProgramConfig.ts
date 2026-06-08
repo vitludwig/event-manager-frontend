@@ -9,6 +9,21 @@ export class FullProgramConfig {
 	 */
 	public static segmentDuration: number = 15;
 
+	/**
+	 * Height of a single event / lane in px
+	 */
+	public static eventHeight: number = 65;
+
+	/**
+	 * Vertical gap between stacked lanes in px
+	 */
+	public static laneGap: number = 4;
+
+	/**
+	 * Vertical distance between lane tops in px (eventHeight + laneGap)
+	 */
+	public static laneStride: number = 69;
+
 	// public static eventTypes: Record<number, IEventType> = {
 	// 	0: {
 	// 		id: 0,
