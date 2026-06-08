@@ -3,6 +3,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
+import {IProgramPlaceLayout} from './types/IProgramPlaceLayout';
+import {layoutPlaceEvents} from './utils/layout-place-events';
 import dayjs, {Dayjs} from 'dayjs';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -174,7 +176,7 @@ export class FullProgramComponent implements AfterViewInit {
 		return this.programService.places();
 	});
 
-	protected readonly eventsByPlaces: Signal<Record<string, Record<number, IProgramEvent>>> = computed(() => {
+	protected readonly eventsByPlaces: Signal<Record<string, IProgramPlaceLayout>> = computed(() => {
 		const allEvents = this.filteredEvents();
 		const firstEventAt = this.#firstEventAt();
 		const selectedDay = this.programService.selectedDay();
@@ -182,7 +184,7 @@ export class FullProgramComponent implements AfterViewInit {
 			return {};
 		}
 
-		const result: Record<string, Record<number, IProgramEvent>> = {};
+		const eventsByLocation: Record<string, IProgramEvent[]> = {};
 
 		for(const event of allEvents) {
 			const selectedDayJs = dayjs(selectedDay);
@@ -192,15 +194,20 @@ export class FullProgramComponent implements AfterViewInit {
 			const startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
 			const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
 
-			if(!result[event.locationId]) {
-				result[event.locationId] = {};
+			if(!eventsByLocation[event.locationId]) {
+				eventsByLocation[event.locationId] = [];
 			}
 
-			result[event.locationId][startSegment] = {
+			eventsByLocation[event.locationId].push({
 				...event,
 				startSegment,
-				segmentCount
-			};
+				segmentCount,
+			});
+		}
+
+		const result: Record<string, IProgramPlaceLayout> = {};
+		for(const locationId of Object.keys(eventsByLocation)) {
+			result[locationId] = layoutPlaceEvents(eventsByLocation[locationId]);
 		}
 
 		return result;

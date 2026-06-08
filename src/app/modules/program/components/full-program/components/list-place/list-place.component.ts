@@ -4,6 +4,7 @@ import {FullProgramConfig} from '../../FullProgramConfig';
 import {ListEventComponent} from '../list-event/list-event.component';
 import {IProgramEvent, IProgramPlace} from '../../../../types/IProgramPlace';
 import {IProgramSegment} from '../../types/IProgramSegment';
+import {IProgramPlaceLayout} from '../../types/IProgramPlaceLayout';
 
 @Component({
     selector: 'app-list-place',
@@ -19,12 +20,17 @@ export class ListPlaceComponent {
 	public segments: IProgramSegment[];
 
 	@Input()
-	public events: Record<number, IProgramEvent>;
+	public layout: IProgramPlaceLayout;
 
 	@Output()
 	public placeSelect: EventEmitter<IProgramEvent> = new EventEmitter<IProgramEvent>();
 
 	protected readonly FullProgramConfig = FullProgramConfig;
+
+	/** Výška řádku/buňky podle počtu pruhů; pro 1 pruh = 65px (dnešní výška). */
+	protected rowHeight(): number {
+		return this.layout.laneCount * FullProgramConfig.laneStride - FullProgramConfig.laneGap;
+	}
 
 	protected showEventDetail(event: IProgramEvent): void {
 		this.placeSelect.emit(event);

@@ -315,7 +315,7 @@ describe('FullProgramComponent', () => {
 			expect(Object.keys(result)).toContain('p2');
 		});
 
-		it('should compute startSegment and segmentCount', () => {
+		it('should produce a single-lane layout with startSegment/segmentCount', () => {
 			const baseDay = dayjs('2025-07-10');
 			const day = baseDay.startOf('day').valueOf();
 			const events = [
@@ -331,13 +331,50 @@ describe('FullProgramComponent', () => {
 
 			TestBed.flushEffects();
 
-			const result = (component as any).eventsByPlaces();
-			const placeEvents = result['p1'];
-			expect(placeEvents).toBeDefined();
+			const layout = (component as any).eventsByPlaces()['p1'];
+			expect(layout).toBeDefined();
+			expect(layout.laneCount).toBe(1);
+			expect(layout.hasOverlap).toBeFalse();
 
-			const eventValues = Object.values(placeEvents) as any[];
-			expect(eventValues.length).toBe(1);
-			expect(eventValues[0].segmentCount).toBe(4);
+			const startEvents = layout.eventsByStartSegment[0];
+			expect(startEvents.length).toBe(1);
+			expect(startEvents[0].segmentCount).toBe(4);
+			expect(startEvents[0].lane).toBe(0);
+		});
+
+		it('should keep both events that share the same start segment (no data loss)', () => {
+			const baseDay = dayjs('2025-07-10');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({id: 'e1', locationId: 'p1', startAt: baseDay.hour(10).toISOString(), endAt: baseDay.hour(11).toISOString()}),
+				createMockEvent({id: 'e2', locationId: 'p1', startAt: baseDay.hour(10).toISOString(), endAt: baseDay.hour(11).toISOString()}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const layout = (component as any).eventsByPlaces()['p1'];
+			expect(layout.laneCount).toBe(2);
+			expect(layout.hasOverlap).toBeTrue();
+			expect(layout.eventsByStartSegment[0].length).toBe(2);
+		});
+
+		it('should split two time-overlapping events into two lanes', () => {
+			const baseDay = dayjs('2025-07-10');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({id: 'e1', locationId: 'p1', startAt: baseDay.hour(10).toISOString(), endAt: baseDay.hour(11).toISOString()}),
+				createMockEvent({id: 'e2', locationId: 'p1', startAt: baseDay.hour(10).minute(30).toISOString(), endAt: baseDay.hour(11).minute(30).toISOString()}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const layout = (component as any).eventsByPlaces()['p1'];
+			expect(layout.laneCount).toBe(2);
+			expect(layout.hasOverlap).toBeTrue();
 		});
 	});
 

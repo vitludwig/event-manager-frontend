@@ -20,7 +20,23 @@
 
     .place__segment {
       position: relative;
-      height: 65px;
     }
+  }
+
+  // Zlatá lišta u míst s překryvem — sticky vlevo jako název místa.
+  // margin-right: -4px → nezabírá místo ve flex řadě, takže segmenty
+  // zůstanou zarovnané s časovou osou (nezačnou o 4px doprava).
+  // ⚠ Žádný předek nesmí mít overflow/transform/filter/contain/will-change,
+  //   jinak iOS WKWebView sticky utne.
+  &__rail {
+    position: sticky;
+    left: 15px;
+    z-index: 2;
+    flex-shrink: 0;
+    align-self: flex-start;
+    width: 4px;
+    margin-right: -4px;
+    background: #b08d00;
+    border-radius: 3px;
   }
 }
