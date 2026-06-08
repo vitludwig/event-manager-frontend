@@ -32,7 +32,7 @@ describe('ListEventComponent', () => {
 			startAt: '2025-07-10T14:00:00Z', endAt: '2025-07-10T15:00:00Z',
 			locationId: 'p1', favorite: false,
 			eventType: {id: 't1', name: 'Concert', color: '#f00'},
-			tags: [], startSegment: 0, segmentCount: 4,
+			tags: [], startSegment: 0, segmentCount: 4, lane: 0,
 		} as any;
 		fixture.detectChanges();
 	});
