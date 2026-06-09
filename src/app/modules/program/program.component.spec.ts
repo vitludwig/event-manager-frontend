@@ -17,6 +17,7 @@ describe('ProgramComponent', () => {
 		places: signal([]),
 		days: signal({}),
 		selectedDay: signal(undefined),
+		eventsLoading: signal(true),
 		eventTypes: [],
 		tags: [],
 		allPlaces: [],
