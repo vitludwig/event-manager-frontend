@@ -13,6 +13,7 @@ export interface ICustomization {
 	logoUrl?: string;
 	faqUrlCs?: string;
 	faqUrlEn?: string;
+	configurableButtonIcon?: string;
 	festivalId?: string;
 	maps?: IMapImage[];
 	competitionsInfo?: any[];
@@ -73,6 +74,10 @@ export class CustomizationService {
 
 	public get faqUrlEn(): string | undefined {
 		return this.data().faqUrlEn;
+	}
+
+	public get configurableButtonIcon(): string | undefined {
+		return this.data().configurableButtonIcon;
 	}
 
 	public get festivalId(): string | undefined {
