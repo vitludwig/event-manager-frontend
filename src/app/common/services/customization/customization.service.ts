@@ -16,6 +16,7 @@ export interface ICustomization {
 	faqUrlCs?: string;
 	faqUrlEn?: string;
 	configurableButtonIcon?: string;
+	eventCardTagCount?: number | string;
 	festivalId?: string;
 	maps?: IMapImage[];
 	competitionsInfo?: any[];
@@ -80,6 +81,19 @@ export class CustomizationService {
 
 	public get configurableButtonIcon(): string | undefined {
 		return this.data().configurableButtonIcon;
+	}
+
+	public get eventCardTagCount(): number | undefined {
+		const raw = this.data().eventCardTagCount;
+		// Guard "unset" BEFORE Number(): Number('') === 0 would otherwise hide all tags.
+		if (raw === undefined || raw === null || raw === '') {
+			return undefined;
+		}
+		const n = Number(raw);
+		if (Number.isNaN(n) || n < 0) {
+			return undefined;
+		}
+		return Math.floor(n);
 	}
 
 	public get festivalId(): string | undefined {
