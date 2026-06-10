@@ -13,6 +13,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {IEventType} from '../../../../types/IEventType';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {IEventTag} from "../../../../types/IEventTag";
+import {IProgramPlace} from '../../../../types/IProgramPlace';
 
 @Component({
     selector: 'app-list-filter',
@@ -36,8 +37,12 @@ export class ListFilterComponent {
 	#data: { options: IProgramFilterOptions } = inject(MAT_DIALOG_DATA);
 	#dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions> = inject(MatDialogRef<ListFilterComponent, IProgramFilterOptions>);
 
-	protected eventTypes: IEventType[] = this.programService.eventTypes;
-	protected tags: IEventTag[] = this.programService.tags;
+	protected places: IProgramPlace[] = [...this.programService.allPlaces]
+		.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
+	protected eventTypes: IEventType[] = [...this.programService.eventTypes]
+		.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
+	protected tags: IEventTag[] = [...this.programService.tags]
+		.sort((a, b) => this.tagLabel(a).localeCompare(this.tagLabel(b), this.translate.currentLang));
 	protected locationId: string[] | undefined = this.#data.options.locationId ?? undefined;
 	protected selectedEventType: string[] | undefined = this.#data.options.eventType ?? undefined;
 	protected selectedTags: string[] | undefined = this.#data.options.tags ?? undefined;
@@ -62,5 +67,9 @@ export class ListFilterComponent {
 		this.selectedTags = undefined;
 
 		this.applyFilters();
+	}
+
+	private tagLabel(tag: IEventTag): string {
+		return this.translate.currentLang === 'cs' ? tag.nameCs : (tag.nameEn ?? tag.nameCs);
 	}
 }

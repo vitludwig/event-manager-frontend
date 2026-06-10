@@ -17,7 +17,7 @@
     <mat-select [(ngModel)]="locationId"
       multiple
       >
-      @for (place of programService.allPlaces; track place) {
+      @for (place of places; track place) {
         <mat-option
           [value]="place.id"
           >

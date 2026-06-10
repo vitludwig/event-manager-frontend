@@ -128,4 +128,60 @@ describe('ListFilterComponent', () => {
 			});
 		});
 	});
+
+	describe('alphabetical sorting', () => {
+		afterEach(() => {
+			mockProgramService.eventTypes = [{id: 'concert', name: 'Concert', color: '#f00'}];
+			mockProgramService.tags = [{id: 'rock', nameCs: 'Rock', nameEn: 'Rock', color: '#f00'}];
+			mockProgramService.allPlaces = [{id: 'p1', name: 'Main Stage'}];
+		});
+
+		it('sorts places alphabetically by name', () => {
+			mockProgramService.allPlaces = [
+				{id: 'c', name: 'Club'},
+				{id: 'a', name: 'Arena'},
+				{id: 'b', name: 'Bar'},
+			];
+
+			createComponent();
+
+			expect((component as any).places.map((p: any) => p.name)).toEqual(['Arena', 'Bar', 'Club']);
+		});
+
+		it('sorts event types alphabetically by name', () => {
+			mockProgramService.eventTypes = [
+				{id: 'c', name: 'Cinema', color: '#000'},
+				{id: 'a', name: 'Adventure', color: '#000'},
+				{id: 'b', name: 'Ballet', color: '#000'},
+			];
+
+			createComponent();
+
+			expect((component as any).eventTypes.map((t: any) => t.name)).toEqual(['Adventure', 'Ballet', 'Cinema']);
+		});
+
+		it('sorts tags alphabetically by current-language name', () => {
+			mockProgramService.tags = [
+				{id: 'z', nameCs: 'Zumba', nameEn: 'Zumba', color: '#000'},
+				{id: 'a', nameCs: 'Akce', nameEn: 'Action', color: '#000'},
+				{id: 'm', nameCs: 'Mistr', nameEn: 'Master', color: '#000'},
+			];
+
+			createComponent();
+
+			// default language is not 'cs', so tags are sorted by nameEn
+			expect((component as any).tags.map((t: any) => t.id)).toEqual(['a', 'm', 'z']);
+		});
+
+		it('does not mutate the service arrays', () => {
+			mockProgramService.eventTypes = [
+				{id: 'c', name: 'Cinema', color: '#000'},
+				{id: 'a', name: 'Adventure', color: '#000'},
+			];
+
+			createComponent();
+
+			expect(mockProgramService.eventTypes.map((t: any) => t.id)).toEqual(['c', 'a']);
+		});
+	});
 });
