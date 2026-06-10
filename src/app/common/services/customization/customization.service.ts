@@ -6,6 +6,8 @@ import { environment } from '../../../../environments/environment';
 export interface IMapImage {
 	name: string;
 	value: string;
+	labelCs?: string;
+	labelEn?: string;
 }
 
 export interface ICustomization {
@@ -91,6 +93,8 @@ export class CustomizationService {
 			this.resolvedMaps = (source ?? []).map(m => ({
 				name: m.name,
 				value: this.resolveUrl(m.value) ?? m.value,
+				labelCs: m.labelCs,
+				labelEn: m.labelEn,
 			}));
 		}
 		return this.resolvedMaps;
