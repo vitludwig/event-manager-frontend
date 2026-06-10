@@ -4,6 +4,7 @@ import {TranslateModule} from '@ngx-translate/core';
 
 import {ListEventComponent} from './list-event.component';
 import {ProgramService} from '../../../../services/program/program.service';
+import {CustomizationService} from '../../../../../../common/services/customization/customization.service';
 
 describe('ListEventComponent', () => {
 	let component: ListEventComponent;
@@ -16,11 +17,16 @@ describe('ListEventComponent', () => {
 		updateEvent: jasmine.createSpy('updateEvent'),
 	};
 
+	const mockCustomizationService = {
+		eventCardTagCount: undefined as number | undefined,
+	};
+
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [ListEventComponent, TranslateModule.forRoot()],
 			providers: [
 				{provide: ProgramService, useValue: mockProgramService},
+				{provide: CustomizationService, useValue: mockCustomizationService},
 			],
 		});
 
@@ -39,5 +45,47 @@ describe('ListEventComponent', () => {
 
 	it('should create', () => {
 		expect(component).toBeTruthy();
+	});
+
+	describe('visibleTags', () => {
+		const tags = [
+			{id: 'a', nameCs: 'A', nameEn: 'A', color: '#000'},
+			{id: 'b', nameCs: 'B', nameEn: 'B', color: '#000'},
+			{id: 'c', nameCs: 'C', nameEn: 'C', color: '#000'},
+		];
+
+		afterEach(() => {
+			mockCustomizationService.eventCardTagCount = undefined;
+		});
+
+		it('shows one tag by default (unset)', () => {
+			mockCustomizationService.eventCardTagCount = undefined;
+			component.event = {...component.event, tags} as any;
+			expect((component as any).visibleTags.map((t: any) => t.id)).toEqual(['a']);
+		});
+
+		it('shows no tags when the count is 0', () => {
+			mockCustomizationService.eventCardTagCount = 0;
+			component.event = {...component.event, tags} as any;
+			expect((component as any).visibleTags).toEqual([]);
+		});
+
+		it('shows the first N tags', () => {
+			mockCustomizationService.eventCardTagCount = 2;
+			component.event = {...component.event, tags} as any;
+			expect((component as any).visibleTags.map((t: any) => t.id)).toEqual(['a', 'b']);
+		});
+
+		it('shows all tags when the count exceeds the available tags', () => {
+			mockCustomizationService.eventCardTagCount = 5;
+			component.event = {...component.event, tags} as any;
+			expect((component as any).visibleTags.map((t: any) => t.id)).toEqual(['a', 'b', 'c']);
+		});
+
+		it('returns an empty array when the event has no tags', () => {
+			mockCustomizationService.eventCardTagCount = 3;
+			component.event = {...component.event, tags: []} as any;
+			expect((component as any).visibleTags).toEqual([]);
+		});
 	});
 });

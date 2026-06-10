@@ -16,12 +16,16 @@
     <div class="card-content">
       <div class="card-title">{{ event | translateEventProperty: 'name' | eventEllipsis: event }}</div>
     </div>
-    @if(event.tags && event.tags.length > 0) {
-      <div class="tag">
-        @if(translate.currentLang === 'cs') {
-          {{ event.tags[0].nameCs }}
-        } @else {
-          {{ event.tags[0].nameEn }}
+    @if (visibleTags.length > 0) {
+      <div class="tags">
+        @for (tag of visibleTags; track tag.id) {
+          <div class="tag">
+            @if (translate.currentLang === 'cs') {
+              {{ tag.nameCs }}
+            } @else {
+              {{ tag.nameEn }}
+            }
+          </div>
         }
       </div>
     }

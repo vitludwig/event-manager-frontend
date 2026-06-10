@@ -9,6 +9,8 @@ import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-prop
 import {ProgramService} from '../../../../services/program/program.service';
 import {EventEllipsisPipe} from './pipes/event-ellipsis.pipe';
 import {TranslateService} from "@ngx-translate/core";
+import {CustomizationService} from '../../../../../../common/services/customization/customization.service';
+import {IEventTag} from '../../../../types/IEventTag';
 
 @Component({
     selector: 'app-list-event',
@@ -26,6 +28,12 @@ export class ListEventComponent {
 	protected readonly fullProgramConfig = FullProgramConfig;
 	protected readonly programService: ProgramService = inject(ProgramService);
 	protected readonly translate: TranslateService = inject(TranslateService);
+	private readonly customizationService: CustomizationService = inject(CustomizationService);
+
+	protected get visibleTags(): IEventTag[] {
+		const limit = this.customizationService.eventCardTagCount ?? 1;
+		return (this.event?.tags ?? []).slice(0, limit);
+	}
 
 	protected showDetail(event: IProgramEvent): void {
 		this.eventSelect.emit(event);
