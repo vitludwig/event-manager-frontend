@@ -26,6 +26,7 @@ import {
 } from '../program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
 import {TranslateModule} from '@ngx-translate/core';
 import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
+import {EventLegendComponent} from './components/event-legend/event-legend.component';
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
@@ -51,6 +52,7 @@ import {CustomizationService} from "../../../../common/services/customization/cu
     MatDialogModule,
     TranslateModule,
     LanguageMenuComponent,
+    EventLegendComponent,
     MatMenuModule,
     UserInfoComponent,
     MatBadge
