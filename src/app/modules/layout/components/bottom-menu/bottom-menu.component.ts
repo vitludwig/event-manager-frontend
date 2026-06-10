@@ -32,10 +32,22 @@ export class BottomMenuComponent {
 
 	protected EDisplayDevice = EDisplayDevice;
 
-	protected openFAQ(): void {
-		const url = this.translate.currentLang === 'cs'
+	protected get configurableButtonUrl(): string | undefined {
+		return this.translate.currentLang === 'cs'
 			? this.customizationService.faqUrlCs
 			: this.customizationService.faqUrlEn;
+	}
+
+	protected get configurableButtonIcon(): string {
+		return this.customizationService.configurableButtonIcon || 'help';
+	}
+
+	protected get showConfigurableButton(): boolean {
+		return !!this.configurableButtonUrl;
+	}
+
+	protected openConfigurableButton(): void {
+		const url = this.configurableButtonUrl;
 		if (url) {
 			window.open(url, '_blank');
 		}

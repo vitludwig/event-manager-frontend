@@ -39,16 +39,18 @@
             }
 		</button>
 
-		<button mat-button
-			routerLinkActive="bottom-menu__button--active"
-			class="bottom-menu__button"
-            [class.with-text]="settingsService.device() === EDisplayDevice.INFO_PANEL"
-			(click)="openFAQ()"
-		>
-			<mat-icon>help</mat-icon>
-            @if(settingsService.device() === EDisplayDevice.INFO_PANEL) {
-                {{ 'FAQ' | translate }}
-            }
-		</button>
+		@if (showConfigurableButton) {
+			<button mat-button
+				routerLinkActive="bottom-menu__button--active"
+				class="bottom-menu__button"
+				[class.with-text]="settingsService.device() === EDisplayDevice.INFO_PANEL"
+				(click)="openConfigurableButton()"
+			>
+				<mat-icon>{{ configurableButtonIcon }}</mat-icon>
+				@if(settingsService.device() === EDisplayDevice.INFO_PANEL) {
+					{{ 'FAQ' | translate }}
+				}
+			</button>
+		}
 	</div>
 </mat-toolbar>
