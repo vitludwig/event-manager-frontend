@@ -23,7 +23,7 @@
             @if (translate.currentLang === 'cs') {
               {{ tag.nameCs }}
             } @else {
-              {{ tag.nameEn }}
+              {{ tag.nameEn ?? tag.nameCs }}
             }
           </div>
         }

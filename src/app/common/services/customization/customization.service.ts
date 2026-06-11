@@ -42,7 +42,12 @@ export class CustomizationService {
 		try {
 			const cached = localStorage.getItem('customization');
 			if (cached) {
-				this.data.set(JSON.parse(cached));
+				try {
+					this.data.set(JSON.parse(cached));
+				} catch {
+					// A corrupt cache must not block the network fetch below.
+					localStorage.removeItem('customization');
+				}
 			}
 
 			const result = await firstValueFrom(

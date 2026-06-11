@@ -20,9 +20,9 @@ export class FullProgramConfig {
 	public static laneGap: number = 4;
 
 	/**
-	 * Vertical distance between lane tops in px (eventHeight + laneGap)
+	 * Vertical distance between lane tops in px (derived: eventHeight + laneGap)
 	 */
-	public static laneStride: number = 69;
+	public static laneStride: number = FullProgramConfig.eventHeight + FullProgramConfig.laneGap;
 
 	// public static eventTypes: Record<number, IEventType> = {
 	// 	0: {

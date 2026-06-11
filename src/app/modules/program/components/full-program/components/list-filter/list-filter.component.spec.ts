@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 import {signal} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 import {ListFilterComponent} from './list-filter.component';
 import {ProgramService} from '../../../../services/program/program.service';
@@ -24,7 +24,7 @@ describe('ListFilterComponent', () => {
 		filterPlaces: jasmine.createSpy('filterPlaces'),
 	};
 
-	function createComponent(options = {}) {
+	function createComponent(options = {}, lang?: string) {
 		mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
 
 		TestBed.configureTestingModule({
@@ -40,6 +40,11 @@ describe('ListFilterComponent', () => {
 				{provide: ProgramService, useValue: mockProgramService},
 			],
 		});
+
+		if (lang) {
+			// Field initializers read translate.currentLang at construction — set it first.
+			(TestBed.inject(TranslateService) as any).currentLang = lang;
+		}
 
 		const fixture = TestBed.createComponent(ListFilterComponent);
 		component = fixture.componentInstance;
@@ -182,6 +187,31 @@ describe('ListFilterComponent', () => {
 			createComponent();
 
 			expect(mockProgramService.eventTypes.map((t: any) => t.id)).toEqual(['c', 'a']);
+		});
+
+		it('sorts tags by nameCs (not nameEn) when language is cs', () => {
+			mockProgramService.tags = [
+				{id: 'x', nameCs: 'Auto', nameEn: 'Zebra', color: '#000'},
+				{id: 'y', nameCs: 'Bota', nameEn: 'Apple', color: '#000'},
+			];
+
+			createComponent({}, 'cs');
+
+			// cs → ordered by nameCs (Auto, Bota) → [x, y];
+			// (en would order by nameEn (Apple, Zebra) → [y, x])
+			expect((component as any).tags.map((t: any) => t.id)).toEqual(['x', 'y']);
+		});
+
+		it('falls back to nameCs in the tag label when nameEn is null', () => {
+			mockProgramService.tags = [
+				{id: 'b', nameCs: 'Bota', nameEn: null, color: '#000'},
+				{id: 'a', nameCs: 'Auto', nameEn: null, color: '#000'},
+			] as any;
+
+			createComponent();
+
+			// nameEn is null → tagLabel uses nameCs; no throw, sorted by nameCs (Auto, Bota)
+			expect((component as any).tags.map((t: any) => t.id)).toEqual(['a', 'b']);
 		});
 	});
 });

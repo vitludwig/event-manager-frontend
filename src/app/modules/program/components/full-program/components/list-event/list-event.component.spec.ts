@@ -8,6 +8,7 @@ import {CustomizationService} from '../../../../../../common/services/customizat
 
 describe('ListEventComponent', () => {
 	let component: ListEventComponent;
+	let fixture: ReturnType<typeof TestBed.createComponent<ListEventComponent>>;
 
 	const mockProgramService = {
 		events: signal([]),
@@ -30,7 +31,7 @@ describe('ListEventComponent', () => {
 			],
 		});
 
-		const fixture = TestBed.createComponent(ListEventComponent);
+		fixture = TestBed.createComponent(ListEventComponent);
 		component = fixture.componentInstance;
 		component.event = {
 			id: 'e1', nameCs: 'Test', nameEn: 'Test EN',
@@ -86,6 +87,21 @@ describe('ListEventComponent', () => {
 			mockCustomizationService.eventCardTagCount = 3;
 			component.event = {...component.event, tags: []} as any;
 			expect((component as any).visibleTags).toEqual([]);
+		});
+
+		it('renders the visible tags in the DOM, falling back to nameCs when nameEn is null', () => {
+			mockCustomizationService.eventCardTagCount = 2;
+			component.event = {...component.event, tags: [
+				{id: 'a', nameCs: 'Akce', nameEn: 'Action', color: '#000'},
+				{id: 'b', nameCs: 'Bota', nameEn: null, color: '#000'},
+			]} as any;
+			fixture.detectChanges();
+
+			const pills = fixture.nativeElement.querySelectorAll('.tag');
+			expect(pills.length).toBe(2);
+			// default lang (not cs) → nameEn, with fallback to nameCs when nameEn is null
+			expect(pills[0].textContent.trim()).toBe('Action');
+			expect(pills[1].textContent.trim()).toBe('Bota');
 		});
 	});
 });

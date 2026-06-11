@@ -1,8 +1,9 @@
 import {TestBed} from '@angular/core/testing';
 import {provideHttpClient} from '@angular/common/http';
-import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClientTesting, HttpTestingController} from '@angular/common/http/testing';
 
 import {CustomizationService} from './customization.service';
+import {environment} from '../../../../environments/environment';
 
 describe('CustomizationService', () => {
 	let service: CustomizationService;
@@ -60,6 +61,23 @@ describe('CustomizationService', () => {
 		it('floors a fractional number', () => {
 			(service as any).data.set({eventCardTagCount: 2.7});
 			expect(service.eventCardTagCount).toBe(2);
+		});
+	});
+
+	describe('load', () => {
+		it('still fetches from the network when the localStorage cache is corrupt', async () => {
+			spyOn(localStorage, 'getItem').and.returnValue('not-valid-json{');
+			spyOn(localStorage, 'setItem');
+			spyOn(localStorage, 'removeItem');
+			const httpTesting = TestBed.inject(HttpTestingController);
+
+			const loadPromise = service.load();
+			const req = httpTesting.expectOne(`${environment.apiUrl}/public/customization`);
+			req.flush({eventCardTagCount: '3'});
+			await loadPromise;
+
+			expect(service.eventCardTagCount).toBe(3);
+			httpTesting.verify();
 		});
 	});
 });

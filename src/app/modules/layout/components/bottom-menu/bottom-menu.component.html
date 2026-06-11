@@ -41,7 +41,6 @@
 
 		@if (showConfigurableButton) {
 			<button mat-button
-				routerLinkActive="bottom-menu__button--active"
 				class="bottom-menu__button"
 				[class.with-text]="settingsService.device() === EDisplayDevice.INFO_PANEL"
 				(click)="openConfigurableButton()"

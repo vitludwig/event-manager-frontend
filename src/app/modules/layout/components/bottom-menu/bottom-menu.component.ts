@@ -33,9 +33,11 @@ export class BottomMenuComponent {
 	protected EDisplayDevice = EDisplayDevice;
 
 	protected get configurableButtonUrl(): string | undefined {
-		return this.translate.currentLang === 'cs'
-			? this.customizationService.faqUrlCs
-			: this.customizationService.faqUrlEn;
+		const isCs = this.translate.currentLang === 'cs';
+		const primary = isCs ? this.customizationService.faqUrlCs : this.customizationService.faqUrlEn;
+		const fallback = isCs ? this.customizationService.faqUrlEn : this.customizationService.faqUrlCs;
+		// Fall back to the other language's URL so a single-language config still shows the button.
+		return primary ?? fallback;
 	}
 
 	protected get configurableButtonIcon(): string {
@@ -49,7 +51,9 @@ export class BottomMenuComponent {
 	protected openConfigurableButton(): void {
 		const url = this.configurableButtonUrl;
 		if (url) {
-			window.open(url, '_blank');
+			// noopener,noreferrer prevents the opened (operator-supplied) page from
+			// hijacking this tab via window.opener (tabnabbing).
+			window.open(url, '_blank', 'noopener,noreferrer');
 		}
 	}
 }
