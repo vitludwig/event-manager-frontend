@@ -39,7 +39,10 @@ export class ProgramService {
 
 	public activeFiltersCount: number = 0;
 	public favorites: IEvent[] = [];
-	public eventTypes: IEventType[] = [];
+	readonly #eventTypes = signal<IEventType[]>([]);
+	// Signal so OnPush consumers (e.g. the event legend) refresh when types load,
+	// including after a websocket reconnect (loadEventTypes fires no other signal).
+	public readonly eventTypes = this.#eventTypes.asReadonly();
 	public tags: IEventTag[] = [];
 	public selectedDay = signal<number | undefined>(undefined);
 	#showEventDetails: boolean = false;
@@ -244,7 +247,7 @@ export class ProgramService {
 	}
 
 	public async loadEventTypes(): Promise<void> {
-		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`));
+		this.#eventTypes.set(await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`)));
 	}
 
 	/**

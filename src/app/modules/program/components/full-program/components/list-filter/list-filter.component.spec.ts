@@ -16,7 +16,7 @@ describe('ListFilterComponent', () => {
 		places: signal([]),
 		days: signal({}),
 		selectedDay: signal(undefined),
-		eventTypes: [{id: 'concert', name: 'Concert', color: '#f00'}],
+		eventTypes: signal([{id: 'concert', name: 'Concert', color: '#f00'}]),
 		tags: [{id: 'rock', nameCs: 'Rock', nameEn: 'Rock', color: '#f00'}],
 		allPlaces: [{id: 'p1', name: 'Main Stage'}],
 		userFilterOptions: {},
@@ -136,7 +136,7 @@ describe('ListFilterComponent', () => {
 
 	describe('alphabetical sorting', () => {
 		afterEach(() => {
-			mockProgramService.eventTypes = [{id: 'concert', name: 'Concert', color: '#f00'}];
+			mockProgramService.eventTypes.set([{id: 'concert', name: 'Concert', color: '#f00'}]);
 			mockProgramService.tags = [{id: 'rock', nameCs: 'Rock', nameEn: 'Rock', color: '#f00'}];
 			mockProgramService.allPlaces = [{id: 'p1', name: 'Main Stage'}];
 		});
@@ -154,11 +154,11 @@ describe('ListFilterComponent', () => {
 		});
 
 		it('sorts event types alphabetically by name', () => {
-			mockProgramService.eventTypes = [
+			mockProgramService.eventTypes.set([
 				{id: 'c', name: 'Cinema', color: '#000'},
 				{id: 'a', name: 'Adventure', color: '#000'},
 				{id: 'b', name: 'Ballet', color: '#000'},
-			];
+			]);
 
 			createComponent();
 
@@ -179,14 +179,14 @@ describe('ListFilterComponent', () => {
 		});
 
 		it('does not mutate the service arrays', () => {
-			mockProgramService.eventTypes = [
+			mockProgramService.eventTypes.set([
 				{id: 'c', name: 'Cinema', color: '#000'},
 				{id: 'a', name: 'Adventure', color: '#000'},
-			];
+			]);
 
 			createComponent();
 
-			expect(mockProgramService.eventTypes.map((t: any) => t.id)).toEqual(['c', 'a']);
+			expect(mockProgramService.eventTypes().map((t: any) => t.id)).toEqual(['c', 'a']);
 		});
 
 		it('sorts tags by nameCs (not nameEn) when language is cs', () => {

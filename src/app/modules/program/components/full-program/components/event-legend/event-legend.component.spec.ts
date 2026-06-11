@@ -1,4 +1,5 @@
 import {TestBed} from '@angular/core/testing';
+import {signal} from '@angular/core';
 import {TranslateModule} from '@ngx-translate/core';
 
 import {EventLegendComponent} from './event-legend.component';
@@ -6,7 +7,7 @@ import {ProgramService} from '../../../../services/program/program.service';
 
 describe('EventLegendComponent', () => {
 	const mockProgramService = {
-		eventTypes: [{id: 'concert', name: 'Concert', color: 'rgb(255, 0, 0)'}],
+		eventTypes: signal([{id: 'concert', name: 'Concert', color: 'rgb(255, 0, 0)'}]),
 	};
 
 	function createComponent() {
@@ -22,7 +23,7 @@ describe('EventLegendComponent', () => {
 	}
 
 	afterEach(() => {
-		mockProgramService.eventTypes = [{id: 'concert', name: 'Concert', color: 'rgb(255, 0, 0)'}];
+		mockProgramService.eventTypes.set([{id: 'concert', name: 'Concert', color: 'rgb(255, 0, 0)'}]);
 	});
 
 	it('should create', () => {
@@ -31,10 +32,10 @@ describe('EventLegendComponent', () => {
 	});
 
 	it('renders one chip per event type', () => {
-		mockProgramService.eventTypes = [
+		mockProgramService.eventTypes.set([
 			{id: 'a', name: 'Concert', color: 'rgb(255, 0, 0)'},
 			{id: 'b', name: 'Workshop', color: 'rgb(0, 255, 0)'},
-		];
+		]);
 
 		const fixture = createComponent();
 
@@ -57,11 +58,11 @@ describe('EventLegendComponent', () => {
 	});
 
 	it('sorts event types alphabetically by name', () => {
-		mockProgramService.eventTypes = [
+		mockProgramService.eventTypes.set([
 			{id: 'c', name: 'Cinema', color: 'rgb(0, 0, 0)'},
 			{id: 'a', name: 'Adventure', color: 'rgb(0, 0, 0)'},
 			{id: 'b', name: 'Ballet', color: 'rgb(0, 0, 0)'},
-		];
+		]);
 
 		const fixture = createComponent();
 
@@ -71,7 +72,7 @@ describe('EventLegendComponent', () => {
 	});
 
 	it('renders nothing when there are no event types', () => {
-		mockProgramService.eventTypes = [];
+		mockProgramService.eventTypes.set([]);
 
 		const fixture = createComponent();
 
@@ -79,13 +80,13 @@ describe('EventLegendComponent', () => {
 	});
 
 	it('does not mutate the service array', () => {
-		mockProgramService.eventTypes = [
+		mockProgramService.eventTypes.set([
 			{id: 'c', name: 'Cinema', color: 'rgb(0, 0, 0)'},
 			{id: 'a', name: 'Adventure', color: 'rgb(0, 0, 0)'},
-		];
+		]);
 
 		createComponent();
 
-		expect(mockProgramService.eventTypes.map((t) => t.id)).toEqual(['c', 'a']);
+		expect(mockProgramService.eventTypes().map((t) => t.id)).toEqual(['c', 'a']);
 	});
 });

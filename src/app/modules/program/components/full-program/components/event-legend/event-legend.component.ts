@@ -9,17 +9,17 @@ import {TranslateService} from '@ngx-translate/core';
 	imports: [],
 	templateUrl: './event-legend.component.html',
 	styleUrls: ['./event-legend.component.scss'],
-	// Default CD (not OnPush): programService.eventTypes is a plain array filled by an
-	// HTTP request that emits no signal afterwards. An OnPush component without inputs
-	// would render empty and never refresh. The component is trivial, so default CD is cheap.
-	changeDetection: ChangeDetectionStrategy.Default,
+	// OnPush: the template reads programService.eventTypes() (a signal) via this getter,
+	// so the view is re-checked whenever event types load — including after a websocket
+	// reconnect — and the getter no longer sorts on every change-detection cycle.
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventLegendComponent {
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly translate: TranslateService = inject(TranslateService);
 
 	protected get eventTypes(): IEventType[] {
-		return [...this.programService.eventTypes]
+		return [...this.programService.eventTypes()]
 			.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
 	}
 }

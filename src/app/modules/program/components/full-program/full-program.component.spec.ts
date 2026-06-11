@@ -50,7 +50,7 @@ class MockProgramService {
 	allEvents: IEvent[] = [];
 	showEventDetails = false;
 	favorites: IEvent[] = [];
-	eventTypes: IEventType[] = [];
+	eventTypes = signal<IEventType[]>([]);
 	tags: any[] = [];
 
 	filterEvents = jasmine.createSpy('filterEvents');

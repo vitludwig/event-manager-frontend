@@ -146,7 +146,7 @@ describe('ProgramService', () => {
 			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush(eventTypes);
 			tick();
 
-			expect(service.eventTypes).toEqual(eventTypes);
+			expect(service.eventTypes()).toEqual(eventTypes);
 		}));
 	});
 

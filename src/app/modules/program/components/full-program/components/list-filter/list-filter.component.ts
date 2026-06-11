@@ -39,7 +39,7 @@ export class ListFilterComponent {
 
 	protected places: IProgramPlace[] = [...this.programService.allPlaces]
 		.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
-	protected eventTypes: IEventType[] = [...this.programService.eventTypes]
+	protected eventTypes: IEventType[] = [...this.programService.eventTypes()]
 		.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
 	protected tags: IEventTag[] = [...this.programService.tags]
 		.sort((a, b) => this.tagLabel(a).localeCompare(this.tagLabel(b), this.translate.currentLang));
