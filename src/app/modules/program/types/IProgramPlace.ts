@@ -3,6 +3,7 @@ import {IEvent} from './IEvent';
 export interface IProgramPlace {
 	id: string;
 	name: string;
+	nameEn?: string | null;
 	order?: number;
 }
 

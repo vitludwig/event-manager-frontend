@@ -5,10 +5,11 @@ import {ListEventComponent} from '../list-event/list-event.component';
 import {IProgramEvent, IProgramPlace} from '../../../../types/IProgramPlace';
 import {IProgramSegment} from '../../types/IProgramSegment';
 import {IProgramPlaceLayout} from '../../types/IProgramPlaceLayout';
+import {LocalizedNamePipe} from '../../../../pipes/localized-name/localized-name.pipe';
 
 @Component({
     selector: 'app-list-place',
-    imports: [ListEventComponent],
+    imports: [ListEventComponent, LocalizedNamePipe],
     templateUrl: './list-place.component.html',
     styleUrls: ['./list-place.component.scss']
 })

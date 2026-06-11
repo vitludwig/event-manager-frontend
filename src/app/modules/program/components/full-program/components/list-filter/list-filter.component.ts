@@ -14,6 +14,8 @@ import {IEventType} from '../../../../types/IEventType';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {IEventTag} from "../../../../types/IEventTag";
 import {IProgramPlace} from '../../../../types/IProgramPlace';
+import {LocalizedNamePipe} from '../../../../pipes/localized-name/localized-name.pipe';
+import {localizedName} from '../../../../pipes/localized-name/localized-name';
 
 @Component({
     selector: 'app-list-filter',
@@ -26,7 +28,8 @@ import {IProgramPlace} from '../../../../types/IProgramPlace';
     MatFormFieldModule,
     MatSelectModule,
     MatSlideToggleModule,
-    TranslateModule
+    TranslateModule,
+    LocalizedNamePipe,
 ],
     templateUrl: './list-filter.component.html',
     styleUrls: ['./list-filter.component.scss']
@@ -38,9 +41,11 @@ export class ListFilterComponent {
 	#dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions> = inject(MatDialogRef<ListFilterComponent, IProgramFilterOptions>);
 
 	protected places: IProgramPlace[] = [...this.programService.allPlaces]
-		.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
+		.sort((a, b) => localizedName(a, this.translate.currentLang)
+			.localeCompare(localizedName(b, this.translate.currentLang), this.translate.currentLang));
 	protected eventTypes: IEventType[] = [...this.programService.eventTypes()]
-		.sort((a, b) => a.name.localeCompare(b.name, this.translate.currentLang));
+		.sort((a, b) => localizedName(a, this.translate.currentLang)
+			.localeCompare(localizedName(b, this.translate.currentLang), this.translate.currentLang));
 	protected tags: IEventTag[] = [...this.programService.tags]
 		.sort((a, b) => this.tagLabel(a).localeCompare(this.tagLabel(b), this.translate.currentLang));
 	protected locationId: string[] | undefined = this.#data.options.locationId ?? undefined;

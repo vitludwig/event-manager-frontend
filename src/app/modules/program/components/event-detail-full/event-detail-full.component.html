@@ -12,11 +12,11 @@
       <div class="event-detail__content__title">
         <h3>{{ event | translateEventProperty: 'name' }}</h3>
         <div>
-          {{ event.eventType.name }}
+          {{ event.eventType | localizedName }}
         </div>
         <div style="display: flex; justify-content: center"><app-event-tags [event]="event" /></div>
         <div>{{ event.startAt | date: 'HH:mm' }} - {{ event.endAt | date: 'HH:mm' }}</div>
-        <div>{{ place.name }}</div>
+        <div>{{ place | localizedName }}</div>
       </div>
       <mat-divider></mat-divider>
       <div class="event-detail__content__description">

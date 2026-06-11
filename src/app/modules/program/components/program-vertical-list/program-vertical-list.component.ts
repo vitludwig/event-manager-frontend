@@ -12,6 +12,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
 import {EventDetailFullComponent} from "../event-detail-full/event-detail-full.component";
+import {LocalizedNamePipe} from '../../pipes/localized-name/localized-name.pipe';
 
 @Component({
     selector: 'app-program-vertical-list',
@@ -23,6 +24,7 @@ import {EventDetailFullComponent} from "../event-detail-full/event-detail-full.c
         MatRippleModule,
         TranslateModule,
         TranslateEventPropertyPipe,
+        LocalizedNamePipe,
     ],
     templateUrl: './program-vertical-list.component.html',
     styleUrls: ['./program-vertical-list.component.scss']

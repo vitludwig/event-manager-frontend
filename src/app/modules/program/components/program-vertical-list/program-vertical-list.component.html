@@ -28,9 +28,9 @@
                   <span class="list-vertical__event__content__title">
                     <span class="event-title">{{ event | translateEventProperty: 'name' }}</span>
                     <small>
-                      {{ event.eventType.name }}
+                      {{ event.eventType | localizedName }}
                     </small>
-                    <small>{{event.location.name }}</small>
+                    <small>{{ event.location | localizedName }}</small>
                   </span>
                 </div>
               </div>

@@ -21,7 +21,7 @@
         <mat-option
           [value]="place.id"
           >
-          {{ place.name }}
+          {{ place | localizedName }}
         </mat-option>
       }
     </mat-select>
@@ -36,7 +36,7 @@
         <mat-option
           [value]="item.id"
           >
-          {{ item.name }}
+          {{ item | localizedName }}
         </mat-option>
       }
     </mat-select>

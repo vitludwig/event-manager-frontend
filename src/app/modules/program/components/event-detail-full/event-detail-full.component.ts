@@ -9,6 +9,7 @@ import {ProgramService} from '../../services/program/program.service';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TranslateEventPropertyPipe} from '../../pipes/translate-event-property/translate-event-property.pipe';
 import {EventTagsComponent} from "../event-tags/event-tags.component";
+import {LocalizedNamePipe} from '../../pipes/localized-name/localized-name.pipe';
 
 @Component({
     selector: 'app-event-detail-full',
@@ -21,6 +22,7 @@ import {EventTagsComponent} from "../event-tags/event-tags.component";
         TranslateModule,
         TranslateEventPropertyPipe,
         EventTagsComponent,
+        LocalizedNamePipe,
     ],
     templateUrl: './event-detail-full.component.html',
     styleUrls: ['./event-detail-full.component.scss']

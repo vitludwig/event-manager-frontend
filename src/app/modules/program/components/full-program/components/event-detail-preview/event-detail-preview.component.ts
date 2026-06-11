@@ -13,6 +13,7 @@ import {EllipsisPipe} from '../../../../../../common/pipes/ellipsis/ellipsis.pip
 import {MatDivider} from '@angular/material/divider';
 import {EventTagsComponent} from "../../../event-tags/event-tags.component";
 import {EventDetailFullComponent} from "../../../event-detail-full/event-detail-full.component";
+import {LocalizedNamePipe} from '../../../../pipes/localized-name/localized-name.pipe';
 
 @Component({
     selector: 'app-event-detail-preview',
@@ -25,7 +26,8 @@ import {EventDetailFullComponent} from "../../../event-detail-full/event-detail-
         TranslateModule,
         EllipsisPipe,
         MatDivider,
-        EventTagsComponent
+        EventTagsComponent,
+        LocalizedNamePipe,
     ],
     templateUrl: './event-detail-preview.component.html',
     styleUrls: ['./event-detail-preview.component.scss']

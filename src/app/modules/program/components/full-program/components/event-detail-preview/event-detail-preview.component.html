@@ -6,7 +6,7 @@
 			<div class="event-detail__content__title__info">
 				<h4>{{ data.event | translateEventProperty: 'name' }}</h4>
 				<h6>
-                    {{ data.event.eventType.name }}
+                    {{ data.event.eventType | localizedName }}
                 </h6>
 				<div style="display: flex; justify-content: space-between; align-items: center">
                     <div>{{ data.event.startAt | date: 'HH:mm' }} - {{ data.event.endAt | date: 'HH:mm' }}</div>
