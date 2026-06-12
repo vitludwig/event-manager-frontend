@@ -7,10 +7,10 @@
 			[routerLink]="ERoute.PROGRAM"
             [queryParamsHandling]="'merge'"
 		>
-			<mat-icon>view_list</mat-icon>
-            @if(settingsService.device() === EDisplayDevice.INFO_PANEL) {
-                {{ 'Program' | translate }}
-            }
+			<span class="bottom-menu__inner">
+				<mat-icon>view_list</mat-icon>
+				<span class="bottom-menu__label">{{ 'Program' | translate }}</span>
+			</span>
         </button>
 
         <button mat-button
@@ -20,10 +20,10 @@
             [routerLink]="ERoute.MAP"
             [queryParamsHandling]="'merge'"
         >
-            <mat-icon> place</mat-icon>
-            @if(settingsService.device() === EDisplayDevice.INFO_PANEL) {
-                {{ 'Mapa' | translate }}
-            }
+			<span class="bottom-menu__inner">
+				<mat-icon>place</mat-icon>
+				<span class="bottom-menu__label">{{ 'Mapa' | translate }}</span>
+			</span>
         </button>
 
 		<button mat-button
@@ -33,10 +33,10 @@
 			[routerLink]="ERoute.NOTIFICATIONS"
             [queryParamsHandling]="'merge'"
 		>
-			<mat-icon>notifications</mat-icon>
-            @if(settingsService.device() === EDisplayDevice.INFO_PANEL) {
-                {{ 'Notifikace' | translate }}
-            }
+			<span class="bottom-menu__inner">
+				<mat-icon>notifications</mat-icon>
+				<span class="bottom-menu__label">{{ 'Notifikace' | translate }}</span>
+			</span>
 		</button>
 
 		@if (showConfigurableButton) {
@@ -45,10 +45,10 @@
 				[class.with-text]="settingsService.device() === EDisplayDevice.INFO_PANEL"
 				(click)="openConfigurableButton()"
 			>
-				<mat-icon>{{ configurableButtonIcon }}</mat-icon>
-				@if(settingsService.device() === EDisplayDevice.INFO_PANEL) {
-					{{ 'FAQ' | translate }}
-				}
+				<span class="bottom-menu__inner">
+					<mat-icon>{{ configurableButtonIcon }}</mat-icon>
+					<span class="bottom-menu__label">{{ configurableButtonLabel }}</span>
+				</span>
 			</button>
 		}
 	</div>

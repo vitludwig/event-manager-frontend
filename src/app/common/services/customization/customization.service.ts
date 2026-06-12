@@ -16,6 +16,8 @@ export interface ICustomization {
 	faqUrlCs?: string;
 	faqUrlEn?: string;
 	configurableButtonIcon?: string;
+	configurableButtonLabelCs?: string;
+	configurableButtonLabelEn?: string;
 	eventCardTagCount?: number | string;
 	festivalId?: string;
 	maps?: IMapImage[];
@@ -86,6 +88,14 @@ export class CustomizationService {
 
 	public get configurableButtonIcon(): string | undefined {
 		return this.data().configurableButtonIcon;
+	}
+
+	public get configurableButtonLabelCs(): string | undefined {
+		return this.data().configurableButtonLabelCs;
+	}
+
+	public get configurableButtonLabelEn(): string | undefined {
+		return this.data().configurableButtonLabelEn;
 	}
 
 	public get eventCardTagCount(): number | undefined {

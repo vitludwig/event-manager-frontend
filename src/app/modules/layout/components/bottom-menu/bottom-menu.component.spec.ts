@@ -19,6 +19,8 @@ describe('BottomMenuComponent', () => {
 		faqUrlCs?: string;
 		faqUrlEn?: string;
 		configurableButtonIcon?: string;
+		configurableButtonLabelCs?: string;
+		configurableButtonLabelEn?: string;
 	};
 
 	function setup(): void {
@@ -87,5 +89,29 @@ describe('BottomMenuComponent', () => {
 		(TestBed.inject(TranslateService) as any).currentLang = 'en'; // English user
 		expect((component as any).showConfigurableButton).toBeTrue();
 		expect((component as any).configurableButtonUrl).toBe('https://example.test/cs');
+	});
+
+	it('shows the Czech configurable-button label when language is cs', () => {
+		mockCustomization = {
+			faqUrlEn: 'https://example.test/help',
+			configurableButtonLabelCs: 'Nápověda',
+			configurableButtonLabelEn: 'Help',
+		};
+		setup();
+		(TestBed.inject(TranslateService) as any).currentLang = 'cs';
+		expect((component as any).configurableButtonLabel).toBe('Nápověda');
+	});
+
+	it('falls back to the other language label when the current language has none', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help', configurableButtonLabelCs: 'Nápověda'};
+		setup();
+		(TestBed.inject(TranslateService) as any).currentLang = 'en';
+		expect((component as any).configurableButtonLabel).toBe('Nápověda');
+	});
+
+	it('returns an empty configurable-button label when none is configured', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help'};
+		setup();
+		expect((component as any).configurableButtonLabel).toBe('');
 	});
 });

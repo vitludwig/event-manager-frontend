@@ -44,6 +44,14 @@ export class BottomMenuComponent {
 		return this.customizationService.configurableButtonIcon || 'help';
 	}
 
+	protected get configurableButtonLabel(): string {
+		const isCs = this.translate.currentLang === 'cs';
+		const primary = isCs ? this.customizationService.configurableButtonLabelCs : this.customizationService.configurableButtonLabelEn;
+		const fallback = isCs ? this.customizationService.configurableButtonLabelEn : this.customizationService.configurableButtonLabelCs;
+		// Fall back to the other language so a single-language config still shows a label.
+		return primary ?? fallback ?? '';
+	}
+
 	protected get showConfigurableButton(): boolean {
 		return !!this.configurableButtonUrl;
 	}
