@@ -4,6 +4,7 @@
     [style.width]="(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + fullProgramConfig.segmentWidth - 2 + 'px'"
     [style.top.px]="fullProgramConfig.laneStride * event.lane"
     [style.background-color]="event.eventType.color + ' !important'"
+    [class.has-tags]="visibleTags.length > 0"
     (click)="showDetail(event)"
     >
     @if(event.favorite) {
@@ -14,7 +15,7 @@
       </div>
     }
     <div class="card-content">
-      <div class="card-title">{{ event | translateEventProperty: 'name' | eventEllipsis: event }}</div>
+      <div class="card-title">{{ event | translateEventProperty: 'name' }}</div>
     </div>
     @if (visibleTags.length > 0) {
       <div class="tags">

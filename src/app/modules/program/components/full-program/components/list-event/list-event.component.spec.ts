@@ -103,5 +103,41 @@ describe('ListEventComponent', () => {
 			expect(pills[0].textContent.trim()).toBe('Action');
 			expect(pills[1].textContent.trim()).toBe('Bota');
 		});
+
+		it('caps to a single tag for events shorter than 60 minutes', () => {
+			mockCustomizationService.eventCardTagCount = 3;
+			component.event = {
+				...component.event,
+				startAt: '2025-07-10T14:00:00Z',
+				endAt: '2025-07-10T14:30:00Z',   // 30 min
+				segmentCount: 2,                  // ~88px — dost široká na 1 tag
+				tags,
+			} as any;
+			expect((component as any).visibleTags.map((t: any) => t.id)).toEqual(['a']);
+		});
+
+		it('hides all tags when the card is too narrow (15-minute event)', () => {
+			mockCustomizationService.eventCardTagCount = 3;
+			component.event = {
+				...component.event,
+				startAt: '2025-07-10T14:00:00Z',
+				endAt: '2025-07-10T14:15:00Z',   // 15 min
+				segmentCount: 1,                  // ~43px < minTagWidthPx
+				tags,
+			} as any;
+			expect((component as any).visibleTags).toEqual([]);
+		});
+
+		it('still shows multiple tags for a 60-minute (wide) event', () => {
+			mockCustomizationService.eventCardTagCount = 3;
+			component.event = {
+				...component.event,
+				startAt: '2025-07-10T14:00:00Z',
+				endAt: '2025-07-10T15:00:00Z',   // 60 min — strop pod 60 min se NEuplatní
+				segmentCount: 4,                  // široká
+				tags,
+			} as any;
+			expect((component as any).visibleTags.map((t: any) => t.id)).toEqual(['a', 'b', 'c']);
+		});
 	});
 });

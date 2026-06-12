@@ -7,14 +7,14 @@ import {FullProgramConfig} from '../../FullProgramConfig';
 import {MatIconModule} from '@angular/material/icon';
 import {TranslateEventPropertyPipe} from '../../../../pipes/translate-event-property/translate-event-property.pipe';
 import {ProgramService} from '../../../../services/program/program.service';
-import {EventEllipsisPipe} from './pipes/event-ellipsis.pipe';
 import {TranslateService} from "@ngx-translate/core";
 import {CustomizationService} from '../../../../../../common/services/customization/customization.service';
 import {IEventTag} from '../../../../types/IEventTag';
+import dayjs from 'dayjs';
 
 @Component({
     selector: 'app-list-event',
-    imports: [MatButtonModule, MatIconModule, TranslateEventPropertyPipe, EventEllipsisPipe],
+    imports: [MatButtonModule, MatIconModule, TranslateEventPropertyPipe],
     templateUrl: './list-event.component.html',
     styleUrls: ['./list-event.component.scss']
 })
@@ -30,8 +30,22 @@ export class ListEventComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);
 	private readonly customizationService: CustomizationService = inject(CustomizationService);
 
+	protected get cardWidthPx(): number {
+		return FullProgramConfig.segmentWidth * (this.event?.segmentCount ?? 0) - 2;
+	}
+
 	protected get visibleTags(): IEventTag[] {
-		const limit = this.customizationService.eventCardTagCount ?? 1;
+		let limit = this.customizationService.eventCardTagCount ?? 1;
+
+		const durationMinutes = dayjs(this.event?.endAt).diff(dayjs(this.event?.startAt), 'minutes');
+		if (durationMinutes < 60) {
+			limit = Math.min(limit, 1);
+		}
+
+		if (this.cardWidthPx < FullProgramConfig.minTagWidthPx) {
+			limit = 0;
+		}
+
 		return (this.event?.tags ?? []).slice(0, limit);
 	}
 
