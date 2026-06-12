@@ -7,11 +7,9 @@
     [class.has-tags]="visibleTags.length > 0"
     (click)="showDetail(event)"
     >
-    @if(event.favorite) {
-      <div class="card-sidebar">
-        <div class="icon-wrapper">
-          <mat-icon class="favorite-icon">favorite</mat-icon>
-        </div>
+    @if (event.favorite) {
+      <div class="card-favorite">
+        <mat-icon class="favorite-icon">favorite</mat-icon>
       </div>
     }
     <div class="card-content">
