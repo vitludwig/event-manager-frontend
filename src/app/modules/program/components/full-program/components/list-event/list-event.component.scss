@@ -1,7 +1,7 @@
 // Layout konstanty pro ořez obsahu krátkých karet
 // (viz docs/superpowers/specs/2026-06-12-short-event-card-overlap-design.md).
 // minTagWidthPx (skrytí tagů podle šířky) žije ve FullProgramConfig, protože ho čte TS.
-$tag-strip-height: 24px;          // rezervovaný dolní pruh pro řádek tagů
+$tag-strip-height: 26px;          // rezervovaný dolní pruh pro řádek tagů (sedí na výšku .tag)
 $title-max-lines: 3;              // ořez názvu bez tagů
 $title-max-lines-with-tags: 2;    // ořez názvu s tagy (vejde se nad rezervovaný pruh)
 
@@ -14,7 +14,6 @@ $title-max-lines-with-tags: 2;    // ořez názvu s tagy (vejde se nad rezervova
 	border-radius: 5px;
 	font-size: 15px;
 	color: #1e1e1e;
-	opacity: 0.8;
 	line-height: 15px !important;
 	font-weight: 500;
 	margin: 0 1px;
@@ -96,13 +95,14 @@ $title-max-lines-with-tags: 2;    // ořez názvu s tagy (vejde se nad rezervova
 	right: 5px;
 	bottom: 3px;
 	display: flex;
-	gap: 4px;
+	gap: 5px;
 }
 
 .tag {
 	font-size: 11px;
-	border: 1px solid #00000060;
-	border-radius: 5px;
-	padding: 2px 5px;
+	background: rgba(100, 100, 100, 0.12);
+	border: 1px solid rgba(0, 0, 0, 0.22);
+	border-radius: 6px;
+	padding: 3px 7px;
 	white-space: nowrap;
 }
