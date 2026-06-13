@@ -23,7 +23,26 @@
       "Bash(DATABASE_URL=\"postgresql://admin:password@localhost:5432/festival_planner?schema=public\" npx --prefix /home/vitek/Projects/RZB-IT/festival-planner/apps/backend prisma migrate dev --name add-customization 2>&1)",
       "Bash(ls:*)",
       "Bash(sudo chown:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git commit -q --amend -m ' *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"POST /auth/login -> HTTP %{http_code}\\\\n\" -X POST http://localhost:3001/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@example.com\",\"password\":\"admin123\"}')",
+      "Bash(curl -s -o /dev/null -w \"POST :3002/auth/login -> HTTP %{http_code}\\\\n\" --max-time 4 -X POST http://localhost:3002/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@example.com\",\"password\":\"admin123\"}')",
+      "Bash(docker compose *)",
+      "Bash(docker run *)",
+      "Bash(npx tsc *)",
+      "Bash(git commit -m 'docs: design spec for configurable bottom-menu button *)",
+      "Bash(npx eslint *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(git *)",
+      "Bash(grep -v \"^commit\\\\|^Author\\\\|^Date\\\\|^$\\\\|^    \")",
+      "Bash(xargs cat)",
+      "Bash(curl -s http://localhost:3001/public/locations)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(json.dumps\\(data[0] if data else {}, indent=2\\)\\)\")",
+      "Bash(curl -s http://localhost:3001/public/event-types)",
+      "Bash(echo \"build exit=$?\")",
+      "Read(//tmp/**)",
+      "Bash(echo \"test exit=$?\")"
     ]
   }
 }
