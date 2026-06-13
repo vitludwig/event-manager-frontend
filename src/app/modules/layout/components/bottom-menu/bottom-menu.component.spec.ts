@@ -2,6 +2,9 @@ import {TestBed} from '@angular/core/testing';
 import {signal} from '@angular/core';
 import {RouterTestingModule} from '@angular/router/testing';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {By} from '@angular/platform-browser';
+import {RouterLink} from '@angular/router';
+import {ERoute} from '../../../../common/types/ERoute';
 
 import {BottomMenuComponent} from './bottom-menu.component';
 import {SettingsService} from '../../../../common/services/settings/settings.service';
@@ -10,6 +13,7 @@ import {CustomizationService} from '../../../../common/services/customization/cu
 
 describe('BottomMenuComponent', () => {
 	let component: BottomMenuComponent;
+	let fixture: ReturnType<typeof TestBed.createComponent<BottomMenuComponent>>;
 
 	const mockSettingsService = {
 		device: signal(EDisplayDevice.BASIC),
@@ -32,18 +36,49 @@ describe('BottomMenuComponent', () => {
 			],
 		});
 
-		const fixture = TestBed.createComponent(BottomMenuComponent);
+		fixture = TestBed.createComponent(BottomMenuComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	}
 
 	beforeEach(() => {
 		mockCustomization = {};
+		mockSettingsService.device.set(EDisplayDevice.BASIC);
 	});
 
 	it('should create', () => {
 		setup();
 		expect(component).toBeTruthy();
+	});
+
+	it('renders Oblíbené as a routed tab', () => {
+		setup();
+		const labels = Array.from(fixture.nativeElement.querySelectorAll('.bottom-menu__label'))
+			.map((e: any) => e.textContent.trim());
+		expect(labels).toContain('Oblíbené');
+	});
+
+	it('Oblíbené is a router link to the favorites route', () => {
+		setup();
+		const links = fixture.debugElement.queryAll(By.directive(RouterLink));
+		// Program, Mapa, Notifikace, Oblíbené (configurable button has no routerLink)
+		expect(links.length).toBe(4);
+		const targets = links.map((l) => l.injector.get(RouterLink));
+		// RouterLink stores its value in routerLinkInput (setter-only in Angular 21)
+		expect(targets.some((rl: any) => {
+			const input = rl.routerLinkInput;
+			return Array.isArray(input)
+				? input.includes(ERoute.FAVORITES)
+				: input === ERoute.FAVORITES;
+		})).toBeTrue();
+	});
+
+	it('hides Oblíbené in the info-panel display', () => {
+		mockSettingsService.device.set(EDisplayDevice.INFO_PANEL);
+		setup();
+		const labels = Array.from(fixture.nativeElement.querySelectorAll('.bottom-menu__label'))
+			.map((e: any) => e.textContent.trim());
+		expect(labels).not.toContain('Oblíbené');
 	});
 
 	it('hides the configurable button when no URL is set', () => {

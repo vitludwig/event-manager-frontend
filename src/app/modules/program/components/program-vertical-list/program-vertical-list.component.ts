@@ -49,8 +49,7 @@ export class ProgramVerticalListComponent {
 	});
 
 	protected readonly groupEvents = computed(() => {
-		const days = this.programService.days();
-		return this.getGroupedEventsByDay(this.#events(), days);
+		return this.getGroupedEventsByDay(this.#events());
 	});
 
 	private readonly programService: ProgramService = inject(ProgramService);
@@ -75,29 +74,27 @@ export class ProgramVerticalListComponent {
 		this.programService.updateEvent(event, 'favorite', event.favorite);
 	}
 
-	private getGroupedEventsByDay(events: IEvent[] | null, daysRecord: Record<number, number>): Record<number, IEvent[]> {
+	private getGroupedEventsByDay(events: IEvent[] | null): Record<number, IEvent[]> {
 		if(!events) {
 			return {};
 		}
 
-		const days = Object.values(daysRecord);
 		const result: Record<number, IEvent[]> = {};
 
 		for(const event of events) {
-			const eventDayStart = dayjs(event.startAt).startOf('day').valueOf();
-			const day = days.find(day => day === eventDayStart);
-
-			if(day) {
-				if(!result[day]) {
-					result[day] = [];
-				}
-				result[day].push(event);
+			// Group by the event's own start-day so nothing is silently dropped.
+			// (The festival day list intentionally omits some early-morning days,
+			// which previously made favourited/searched events vanish here.)
+			const day = dayjs(event.startAt).startOf('day').valueOf();
+			if(!result[day]) {
+				result[day] = [];
 			}
+			result[day].push(event);
 		}
 
-		for(const [day, events] of Object.entries(result)) {
+		for(const [day, dayEvents] of Object.entries(result)) {
 			// @ts-ignore
-			result[day] = events.sort((prev, next) =>  new Date(prev.startAt).valueOf() - new Date(next.startAt).valueOf());
+			result[day] = dayEvents.sort((prev, next) =>  new Date(prev.startAt).valueOf() - new Date(next.startAt).valueOf());
 		}
 
 		return result;

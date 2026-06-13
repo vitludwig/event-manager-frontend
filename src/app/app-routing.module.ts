@@ -25,6 +25,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./modules/map/map.component').then((c) => c.MapComponent),
 	},
 	{
+		path: ERoute.FAVORITES,
+		loadComponent: () => import('./modules/favorites/favorites.component').then((c) => c.FavoritesComponent),
+	},
+	{
 		path: '**',
 		redirectTo: ERoute.PROGRAM,
 	},
