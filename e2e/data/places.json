@@ -1,0 +1,17 @@
+[
+    {
+        "id": "place1",
+        "name": "Main Stage",
+        "order": 0
+    },
+    {
+        "id": "place2",
+        "name": "Workshop Tent",
+        "order": 1
+    },
+    {
+        "id": "place3",
+        "name": "Bar",
+        "order": 2
+    }
+]

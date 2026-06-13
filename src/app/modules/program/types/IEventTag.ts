@@ -1,5 +1,6 @@
 export interface IEventTag {
     id: string;
-    name: string;
-    name_EN: string;
+    nameCs: string;
+    nameEn: string | null;
+    color: string;
 }

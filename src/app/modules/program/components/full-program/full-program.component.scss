@@ -5,21 +5,18 @@
 	display: flex;
 	flex-direction: column;
 
-	.toolbar-wrapper {
-		&::after {
-			content: "";
-			display: block;
-			height: 20px;
-			//background-image: url("/assets/images/line-big.jpg");
-			background-image: url("/assets/images/line-big-roztoc.jpg");
-		}
-	}
-
 	&__toolbar {
+		margin-top: constant(safe-area-inset-top);
+		margin-top: env(safe-area-inset-top);
+
 		.program-heading {
 			margin: 0;
 			letter-spacing: 1px;
 		}
+
+        .program-logo {
+          max-height: 50px;
+        }
 
 		&__actions {
 			margin-left: auto;
@@ -29,18 +26,18 @@
 	}
 
 	&__secondary-toolbar {
+		background-color: #151515;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease-in-out;
+
 		mat-toolbar {
 			background-color: #151515;
-			height: 0;
-			overflow: hidden;
-			transition: all 0.3s ease-in-out;
+			height: 60px;
 		}
 
 		&.opened {
-			mat-toolbar {
-				height: 60px;
-				overflow: visible;
-			}
+			max-height: 50vh;
 		}
 
 		&__actions {
@@ -58,11 +55,13 @@
 		align-items: flex-start;
 		justify-content: flex-start;
 		height: 100%;
+		touch-action: pan-x pan-y;
 
 		&__scroll-to-now {
-			position: absolute;
+			position: fixed;
 			right: 25px;
-			bottom: 25px;
+			bottom: calc(75px + constant(safe-area-inset-bottom));
+			bottom: calc(75px + env(safe-area-inset-bottom));
 			z-index: 2
 		}
 	}

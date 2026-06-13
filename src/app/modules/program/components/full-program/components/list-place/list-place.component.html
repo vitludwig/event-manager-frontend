@@ -1,17 +1,24 @@
-<div class="place" *ngIf="events">
-	<div class="place__title">
-		<span class="place__title__text"
-			[style.background-color]="place.color"
-		>{{place.name}}</span>
-	</div>
-
-	<div class="place__segment-list">
-		<div class="place__segment"
-			[style.width]="FullProgramConfig.segmentWidth + 'px'"
-			*ngFor="let segment of segments"
-		>
-			<app-list-event [event]="events[segment.index]"
-				(eventSelect)="showEventDetail($event)"></app-list-event>
-		</div>
-	</div>
-</div>
+@if (layout) {
+  <div class="place">
+    <div class="place__title">
+      <span class="place__title__text"
+      >{{ place | localizedName }}</span>
+    </div>
+    <div class="place__segment-list">
+      @if (layout.hasOverlap) {
+        <div class="place__rail" [style.height.px]="rowHeight()"></div>
+      }
+      @for (segment of segments; track segment) {
+        <div class="place__segment"
+          [style.width]="FullProgramConfig.segmentWidth + 'px'"
+          [style.height.px]="rowHeight()"
+          >
+          @for (event of layout.eventsByStartSegment[segment.index] ?? []; track event.id) {
+            <app-list-event [event]="event"
+            (eventSelect)="showEventDetail($event)"></app-list-event>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -1,13 +1,13 @@
 {
-  "/signalr/*": {
-    "target": "http://localhost:5000",
+  "/public/**": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/socket.io/**": {
+    "target": "http://localhost:3000",
     "secure": false,
     "ws": true,
     "logLevel": "debug"
-  },
-  "/api/v1/*": {
-    "target": "http://localhost:5000",
-    "secure": false,
-    "changeOrigin": true
   }
 }

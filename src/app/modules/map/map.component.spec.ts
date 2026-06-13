@@ -1,21 +1,64 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
-import { MapComponent } from './map.component';
+import {MapComponent} from './map.component';
+import {CustomizationService} from '../../common/services/customization/customization.service';
 
 describe('MapComponent', () => {
-  let component: MapComponent;
-  let fixture: ComponentFixture<MapComponent>;
+	let component: MapComponent;
+	let fixture: ComponentFixture<MapComponent>;
+	let translate: TranslateService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [MapComponent]
-    });
-    fixture = TestBed.createComponent(MapComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+	const mockCustomization = {
+		maps: [
+			{name: 'map1', value: 'u1', labelCs: 'Hlavní mapa', labelEn: 'Main map'},
+			{name: 'map2', value: 'u2', labelCs: '', labelEn: 'Comp map'},
+			{name: 'map3', value: '', labelCs: '', labelEn: ''},
+		],
+		competitionsInfo: undefined,
+		tribesInfo: undefined,
+	};
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			imports: [MapComponent, TranslateModule.forRoot()],
+			providers: [
+				{provide: CustomizationService, useValue: mockCustomization},
+			],
+		});
+		fixture = TestBed.createComponent(MapComponent);
+		component = fixture.componentInstance;
+		translate = TestBed.inject(TranslateService);
+		fixture.detectChanges();
+	});
+
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
+
+	it('returns the CS label when language is cs', () => {
+		translate.use('cs');
+		expect((component as any).festivalMapLabel).toBe('Hlavní mapa');
+	});
+
+	it('returns the EN label when language is en', () => {
+		translate.use('en');
+		expect((component as any).festivalMapLabel).toBe('Main map');
+	});
+
+	it('falls back to the other language when the current-language label is empty', () => {
+		translate.use('cs');
+		expect((component as any).competitionMapLabel).toBe('Comp map');
+	});
+
+	it('falls back to "Mapa" when both labels are empty', () => {
+		translate.use('cs');
+		expect((component as any).tribesMapLabel).toBe('Mapa');
+	});
+
+	it('returns the map value by name', () => {
+		expect((component as any).festivalMap).toBe('u1');
+		expect((component as any).competitionMap).toBe('u2');
+		expect((component as any).tribesMap).toBe('');
+	});
 });

@@ -13,23 +13,24 @@ import {EllipsisPipe} from '../../../../../../common/pipes/ellipsis/ellipsis.pip
 import {MatDivider} from '@angular/material/divider';
 import {EventTagsComponent} from "../../../event-tags/event-tags.component";
 import {EventDetailFullComponent} from "../../../event-detail-full/event-detail-full.component";
+import {LocalizedNamePipe} from '../../../../pipes/localized-name/localized-name.pipe';
 
 @Component({
-	selector: 'app-event-detail-preview',
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatButtonModule,
-		MatIconModule,
-		MatDialogModule,
-		TranslateEventPropertyPipe,
-		TranslateModule,
-		EllipsisPipe,
-		MatDivider,
-		EventTagsComponent
-	],
-	templateUrl: './event-detail-preview.component.html',
-	styleUrls: ['./event-detail-preview.component.scss']
+    selector: 'app-event-detail-preview',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatIconModule,
+        MatDialogModule,
+        TranslateEventPropertyPipe,
+        TranslateModule,
+        EllipsisPipe,
+        MatDivider,
+        EventTagsComponent,
+        LocalizedNamePipe,
+    ],
+    templateUrl: './event-detail-preview.component.html',
+    styleUrls: ['./event-detail-preview.component.scss']
 })
 export class EventDetailPreviewComponent {
 	private readonly programService: ProgramService = inject(ProgramService);

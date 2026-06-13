@@ -1,57 +1,57 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, computed, inject, OnInit} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatRippleModule} from '@angular/material/core';
 import {NotificationService} from './services/notification/notification.service';
 import {ProgramService} from '../program/services/program/program.service';
-import {Subject, takeUntil} from 'rxjs';
 import {IEvent} from '../program/types/IEvent';
-import {StringToJsonPipe} from '../../common/pipes/string-to-json/string-to-json.pipe';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatDialogModule} from '@angular/material/dialog';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {Capacitor} from '@capacitor/core';
 
 @Component({
-	selector: 'app-notifications',
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatButtonModule,
-		MatIconModule,
-		MatListModule,
-		MatRippleModule,
-		MatToolbarModule,
-		MatDialogModule,
-		StringToJsonPipe,
-		TranslateModule,
-	],
-	templateUrl: './notifications.component.html',
-	styleUrls: ['./notifications.component.scss']
+    selector: 'app-notifications',
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatRippleModule,
+        MatToolbarModule,
+        MatDialogModule,
+        TranslateModule,
+        MatSlideToggleModule
+    ],
+    templateUrl: './notifications.component.html',
+    styleUrls: ['./notifications.component.scss']
 })
-export class NotificationsComponent implements OnInit, OnDestroy {
-	protected eventsById: Record<string, IEvent | null> = {};
+export class NotificationsComponent implements OnInit {
+    protected readonly eventsById = computed(() => {
+        const events = this.programService.events();
+        const result: Record<string, IEvent | null> = {};
+        for (const event of events) {
+            result[event.id] = event;
+        }
+        return result;
+    });
 
-	protected readonly notificationService: NotificationService = inject(NotificationService);
-	protected readonly translate: TranslateService = inject(TranslateService);
-	private readonly programService: ProgramService = inject(ProgramService);
+    protected readonly notificationService: NotificationService = inject(NotificationService);
+    protected readonly translate: TranslateService = inject(TranslateService);
+    protected readonly isNativePlatform = Capacitor.isNativePlatform();
+    private readonly programService: ProgramService = inject(ProgramService);
 
-	#unsubscribe: Subject<void> = new Subject<void>();
+    public ngOnInit(): void {
+        this.notificationService.loadNotifications();
+    }
 
-	public ngOnInit(): void {
-		this.programService.getEvents()
-			.pipe(takeUntil(this.#unsubscribe))
-			.subscribe((events) => {
-				for(const event of events) {
-					this.eventsById[event.id] = event;
-				}
-			});
-
-		this.notificationService.loadNotifications();
-	}
-
-	public ngOnDestroy(): void {
-		this.#unsubscribe.next();
-	}
+    protected async onStoryToggle(checked: boolean): Promise<void> {
+        if (checked) {
+            await this.notificationService.subscribeToStories();
+        } else {
+            await this.notificationService.unsubscribeFromStories();
+        }
+        await this.notificationService.loadNotifications();
+    }
 }

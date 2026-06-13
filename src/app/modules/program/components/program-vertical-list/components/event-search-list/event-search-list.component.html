@@ -1,0 +1,38 @@
+<div class="event-list">
+  <div class="event-list__header">
+    @if (showBackBtn()) {
+      <button mat-icon-button
+        class="event-list__header__back"
+        aria-label="Back"
+        (click)="back.emit()">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+    }
+
+    <mat-form-field appearance="outline"
+      class="event-list__header__search-input">
+      <input matInput
+        [placeholder]="'Vyhledat' | translate"
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)">
+      <mat-icon matPrefix class="my-icon">search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="event-list__content">
+    <app-program-vertical-list [events]="filteredEvents()"></app-program-vertical-list>
+
+    @if (filteredEvents().length === 0) {
+      @if (loading()) {
+        <div class="event-list__content__loading">
+          <mat-spinner diameter="36"></mat-spinner>
+        </div>
+      } @else {
+        <div class="event-list__content__no-events">
+          <h2>{{ emptyTitle() | translate }}</h2>
+          <h4>{{ emptySubtitle() | translate }}</h4>
+        </div>
+      }
+    }
+  </div>
+</div>

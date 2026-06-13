@@ -1,0 +1,11 @@
+@let types = eventTypes;
+@if (types.length > 0) {
+	<div class="event-legend">
+		@for (type of types; track type.id) {
+			<span class="event-legend__item">
+				<span class="event-legend__swatch" [style.background-color]="type.color"></span>
+				<span class="event-legend__label">{{ type | localizedName }}</span>
+			</span>
+		}
+	</div>
+}

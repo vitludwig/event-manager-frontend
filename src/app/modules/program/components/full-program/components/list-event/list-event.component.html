@@ -1,32 +1,32 @@
-<button class="place__segment__event text-overflow-ellipsis"
-	[style.right]="-(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + 'px'"
-	[style.width]="(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + fullProgramConfig.segmentWidth - 2 + 'px'"
-	[style.background-color]="event.type.color + ' !important'"
-	*ngIf="event"
-	(click)="showDetail(event)"
->
-    @if(event.favorite) {
-        <div class="card-sidebar">
-            <div class="icon-wrapper">
-                <mat-icon class="favorite-icon">favorite</mat-icon>
-            </div>
-        </div>
+@if (event) {
+  <button class="place__segment__event text-overflow-ellipsis"
+    [style.right]="-(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + 'px'"
+    [style.width]="(fullProgramConfig.segmentWidth * (event.segmentCount - 1)) + fullProgramConfig.segmentWidth - 2 + 'px'"
+    [style.top.px]="fullProgramConfig.laneStride * event.lane"
+    [style.background-color]="event.eventType.color + ' !important'"
+    [class.has-tags]="visibleTags.length > 0"
+    (click)="showDetail(event)"
+    >
+    @if (event.favorite) {
+      <div class="card-favorite">
+        <mat-icon class="favorite-icon">favorite</mat-icon>
+      </div>
     }
-
     <div class="card-content">
-        <div class="card-title">{{ event | translateEventProperty: 'name' | eventEllipsis: event }}</div>
-        @if(event.name_Secondary) {
-            <div class="card-title-secondary">{{ event.name_Secondary | eventEllipsis: event }}</div>
-        }
+      <div class="card-title">{{ event | translateEventProperty: 'name' }}</div>
     </div>
-
-    @if(event.tags && event.tags.length > 0) {
-        <div class="tag">
-            @if(translate.currentLang === 'cs') {
-                {{ event.tags[0].name }}
+    @if (visibleTags.length > 0) {
+      <div class="tags">
+        @for (tag of visibleTags; track tag.id) {
+          <div class="tag">
+            @if (translate.currentLang === 'cs') {
+              {{ tag.nameCs }}
             } @else {
-                {{ event.tags[0].name_EN }}
+              {{ tag.nameEn ?? tag.nameCs }}
             }
-        </div>
+          </div>
+        }
+      </div>
     }
-</button>
+  </button>
+}

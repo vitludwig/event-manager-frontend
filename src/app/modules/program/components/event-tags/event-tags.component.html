@@ -3,9 +3,9 @@
     <mat-chip>
         <mat-icon matChipAvatar>tag</mat-icon>
         @if(translate.currentLang === 'cs') {
-            {{ tag.name }}
+            {{ tag.nameCs ?? tag.nameEn }}
         } @else {
-            {{ tag.name_EN }}
+            {{ tag.nameEn ?? tag.nameCs }}
         }
     </mat-chip>
 }

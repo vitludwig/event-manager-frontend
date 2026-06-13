@@ -1,44 +1,53 @@
-import {NgModule, APP_INITIALIZER, isDevMode} from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ServiceWorkerModule} from '@angular/service-worker';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {BottomMenuComponent} from './modules/layout/components/bottom-menu/bottom-menu.component';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {HttpClient, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {appInitializerFactory} from './app-initializer.factory';
-import {ProgramService} from './modules/program/services/program/program.service';
-import {TranslateModule, TranslateLoader, MissingTranslationHandlerParams, MissingTranslationHandler} from '@ngx-translate/core';
+import {
+    TranslateModule,
+    TranslateLoader,
+    MissingTranslationHandlerParams,
+    MissingTranslationHandler
+} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {InitService} from "./common/services/init/init.service";
 
 export function HttpLoaderFactory(http: HttpClient) {
-	return new TranslateHttpLoader(http);
+    return new TranslateHttpLoader(http);
 }
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
-	/**
-	 * in case of missing translation, use string given in template pipe
-	 * @param params
-	 */
-	handle(params: MissingTranslationHandlerParams): string {
-		return params.key;
-	}
+    /**
+     * in case of missing translation, use string given in template pipe
+     * @param params
+     */
+    handle(params: MissingTranslationHandlerParams): string {
+        return params.key;
+    }
 }
 
-@NgModule({ declarations: [
+@NgModule({
+    declarations: [
         AppComponent,
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent],
+    imports: [
+        BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
         MatToolbarModule,
         MatSidenavModule,
         MatIconModule,
         MatButtonModule,
+        MatSnackBarModule,
         BottomMenuComponent,
         TranslateModule.forRoot({
             loader: {
@@ -46,24 +55,16 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient]
             },
-            missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler },
+            missingTranslationHandler: {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
         }),
-        // ServiceWorkerModule.register('ngsw-worker.js', {
-        // 	enabled: true,
-        // 	// Register the ServiceWorker as soon as the application is stable
-        // 	// or after 30 seconds (whichever comes first).
-        // 	registrationStrategy: 'registerWhenStable:30000'
-        // }),
-        // ServiceWorkerModule.register('notification.worker.js', { enabled: true, registrationStrategy: 'registerWhenStable:30000' }),
-        ServiceWorkerModule.register('OneSignalSDKWorker.js', { enabled: !isDevMode() }),
-        ServiceWorkerModule.register('ngsw-worker.js', {
-          enabled: !isDevMode(),
-          // Register the ServiceWorker as soon as the application is stable
-          // or after 30 seconds (whichever comes first).
-          registrationStrategy: 'registerWhenStable:30000'
-        })], providers: [
-        { provide: APP_INITIALIZER, useFactory: appInitializerFactory, deps: [ProgramService], multi: true },
+    ],
+    providers: [
+        provideAppInitializer(() => {
+        const initializerFn = (appInitializerFactory)(inject(InitService));
+        return initializerFn();
+      }),
         provideHttpClient(withInterceptorsFromDi()),
-    ] })
+    ]
+})
 export class AppModule {
 }

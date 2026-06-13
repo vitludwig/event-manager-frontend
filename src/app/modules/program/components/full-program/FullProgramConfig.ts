@@ -9,54 +9,24 @@ export class FullProgramConfig {
 	 */
 	public static segmentDuration: number = 15;
 
-	// public static eventTypes: Record<number, IEventType> = {
-	// 	0: {
-	// 		id: 0,
-	// 		name: 'Soutěž/Turnaj/Larp',
-	// 		color: '#C5C7C6',
-	// 		abbr: 'S',
-	// 	},
-	// 	1: {
-	// 		id: 1,
-	// 		name: 'Živá hudba',
-	// 		color: '#e7503d',
-	// 		abbr: 'H',
-	// 	},
-	// 	2: {
-	// 		id: 2,
-	// 		name: 'Elektronická hudba (DJs)',
-	// 		color: '#318C9F',
-	// 		abbr: 'E',
-	// 	},
-	// 	3: {
-	// 		id: 3,
-	// 		name: 'Film',
-	// 		color: '#afcb1f',
-	// 		abbr: 'F',
-	// 	},
-	// 	4: {
-	// 		id: 4,
-	// 		name: 'Show/Vystoupení',
-	// 		color: '#7d71b1',
-	// 		abbr: 'V',
-	// 	},
-	// 	5: {
-	// 		id: 5,
-	// 		name: 'Workshop',
-	// 		color: '#ffcc01',
-	// 		abbr: 'WS',
-	// 	},
-	// 	6: {
-	// 		id: 6,
-	// 		name: 'Přednáška',
-	// 		color: '#ef7f1b',
-	// 		abbr: 'P',
-	// 	},
-	// 	7: {
-	// 		id: 7,
-	// 		name: 'Kmenový program',
-	// 		color: '#917400',
-	// 		abbr: 'P',
-	// 	},
-	// }
+	/**
+	 * Height of a single event / lane in px
+	 */
+	public static eventHeight: number = 65;
+
+	/**
+	 * Vertical gap between stacked lanes in px
+	 */
+	public static laneGap: number = 4;
+
+	/**
+	 * Vertical distance between lane tops in px (derived: eventHeight + laneGap)
+	 */
+	public static laneStride: number = FullProgramConfig.eventHeight + FullProgramConfig.laneGap;
+
+	/**
+	 * The minimum width of the card (px) at which tags are still displayed.
+	 * Below this (typically 15min event, ~43px) the tags are hidden so that they do not overlap with the title.
+	 */
+	public static minTagWidthPx: number = 60;
 }

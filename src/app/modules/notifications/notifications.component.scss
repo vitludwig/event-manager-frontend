@@ -1,5 +1,19 @@
 .notifications-toolbar {
 	justify-content: space-between;
+	align-items: center;
+	margin-top: constant(safe-area-inset-top);
+	margin-top: env(safe-area-inset-top);
+
+	&__actions {
+		display: flex;
+		align-items: center;
+	}
+}
+
+.notifications-empty {
+	padding: 32px 16px;
+	text-align: center;
+	color: #888;
 }
 
 .notifications-list {

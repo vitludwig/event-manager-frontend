@@ -1,55 +1,57 @@
 <div class="user-info-title"
-	mat-dialog-title
->
-	<div class="user-info-title__content">
-		<h3>{{ 'Peněženka' | translate }}</h3>
-		<small>{{ 'Aktualizováno' | translate }}: {{ userService.lastChecked | date: 'dd.MM.yyyy HH:mm' }}</small>
-	</div>
+  mat-dialog-title
+  >
+  <div class="user-info-title__content">
+    <h3>{{ 'Peněženka' | translate }}</h3>
+    <small>{{ 'Aktualizováno' | translate }}: {{ userService.lastChecked | date: 'dd.MM.yyyy HH:mm' }}</small>
+  </div>
 </div>
 
 <div mat-dialog-content>
-	<mat-list class="balance-list">
-		<mat-list-item>
-			<label>{{ 'Vloženo' | translate}}: </label>
-			<strong>{{ dialogData.data.user.DepositSum ?? 0 }}&nbsp;Kč</strong>
-		</mat-list-item>
-		<mat-list-item>
-			<label>{{ 'Utraceno' | translate}}: </label>
-			<strong>{{ dialogData.data.user.BuySum ?? 0 }}&nbsp;Kč</strong>
-		</mat-list-item>
-		<mat-list-item>
-			<label>{{ 'Zbývá' | translate}}: </label>
-			<strong>{{ dialogData.data.user.TotalSum }}&nbsp;Kč</strong>
-		</mat-list-item>
-	</mat-list>
+  <mat-list class="balance-list">
+    <mat-list-item>
+      <label>{{ 'Vloženo' | translate}}: </label>
+      <strong>{{ dialogData.data.user.DepositSum ?? 0 }}&nbsp;Kč</strong>
+    </mat-list-item>
+    <mat-list-item>
+      <label>{{ 'Utraceno' | translate}}: </label>
+      <strong>{{ dialogData.data.user.BuySum ?? 0 }}&nbsp;Kč</strong>
+    </mat-list-item>
+    <mat-list-item>
+      <label>{{ 'Zbývá' | translate}}: </label>
+      <strong>{{ dialogData.data.user.TotalSum }}&nbsp;Kč</strong>
+    </mat-list-item>
+  </mat-list>
 
 
-	<ng-container *ngIf="dialogData.data.transactions.length > 0">
-		<h4 class="transactions-title">{{ 'Poslední transakce' | translate}}</h4>
-		<mat-list role="list" class="transaction-list">
-			<mat-list-item role="listitem"
-				*ngFor="let transaction of dialogData.data.transactions">
-				<span matListItemTitle>{{transaction.Name}}</span>
-				<span matListItemLine>{{ transaction.AmountSum }} Kč</span>
-				<span matListItemLine>{{ transaction.Created | date: 'dd.MM.yyyy HH:mm' }}</span>
-			</mat-list-item>
-		</mat-list>
-	</ng-container>
+  @if (dialogData.data.transactions.length > 0) {
+    <h4 class="transactions-title">{{ 'Poslední transakce' | translate}}</h4>
+    <mat-list role="list" class="transaction-list">
+      @for (transaction of dialogData.data.transactions; track transaction) {
+        <mat-list-item role="listitem"
+          >
+          <span matListItemTitle>{{transaction.Name}}</span>
+          <span matListItemLine>{{ transaction.AmountSum }} Kč</span>
+          <span matListItemLine>{{ transaction.Created | date: 'dd.MM.yyyy HH:mm' }}</span>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
 </div>
 
 <mat-dialog-actions align="end">
-	<div class="actions">
-		<button mat-stroked-button
-			color="warn"
-			(click)="refreshData()"
-		>
-			{{ 'Aktualizovat' | translate }}
-		</button>
+  <div class="actions">
+    <button mat-stroked-button
+      color="warn"
+      (click)="refreshData()"
+      >
+      {{ 'Aktualizovat' | translate }}
+    </button>
 
-		<button mat-raised-button
-			mat-dialog-close
-		>
-			{{ 'Zavřít' | translate }}
-		</button>
-	</div>
+    <button mat-raised-button
+      mat-dialog-close
+      >
+      {{ 'Zavřít' | translate }}
+    </button>
+  </div>
 </mat-dialog-actions>

@@ -1,0 +1,17 @@
+[
+    {
+        "id": "type1",
+        "name": "Ceremony",
+        "color": "#ff0000"
+    },
+    {
+        "id": "type2",
+        "name": "Workshop",
+        "color": "#00ff00"
+    },
+    {
+        "id": "type3",
+        "name": "Concert",
+        "color": "#0000ff"
+    }
+]

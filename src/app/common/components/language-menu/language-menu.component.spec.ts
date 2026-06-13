@@ -1,21 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { LanguageMenuComponent } from './language-menu.component';
+import {LanguageMenuComponent} from './language-menu.component';
 
 describe('LanguageMenuComponent', () => {
-  let component: LanguageMenuComponent;
-  let fixture: ComponentFixture<LanguageMenuComponent>;
+	let component: LanguageMenuComponent;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [LanguageMenuComponent]
-    });
-    fixture = TestBed.createComponent(LanguageMenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			imports: [LanguageMenuComponent, TranslateModule.forRoot()],
+		});
+		const fixture = TestBed.createComponent(LanguageMenuComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

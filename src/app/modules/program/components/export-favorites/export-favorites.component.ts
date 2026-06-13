@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {ProgramService} from '../../services/program/program.service';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -9,24 +9,22 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {QrScannerComponent} from '../../../../common/components/qr-scanner/qr-scanner.component';
 import { QrCodeModule } from 'ng-qrcode';
-import * as short from "short-uuid";
+import short from "short-uuid";
 
 @Component({
-	selector: 'app-export-favorites',
-	standalone: true,
-	imports: [
-		CommonModule,
-		QrCodeModule,
-		MatButtonModule,
-		MatDialogModule,
-		MatSlideToggleModule,
-		TranslateModule,
-		MatTabsModule,
-		ZXingScannerModule,
-		QrScannerComponent,
-	],
-	templateUrl: './export-favorites.component.html',
-	styleUrls: ['./export-favorites.component.scss']
+    selector: 'app-export-favorites',
+    imports: [
+    QrCodeModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    TranslateModule,
+    MatTabsModule,
+    ZXingScannerModule,
+    QrScannerComponent
+],
+    templateUrl: './export-favorites.component.html',
+    styleUrls: ['./export-favorites.component.scss']
 })
 export class ExportFavoritesComponent implements OnInit {
 	protected favoritesData: string = "";

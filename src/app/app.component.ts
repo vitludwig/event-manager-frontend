@@ -1,26 +1,40 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, NgZone, OnInit} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslateService} from '@ngx-translate/core';
 import {NotificationService} from './modules/notifications/services/notification/notification.service';
 import {ProgramService} from './modules/program/services/program/program.service';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
+import {filter} from 'rxjs';
 import {NavigationEnd, Router} from '@angular/router';
+import {Location} from '@angular/common';
 import {ERoute} from './common/types/ERoute';
-import {SwUpdate} from '@angular/service-worker';
+import {ELocalNotificationAction} from "./modules/notifications/types/ILocalNotificationPayload";
 import {SettingsService} from "./common/services/settings/settings.service";
 import {EDisplayDevice} from "./common/types/EDisplayDevice";
+import {App} from '@capacitor/app';
+import {Capacitor} from '@capacitor/core';
+import {StatusBar, Style} from '@capacitor/status-bar';
+import {Keyboard} from '@capacitor/keyboard';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
-	selector: 'app-root',
-	templateUrl: './app.component.html',
-	styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+	standalone: false,
 })
 export class AppComponent implements OnInit {
 
 	private readonly translate: TranslateService = inject(TranslateService);
-	private readonly swUpdate: SwUpdate = inject(SwUpdate);
 	private readonly notificationService: NotificationService = inject(NotificationService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
+	private readonly location: Location = inject(Location);
+	private readonly destroyRef: DestroyRef = inject(DestroyRef);
+	private readonly ngZone: NgZone = inject(NgZone);
+	private readonly dialog: MatDialog = inject(MatDialog);
+	private readonly snackBar: MatSnackBar = inject(MatSnackBar);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 
 	protected EDisplayDevice = EDisplayDevice;
@@ -28,25 +42,25 @@ export class AppComponent implements OnInit {
 	#alreadyNotified: string[] = [];
 
 	public async ngOnInit(): Promise<void> {
-		setInterval(() => {
-			this.checkForUpdates();
-		}, 1000 * 60 * 30); // 0.5 hour
-		this.checkForUpdates();
-
-		this.settingsService.determineDisplayDevice();
-
 		this.handleLanguage();
-
-		await this.programService.initWebsocket();
-
-		await this.handleLocalNotifications();
-		await this.handlePermissions();
-
-		await this.notificationService.initOneSignal();
+		this.initLocalNotifications();
+		this.initHardwareBackButton();
+		await this.initStatusBar();
 
 		this.handleSubscriptionBtn();
 
-		if(this.settingsService.device === EDisplayDevice.INFO_PANEL) {
+		await this.programService.initWebsocket();
+
+		if (this.programService.eventsLoadFailed()) {
+			const isCs = this.translate.currentLang === 'cs';
+			this.snackBar.open(
+				isCs ? 'Nepodařilo se připojit k serveru. Zobrazují se poslední uložená data.' : 'Could not connect to server. Showing last saved data.',
+				'OK',
+				{ duration: 8000, verticalPosition: 'top', panelClass: 'mdc-snackbar--warning' }
+			);
+		}
+
+		if(this.settingsService.device() === EDisplayDevice.INFO_PANEL) {
 			document.body.className += ' display-info-panel';
 		}
 	}
@@ -56,22 +70,14 @@ export class AppComponent implements OnInit {
 			this.toggleSubscriptionBtn(false);
 		}
 
-		this.router.events.subscribe((event) => {
-			if(event instanceof NavigationEnd) {
-				if(event.url === `/${ERoute.NOTIFICATIONS}`) {
-					this.toggleSubscriptionBtn(true);
-				} else {
-					this.toggleSubscriptionBtn(false);
-				}
-			}
+		this.router.events.pipe(
+			filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+			takeUntilDestroyed(this.destroyRef),
+		).subscribe((event) => {
+			this.toggleSubscriptionBtn(event.url === `/${ERoute.NOTIFICATIONS}`);
 		});
 	}
 
-	/**
-	 * Show or hide OneSignal's subscription button
-	 * @param value
-	 * @private
-	 */
 	private toggleSubscriptionBtn(value: boolean): void {
 		const bell = document.getElementsByClassName('onesignal-customlink-container')[0];
 		if(bell) {
@@ -94,71 +100,68 @@ export class AppComponent implements OnInit {
 		this.translate.use(language ?? this.translate.defaultLang);
 	}
 
+	private async initStatusBar(): Promise<void> {
+		if (!Capacitor.isNativePlatform()) {
+			return;
+		}
 
-	/**
-	 * Loads registration from notification worker to show "local" notifications (instead of push by OneSignal)
-	 * Periodically checks if there are any events incoming and show notification
-	 *
-	 * @private
-	 */
-	private async handleLocalNotifications(): Promise<void> {
+		await StatusBar.setOverlaysWebView({ overlay: true });
+		await StatusBar.setStyle({ style: Style.Dark });
 		try {
-			const registration = await navigator.serviceWorker.getRegistration('notification.worker.js');
-			console.log('SW registrations: ', registration);
-			if(registration) {
-				this.notificationService.notificationRegistration = registration;
-			}
-
-			setInterval(() => {
-				// TODO: filter only events after now
-				const now = dayjs();
-				for(const favorite of this.programService.favorites) {
-					const event = this.programService.getEvent(favorite.id);
-					if(!event) {
-						continue;
-					}
-
-					const diff = Math.abs(now.diff(dayjs(event.start), 'minutes'));
-					const isInRange = diff >= 9 && diff <= 11;
-					if(!this.#alreadyNotified.includes(favorite.id) && isInRange) {
-						this.notificationService.showLocalNotification('Nadcházející akce', `${favorite.name} začíná za 10 minut!`);
-						this.#alreadyNotified.push(favorite.id);
-					}
-				}
-			}, 60000);
-
-		} catch(err) {
-			console.error('SW registration error: ', err);
+			await Keyboard.setAccessoryBarVisible({ isVisible: false });
+		} catch {
+			// Not supported on all platforms
 		}
 	}
 
-	/**
-	 * Separate check for notification permissions used by local notifications
-	 * TODO: app should use only OneSignal's permission popup
-	 *
-	 * @private
-	 */
-	private async handlePermissions(): Promise<void> {
-		const permission = await Notification.requestPermission();
-		this.notificationService.showNotifications = permission === 'granted';
-
-		if(localStorage.getItem('showNotifications') === null) {
-			this.notificationService.showNotifications = true;
+	private initHardwareBackButton(): void {
+		if(!Capacitor.isNativePlatform()) {
+			return;
 		}
+
+		App.addListener('backButton', () => {
+			this.ngZone.run(() => {
+				if(this.dialog.openDialogs.length > 0) {
+					this.dialog.openDialogs[this.dialog.openDialogs.length - 1].close();
+					return;
+				}
+
+				const url = this.router.url;
+				if(url === '/' || url === `/${ERoute.PROGRAM}`) {
+					App.exitApp();
+				} else {
+					this.location.back();
+				}
+			});
+		});
 	}
 
-	private async checkForUpdates(): Promise<void> {
-		if(this.swUpdate.isEnabled) {
-			try {
-				const updateAvailable = await this.swUpdate.checkForUpdate();
-				if(updateAvailable) {
-					if(confirm(this.translate.instant('Nová verze aplikace je k dispozici. Chcete ji nyní nainstalovat?'))) {
-						window.location.reload();
-					}
+	private initLocalNotifications(): void {
+		const intervalId = setInterval(() => {
+			const now = dayjs();
+			for(const favorite of this.programService.favorites) {
+				const event = this.programService.getEvent(favorite.id);
+				if(!event) {
+					continue;
 				}
-			} catch(err) {
-				console.error('SW update error: ', err);
+
+				const diff = Math.abs(now.diff(dayjs(event.startAt), 'minutes'));
+				const isInRange = diff >= 9 && diff <= 11;
+				if(!this.#alreadyNotified.includes(favorite.id) && isInRange) {
+					const isCs = this.translate.currentLang === 'cs';
+					const eventName = isCs ? favorite.nameCs : favorite.nameEn;
+					const title = isCs ? 'Nadcházející akce' : 'Upcoming event';
+					const body = isCs ? `${eventName} začíná za 10 minut!` : `${eventName} starts in 10 minutes!`;
+					this.notificationService.showLocalNotification(title, body,
+						{
+							actionId: ELocalNotificationAction.NAVIGATE_TO,
+							value: `/event-detail/${favorite.id}`
+						});
+					this.#alreadyNotified.push(favorite.id);
+				}
 			}
-		}
+		}, 60000);
+
+		this.destroyRef.onDestroy(() => clearInterval(intervalId));
 	}
 }

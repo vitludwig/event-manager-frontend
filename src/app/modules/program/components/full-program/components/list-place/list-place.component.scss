@@ -1,24 +1,42 @@
 .place {
-	&__title {
-		padding: 10px;
+  margin-bottom: 15px;
 
-		&__text {
-			position: sticky;
-			left: 15px;
-			border: 1px solid transparent;
-			border-radius: 13px;
-			padding: 5px 10px;
-			background-color: #b08d00;
-		}
-	}
+  &__title {
+    padding: 10px;
 
-	&__segment-list {
-		display: flex;
-		flex-direction: row;
+    &__text {
+      position: sticky;
+      left: 15px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      padding: 5px 10px;
+      background-color: #b08d00;
+    }
+  }
 
-		.place__segment {
-			position: relative;
-			height: 65px;
-		}
-	}
+  &__segment-list {
+    display: flex;
+    flex-direction: row;
+
+    .place__segment {
+      position: relative;
+    }
+  }
+
+  // Zlatá lišta u míst s překryvem — sticky vlevo jako název místa.
+  // margin-right: -4px → nezabírá místo ve flex řadě, takže segmenty
+  // zůstanou zarovnané s časovou osou (nezačnou o 4px doprava).
+  // ⚠ Žádný předek nesmí mít overflow/transform/filter/contain/will-change,
+  //   jinak iOS WKWebView sticky utne.
+  &__rail {
+    position: sticky;
+    left: 15px;
+    z-index: 2;
+    flex-shrink: 0;
+    align-self: flex-start;
+    width: 4px;
+    margin-right: -4px;
+    background: #b08d00;
+    border-radius: 3px;
+  }
 }

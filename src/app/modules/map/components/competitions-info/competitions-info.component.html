@@ -1,5 +1,5 @@
 <mat-list>
-    @for(item of competitionsInfo$ | async; track $index) {
+    @for(item of data(); track $index) {
         <mat-list-item>
             <span matListItemTitle>
                 @if(translate.currentLang === 'cs') {

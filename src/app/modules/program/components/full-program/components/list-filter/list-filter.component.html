@@ -1,77 +1,83 @@
 <div mat-dialog-title>
-	<div class="list-filter__title">
-		<h3>{{'Filtrovat' | translate}}</h3>
-		<button mat-stroked-button
-			color="warn"
-			(click)="resetFilters()"
-		>{{'Resetovat' | translate}}
-		</button>
-	</div>
+  <div class="list-filter__title">
+    <h3>{{'Filtrovat' | translate}}</h3>
+    <button mat-stroked-button
+      color="warn"
+      (click)="resetFilters()"
+      >{{'Resetovat' | translate}}
+    </button>
+  </div>
 </div>
 
 <div mat-dialog-content
-	class="list-filter__content"
->
-	<mat-form-field class="w-100">
-		<mat-label>{{'Místo' | translate}}</mat-label>
-		<mat-select [(ngModel)]="placeId"
-			multiple
-		>
-			<mat-option *ngFor="let place of programService.allPlaces"
-				[value]="place.id"
-			>
-				{{ place.name }}
-			</mat-option>
-		</mat-select>
-	</mat-form-field>
+  class="list-filter__content"
+  >
+  <mat-form-field class="w-100">
+    <mat-label>{{'Místo' | translate}}</mat-label>
+    <mat-select [(ngModel)]="locationId"
+      multiple
+      >
+      @for (place of places; track place) {
+        <mat-option
+          [value]="place.id"
+          >
+          {{ place | localizedName }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 
-	<mat-form-field class="w-100">
-		<mat-label>{{'Druh akce' | translate}}</mat-label>
-		<mat-select [(ngModel)]="selectedEventType"
-			multiple
-		>
-			<mat-option *ngFor="let item of eventTypes"
-				[value]="item.id"
-			>
-				{{ translate.currentLang === 'cs' ? item.name : item.name_EN }}
-			</mat-option>
-		</mat-select>
-	</mat-form-field>
+  <mat-form-field class="w-100">
+    <mat-label>{{'Druh akce' | translate}}</mat-label>
+    <mat-select [(ngModel)]="selectedEventType"
+      multiple
+      >
+      @for (item of eventTypes; track item) {
+        <mat-option
+          [value]="item.id"
+          >
+          {{ item | localizedName }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 
-    @if(tags && tags.length > 0) {
-        <mat-form-field class="w-100">
-            <mat-label>{{'Tagy' | translate}}</mat-label>
-            <mat-select [(ngModel)]="selectedTags"
-                        multiple
+  @if(tags && tags.length > 0) {
+    <mat-form-field class="w-100">
+      <mat-label>{{'Tagy' | translate}}</mat-label>
+      <mat-select [(ngModel)]="selectedTags"
+        multiple
+        >
+        @for (item of tags; track item) {
+          <mat-option
+            [value]="item.id"
             >
-                <mat-option *ngFor="let item of tags"
-                            [value]="item.id"
-                >
-                    {{ translate.currentLang === 'cs' ? item.name : item.name_EN }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    }
-	<mat-slide-toggle
-		class="example-margin w-100"
-		[checked]="onlyFavorite"
-		(change)="onlyFavorite = $event.checked"
-	>
-		{{'Pouze oblíbené' | translate}}
-	</mat-slide-toggle>
+            {{ translate.currentLang === 'cs' ? item.nameCs : item.nameEn }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  <mat-slide-toggle
+    class="example-margin w-100"
+    [checked]="onlyFavorite"
+    (change)="onlyFavorite = $event.checked"
+    >
+    {{'Pouze oblíbené' | translate}}
+  </mat-slide-toggle>
 
 </div>
 
 <mat-dialog-actions align="end">
-	<button mat-raised-button
-		mat-dialog-close
-	>
-		{{'Zrušit' | translate}}
-	</button>
-	<button mat-raised-button
-		color="primary"
-		(click)="applyFilters()"
-	>
-		{{'Potvrdit' | translate}}
-	</button>
+  <button mat-raised-button
+    mat-dialog-close
+    >
+    {{'Zrušit' | translate}}
+  </button>
+  <button mat-raised-button
+    color="primary"
+    (click)="applyFilters()"
+    >
+    {{'Potvrdit' | translate}}
+  </button>
 </mat-dialog-actions>

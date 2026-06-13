@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -9,39 +9,59 @@ import {ERoute} from '../../../../common/types/ERoute';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {SettingsService} from "../../../../common/services/settings/settings.service";
 import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
-import {environment} from "../../../../../environments/environment";
-import {EFestivalID} from "../../../../common/types/EFestivalID";
+import {CustomizationService} from "../../../../common/services/customization/customization.service";
 
 @Component({
-	selector: 'app-bottom-menu',
-	templateUrl: './bottom-menu.component.html',
-	styleUrls: ['./bottom-menu.component.scss'],
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatButtonModule,
-		MatIconModule,
-		MatToolbarModule,
-		FormsModule,
-		RouterModule,
-		TranslateModule
-	]
+    selector: 'app-bottom-menu',
+    templateUrl: './bottom-menu.component.html',
+    styleUrls: ['./bottom-menu.component.scss'],
+    imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule
+]
 })
 export class BottomMenuComponent {
 	protected readonly ERoute = ERoute;
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 	private readonly translate: TranslateService = inject(TranslateService);
+	private readonly customizationService = inject(CustomizationService);
 
 	protected EDisplayDevice = EDisplayDevice;
 
-	protected openFAQ(): void {
-		if(this.translate.currentLang === 'cs') {
-			window.open(environment.faqUrl_CS, '_blank');
-		} else {
-			window.open(environment.faqUrl_EN, '_blank');
-		}
+	protected get configurableButtonUrl(): string | undefined {
+		const isCs = this.translate.currentLang === 'cs';
+		const primary = isCs ? this.customizationService.faqUrlCs : this.customizationService.faqUrlEn;
+		const fallback = isCs ? this.customizationService.faqUrlEn : this.customizationService.faqUrlCs;
+		// Fall back to the other language's URL so a single-language config still shows the button.
+		return primary ?? fallback;
 	}
 
-	protected readonly environment = environment;
-	protected readonly EFestivalID = EFestivalID;
+	protected get configurableButtonIcon(): string {
+		return this.customizationService.configurableButtonIcon || 'help';
+	}
+
+	protected get configurableButtonLabel(): string {
+		const isCs = this.translate.currentLang === 'cs';
+		const primary = isCs ? this.customizationService.configurableButtonLabelCs : this.customizationService.configurableButtonLabelEn;
+		const fallback = isCs ? this.customizationService.configurableButtonLabelEn : this.customizationService.configurableButtonLabelCs;
+		// Fall back to the other language so a single-language config still shows a label.
+		return primary ?? fallback ?? '';
+	}
+
+	protected get showConfigurableButton(): boolean {
+		return !!this.configurableButtonUrl;
+	}
+
+	protected openConfigurableButton(): void {
+		const url = this.configurableButtonUrl;
+		if (url) {
+			// noopener,noreferrer prevents the opened (operator-supplied) page from
+			// hijacking this tab via window.opener (tabnabbing).
+			window.open(url, '_blank', 'noopener,noreferrer');
+		}
+	}
 }

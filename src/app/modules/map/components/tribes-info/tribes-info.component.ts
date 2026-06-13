@@ -1,35 +1,20 @@
-import {Component, inject} from '@angular/core';
-import {MatList, MatListItem, MatListItemLine, MatListItemTitle} from '@angular/material/list';
+import {Component, inject, input} from '@angular/core';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {
-	MatAccordion, MatExpansionModule,
-} from '@angular/material/expansion';
-import {HttpClient} from "@angular/common/http";
-import {AsyncPipe} from "@angular/common";
+import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
+import {ITribeInfo} from "../../types/ITribeInfo";
 
 @Component({
-  selector: 'app-tribes-info',
-  standalone: true,
-	imports: [
-		MatList,
-		MatListItem,
-		TranslateModule,
-		MatAccordion,
-		MatExpansionModule,
-		AsyncPipe,
-		MatListItemLine,
-		MatListItemTitle
-	],
-  templateUrl: './tribes-info.component.html',
-  styleUrl: './tribes-info.component.scss'
+    selector: 'app-tribes-info',
+    imports: [
+        TranslateModule,
+        MatAccordion,
+        MatExpansionModule,
+    ],
+    templateUrl: './tribes-info.component.html',
+    styleUrl: './tribes-info.component.scss'
 })
 export class TribesInfoComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);
-	private readonly http: HttpClient = inject(HttpClient);
 
-	protected tribesInfo$;
-
-	constructor() {
-		this.tribesInfo$ = this.http.get<any[]>('/assets/tribe-info.json');
-	}
+	readonly data = input.required<ITribeInfo[]>();
 }

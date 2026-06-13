@@ -1,9 +1,11 @@
-import {Component, ElementRef, inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {AfterViewInit, ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, Renderer2, Signal, signal, ViewChild, WritableSignal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+
 import {IEvent} from '../../types/IEvent';
 import {IProgramEvent, IProgramPlace} from '../../types/IProgramPlace';
-import * as dayjs from 'dayjs';
-import {Dayjs} from 'dayjs';
+import {IProgramPlaceLayout} from './types/IProgramPlaceLayout';
+import {layoutPlaceEvents} from './utils/layout-place-events';
+import dayjs, {Dayjs} from 'dayjs';
 import {ProgramService} from '../../services/program/program.service';
 import {MatTabsModule} from '@angular/material/tabs';
 import {IProgramSegment} from './types/IProgramSegment';
@@ -22,9 +24,9 @@ import {IProgramFilterOptions} from './types/IProgramFilterOptions';
 import {
 	ProgramVerticalListDialogComponent
 } from '../program-vertical-list/components/program-vertical-list-dialog/program-vertical-list-dialog.component';
-import {Subject, takeUntil} from 'rxjs';
 import {TranslateModule} from '@ngx-translate/core';
 import {LanguageMenuComponent} from '../../../../common/components/language-menu/language-menu.component';
+import {EventLegendComponent} from './components/event-legend/event-legend.component';
 import {ExportFavoritesComponent} from '../export-favorites/export-favorites.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {IProgramDay} from './types/IProgramDay';
@@ -32,92 +34,195 @@ import {UserInfoComponent} from '../../../../common/components/user-info/user-in
 import {SettingsService} from "../../../../common/services/settings/settings.service";
 import {EDisplayDevice} from "../../../../common/types/EDisplayDevice";
 import ProgramConfig from "../../config/ProgramConfig";
-import {environment} from "../../../../../environments/environment";
-import {EFestivalID} from "../../../../common/types/EFestivalID";
 import {MatBadge} from "@angular/material/badge";
+import {CustomizationService} from "../../../../common/services/customization/customization.service";
 
 
 @Component({
-	selector: 'app-full-program',
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatTabsModule,
-		ListTimelineComponent,
-		ListPlaceComponent,
-		ListDaySelectComponent,
-		MatBottomSheetModule,
-		MatToolbarModule,
-		MatButtonModule,
-		MatIconModule,
-		MatDialogModule,
-		TranslateModule,
-		LanguageMenuComponent,
-		MatMenuModule,
-		UserInfoComponent,
-		MatBadge,
-	],
-	templateUrl: './full-program.component.html',
-	styleUrls: ['./full-program.component.scss']
+    selector: 'app-full-program',
+    imports: [
+    MatTabsModule,
+    ListTimelineComponent,
+    ListPlaceComponent,
+    ListDaySelectComponent,
+    MatBottomSheetModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    TranslateModule,
+    LanguageMenuComponent,
+    EventLegendComponent,
+    MatMenuModule,
+    UserInfoComponent,
+    MatBadge
+],
+    templateUrl: './full-program.component.html',
+    styleUrls: ['./full-program.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FullProgramComponent implements OnInit, OnDestroy {
+export class FullProgramComponent implements AfterViewInit {
 	@ViewChild('secondaryToolbar')
 	public secondaryToolbar: ElementRef;
 
 	@ViewChild(ListTimelineComponent)
 	public timeline: ListTimelineComponent;
 
-	// n-minute segments for day
-	protected allSegments: IProgramSegment[] = [];
-	protected days: IProgramDay[] = [];
-	protected places: IProgramPlace[] = [];
-	/**
-	 * Events grouped by place and start date
-	 * Example: {<placeId>>: {<startTime>: event1}
-	 * @protected
-	 */
-	protected eventsByPlaces: Record<string, Record<number, IProgramEvent>> = {};
+	@ViewChild('programList')
+	private programListRef: ElementRef<HTMLDivElement>;
+
 	protected selectedEvent: IProgramEvent | null = null;
 
-	protected get selectedDay(): number | undefined {
-		return this.#selectedDay;
-	}
-
-	protected set selectedDay(value: number) {
-		this.#selectedDay = value;
-		this.programService.selectedDay = value;
-		this.applyFilters(this.programService.userFilterOptions);
-
-		if(this.timeline) {
-			setTimeout(() => {
-				this.timeline.scrollToNowSegment();
-			}, 0);
-		}
-	}
-
 	protected readonly EDisplayDevice = EDisplayDevice;
-	protected readonly environment = environment;
-	protected readonly EFestivalID = EFestivalID;
-
-	#firstEventAt: Dayjs;
-	#selectedDay?: number;
-	#unsubscribe: Subject<void> = new Subject<void>();
 
 	protected readonly programService: ProgramService = inject(ProgramService);
+	private readonly customizationService: CustomizationService = inject(CustomizationService);
+
+	protected get logoUrl(): string | undefined { return this.customizationService.logoUrl; }
+	protected get festivalId(): string | undefined { return this.customizationService.festivalId; }
 	private readonly bottomSheet: MatBottomSheet = inject(MatBottomSheet);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly renderer: Renderer2 = inject(Renderer2);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
+	private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
-	public ngOnInit(): void {
-		this.loadPlaces();
-		this.loadEvents();
+	protected readonly zoomLevel: WritableSignal<number> = signal(1.0);
+	private readonly MIN_ZOOM = 0.4;
+	private readonly MAX_ZOOM = 1.0;
+	private pinchStartDistance: number | null = null;
+	private pinchStartZoom: number = 1.0;
+	private readonly boundTouchMove = (e: TouchEvent) => this.onTouchMove(e);
 
-		this.selectedDay = this.programService.selectedDay ?? this.findToday(this.days)?.id ?? this.days[0].id;
+	protected readonly days: Signal<IProgramDay[]> = computed(() => {
+		return this.getParsedDays(this.programService.days());
+	});
+
+	protected get selectedDay(): number | undefined {
+		return this.programService.selectedDay();
 	}
 
-	public ngOnDestroy(): void {
-		this.#unsubscribe.next();
+	protected set selectedDay(value: number) {
+		this.programService.selectedDay.set(value);
+		this.applyFilters(this.programService.userFilterOptions);
+
+		if(this.timeline) {
+			setTimeout(() => {
+				this.timeline?.scrollToNowSegment();
+			}, 0);
+		}
+	}
+
+	protected readonly filteredEvents: Signal<IEvent[]> = computed(() => {
+		const selectedDay = this.programService.selectedDay();
+		const events = this.programService.events();
+		if(!selectedDay) {
+			return events;
+		}
+		return this.filterEventsByDay(events, selectedDay);
+	});
+
+	/**
+	 * Events filtered by place for segment computation (excludes empty start/end segments)
+	 */
+	readonly #eventsForSegments: Signal<IEvent[]> = computed(() => {
+		const events = this.filteredEvents();
+		if(events.length === 0) {
+			return [];
+		}
+
+		const placeFilter = this.programService.userFilterOptions.locationId;
+		if(Array.isArray(placeFilter) && placeFilter.length > 0) {
+			return events.filter((event) => placeFilter.includes(event.locationId));
+		}
+		return events;
+	});
+
+	readonly #firstEventAt: Signal<Dayjs | null> = computed(() => {
+		const events = this.#eventsForSegments();
+		if(events.length === 0) {
+			return null;
+		}
+		const allStarts = events.map((event) => event.startAt);
+		const firstEventAt = allStarts.reduce((prev, curr) => prev < curr ? prev : curr);
+		return dayjs(firstEventAt).set('minutes', 0);
+	});
+
+	protected readonly allSegments: Signal<IProgramSegment[]> = computed(() => {
+		const events = this.#eventsForSegments();
+		const firstEventAt = this.#firstEventAt();
+		if(events.length === 0 || !firstEventAt) {
+			return [];
+		}
+
+		const allEnds = events.map((event) => event.endAt);
+		const lastEventAt = allEnds.reduce((prev, curr) => prev > curr ? prev : curr);
+		const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(firstEventAt.diff(dayjs(lastEventAt))));
+
+		return Array(segmentCount).fill(1).map((value, index) => {
+			const incIndex = index * FullProgramConfig.segmentDuration;
+			const time = firstEventAt.add(incIndex, 'minutes').format('HH:mm');
+			let isWholeHour = false;
+			if(incIndex % (60 / FullProgramConfig.segmentDuration) === 0) {
+				isWholeHour = true;
+			}
+
+			return {
+				time,
+				isWholeHour,
+				index
+			};
+		});
+	});
+
+	protected readonly places: Signal<IProgramPlace[]> = computed(() => {
+		return this.programService.places();
+	});
+
+	protected readonly eventsByPlaces: Signal<Record<string, IProgramPlaceLayout>> = computed(() => {
+		const allEvents = this.filteredEvents();
+		const firstEventAt = this.#firstEventAt();
+		const selectedDay = this.programService.selectedDay();
+		if(!firstEventAt || !selectedDay) {
+			return {};
+		}
+
+		const eventsByLocation: Record<string, IProgramEvent[]> = {};
+
+		for(const event of allEvents) {
+			const selectedDayJs = dayjs(selectedDay);
+			const eventStart = dayjs(event.startAt);
+			const eventEnd = dayjs(event.endAt);
+			const dayStart = eventStart.set('hour', firstEventAt.hour()).set('minutes', firstEventAt.minute()).set('date', selectedDayJs.get('date'));
+			const startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
+			const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
+
+			if(!eventsByLocation[event.locationId]) {
+				eventsByLocation[event.locationId] = [];
+			}
+
+			eventsByLocation[event.locationId].push({
+				...event,
+				startSegment,
+				segmentCount,
+			});
+		}
+
+		const result: Record<string, IProgramPlaceLayout> = {};
+		for(const locationId of Object.keys(eventsByLocation)) {
+			result[locationId] = layoutPlaceEvents(eventsByLocation[locationId]);
+		}
+
+		return result;
+	});
+
+	constructor() {
+	}
+
+	public ngAfterViewInit(): void {
+		this.programListRef?.nativeElement.addEventListener('touchmove', this.boundTouchMove, { passive: false });
+		this.destroyRef.onDestroy(() => {
+			this.programListRef?.nativeElement.removeEventListener('touchmove', this.boundTouchMove);
+		});
 	}
 
 	protected showEventDetail(event: IProgramEvent, place: IProgramPlace): void {
@@ -143,7 +248,9 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 			data: {options: this.programService.userFilterOptions},
 		});
 
-		dialog.afterClosed().subscribe((result) => {
+		dialog.afterClosed().pipe(
+			takeUntilDestroyed(this.destroyRef),
+		).subscribe((result) => {
 			if(result) {
 				this.programService.userFilterOptions = result;
 				this.applyFilters(result);
@@ -166,7 +273,8 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 	}
 
 	protected scrollToNow(): void {
-		this.selectedDay = this.findToday(this.days)?.id ?? 0;
+		const today = this.findToday(this.days());
+		this.programService.selectedDay.set(today?.id ?? 0);
 		this.timeline.scrollToNowSegment();
 	}
 
@@ -183,9 +291,7 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		this.places = [];
-		this.eventsByPlaces = {};
-		this.programService.filterPlaces(options.placeId);
+		this.programService.filterPlaces(options.locationId);
 		this.programService.filterEvents({
 			eventType: options.eventType,
 			onlyFavorite: options.onlyFavorite,
@@ -193,120 +299,6 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	/**
-	 * Loads all segments for day based on start and end times of day's events
-	 *
-	 * @param events
-	 * @protected
-	 */
-	private loadDayTimeSegments(events: IEvent[]): void {
-		this.allSegments = [];
-		if(events.length === 0) {
-			return;
-		}
-
-		// Filter events by place if place filter is set, so we don't display empty start/end segments
-		if(Array.isArray(this.programService.userFilterOptions.placeId) && this.programService.userFilterOptions.placeId.length > 0) {
-			events = events.filter((event) => this.programService.userFilterOptions.placeId?.includes(event.placeId));
-		}
-
-		// TODO: find a way how to optimize this - store days and compute this only if they differ
-		const allStarts = events.map((event) => event.start);
-		const allEnds = events.map((event) => event.end);
-		const firstEventAt = allStarts.reduce((prev, curr) => prev < curr ? prev : curr);
-		const lastEventAt = allEnds.reduce((prev, curr) => prev > curr ? prev : curr);
-		// round it to whole hour, so we don't display thresholds like 9:15
-		this.#firstEventAt = dayjs(firstEventAt).set('minutes', 0);
-		const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(this.#firstEventAt.diff(dayjs(lastEventAt))));
-		const startingTime = this.#firstEventAt;
-
-		this.allSegments = Array(segmentCount).fill(1).map((value, index) => {
-			// Increment time by 15 minutes on every segment and display it only on full hours
-			const incIndex = index * FullProgramConfig.segmentDuration;
-			const time = startingTime.add(incIndex, 'minutes').format('HH:mm');
-			let isWholeHour = false;
-			if(incIndex % (60 / FullProgramConfig.segmentDuration) === 0) {
-				isWholeHour = true;
-			}
-
-			return {
-				time,
-				isWholeHour,
-				index
-			};
-		});
-	}
-
-	/**
-	 * Load events to hashmap by place and start time
-	 * @param allEvents
-	 * @private
-	 */
-	private loadEventsByPlaces(allEvents: IEvent[]): void {
-		let dayStart;
-		let eventStart;
-		let eventEnd;
-		let startSegment;
-		let segmentCount;
-
-		for(const event of allEvents) {
-			const selectedDay = dayjs(this.selectedDay);
-			eventStart = dayjs(event.start);
-			eventEnd = dayjs(event.end);
-			dayStart = eventStart.set('hour', this.#firstEventAt.hour()).set('minutes', this.#firstEventAt.minute()).set('date', selectedDay.get('date'));
-			// convert to seconds -> minutes -> 15 minutes segments
-			startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
-			segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
-
-			if(!this.eventsByPlaces[event.placeId]) {
-				this.eventsByPlaces[event.placeId] = {};
-			}
-
-			this.eventsByPlaces[event.placeId][startSegment] = {
-				...event,
-				startSegment,
-				segmentCount
-			};
-		}
-	}
-
-	/**
-	 * Sets selected day and loads events for that day
-	 * @param day
-	 * @protected
-	 */
-	private loadEvents(day: number | undefined = this.selectedDay): void {
-		this.programService.getEvents(day)
-			.pipe(takeUntil(this.#unsubscribe))
-			.subscribe((events) => {
-				events = this.filterEventsByDay(events, this.selectedDay);
-
-				this.loadDays();
-				this.loadDayTimeSegments(events);
-				this.loadEventsByPlaces(events);
-			});
-	}
-
-	private loadPlaces(): void {
-		this.programService.places$
-			.pipe(takeUntil(this.#unsubscribe))
-			.subscribe((places) => {
-				this.places = places;
-			});
-	}
-
-	private loadDays(): void {
-		this.programService.days$
-			.pipe(takeUntil(this.#unsubscribe))
-			.subscribe((days) => {
-				this.days = this.getParsedDays(days);
-			});
-	}
-
-	/**
-	 * Loads days from program service and transforms them into array of objects with day name and id
-	 * @protected
-	 */
 	private getParsedDays(days: Record<number, number>): IProgramDay[] {
 		return Object.entries(days).sort().map(([id, date]) => {
 			return {
@@ -322,28 +314,45 @@ export class FullProgramComponent implements OnInit, OnDestroy {
 		return days.find((day) => dayjs(day.date).isSame(today, 'day'));
 	}
 
-	/**
-	 * Converts milliseconds to n-minutes segments
-	 * @param milliseconds
-	 * @private
-	 */
 	private getSegmentsFromMilliseconds(milliseconds: number): number {
 		return Math.ceil(milliseconds / 1000 / 60 / FullProgramConfig.segmentDuration);
 	}
 
-	/**
-	 * Filter events by given day
-	 * Add days from given day with start after 6AM and events from next day with start before 6AM
-	 * @param events
-	 * @param day
-	 * @private
-	 */
 	private filterEventsByDay(events: IEvent[], day?: number): IEvent[] {
 		return events.filter((event) => {
-			const eventStart = dayjs(event.start);
+			const eventStart = dayjs(event.startAt);
 			const nextDay = dayjs(day).add(1, 'day');
-			const addEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
-			return (dayjs(event.start).isSame(day, 'day') && eventStart.get('hour') > 6) || addEarlyNextDayEvent;
+			const isEarlyNextDayEvent = eventStart.isSame(nextDay, 'day') && (eventStart.get('hour') <= ProgramConfig.eventStartHourThreshold);
+			const isSelectedDayEvent = eventStart.isSame(day, 'day') && eventStart.get('hour') > ProgramConfig.eventStartHourThreshold;
+			return isSelectedDayEvent || isEarlyNextDayEvent;
 		});
+	}
+
+	protected onTouchStart(event: TouchEvent): void {
+		if (event.touches.length === 2) {
+			this.pinchStartDistance = this.getTouchDistance(event.touches);
+			this.pinchStartZoom = this.zoomLevel();
+		}
+	}
+
+	protected onTouchMove(event: TouchEvent): void {
+		if (event.touches.length === 2 && this.pinchStartDistance !== null) {
+			event.preventDefault();
+			const currentDistance = this.getTouchDistance(event.touches);
+			const scale = currentDistance / this.pinchStartDistance;
+			this.zoomLevel.set(Math.min(this.MAX_ZOOM, Math.max(this.MIN_ZOOM, this.pinchStartZoom * scale)));
+		}
+	}
+
+	protected onTouchEnd(event: TouchEvent): void {
+		if (event.touches.length < 2) {
+			this.pinchStartDistance = null;
+		}
+	}
+
+	private getTouchDistance(touches: TouchList): number {
+		const dx = touches[0].clientX - touches[1].clientX;
+		const dy = touches[0].clientY - touches[1].clientY;
+		return Math.sqrt(dx * dx + dy * dy);
 	}
 }

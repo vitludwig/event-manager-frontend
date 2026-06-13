@@ -1,57 +1,44 @@
 <div class="event-detail">
-	<ng-container *ngIf="event && place; else noData">
-        <button mat-icon-button
-            mat-dialog-close
-            class="event-detail__close"
-            aria-label="Close event detail"
-        >
-            <mat-icon>keyboard_backspace</mat-icon>
-        </button>
-<!--			<div class="event-detail__image">-->
-<!--				<img [src]="'/assets/icons/icon-192x192.png'"-->
-<!--					alt="Event image"-->
-<!--				>-->
-<!--			</div>-->
-        <div class="event-detail__content--wrapper">
-			<div class="event-detail__content">
-				<div class="event-detail__content__title">
-					<h3>{{ event | translateEventProperty: 'name' }}</h3>
-					<div>
-                        @if(translate.currentLang === 'cs') {
-                            {{ event.type.name }}
-                        } @else {
-                            {{ event.type.name_EN }}
-                        }
-                    </div>
-                    <div style="display: flex; justify-content: center"><app-event-tags [event]="event" /></div>
-					<div>{{ event.start | date: 'HH:mm' }} - {{ event.end | date: 'HH:mm' }}</div>
-					<div>{{ place.name }}</div>
-				</div>
-
-				<mat-divider></mat-divider>
-
-				<div class="event-detail__content__description">
-					<p>{{ event | translateEventProperty: 'description' }}</p>
-				</div>
-			</div>
+  @if (event && place) {
+    <button mat-icon-button
+      mat-dialog-close
+      class="event-detail__close"
+      aria-label="Close event detail"
+      >
+      <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+  <div class="event-detail__content--wrapper">
+    <div class="event-detail__content">
+      <div class="event-detail__content__title">
+        <h3>{{ event | translateEventProperty: 'name' }}</h3>
+        <div>
+          {{ event.eventType | localizedName }}
         </div>
+        <div style="display: flex; justify-content: center"><app-event-tags [event]="event" /></div>
+        <div>{{ event.startAt | date: 'HH:mm' }} - {{ event.endAt | date: 'HH:mm' }}</div>
+        <div>{{ place | localizedName }}</div>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="event-detail__content__description">
+        <p>{{ event | translateEventProperty: 'description' }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="event-detail__actions">
+    <button mat-mini-fab
+      class="favorite-button"
+      (click)="toggleFavorite()">
+      <mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
+  </div>
+} @else {
+  <div class="event-detail__no-data">
+    <div class="event-detail__no-data__text">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Event not found</h2>
+    </div>
+  </div>
+}
 
-		<div class="event-detail__actions">
-			<button mat-mini-fab
-				class="favorite-button"
-				(click)="toggleFavorite()">
-				<mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
-			</button>
-		</div>
-	</ng-container>
-
-	<ng-template #noData>
-		<div class="event-detail__no-data">
-			<div class="event-detail__no-data__text">
-				<mat-icon>error_outline</mat-icon>
-				<h2>Event not found</h2>
-			</div>
-		</div>
-	</ng-template>
 </div>
 

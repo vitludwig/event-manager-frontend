@@ -1,0 +1,77 @@
+:host {
+	display: block;
+	height: 100%;
+}
+
+::ng-deep {
+	.event-list__header__search-input {
+		.mat-mdc-form-field-subscript-wrapper {
+			display: none;
+		}
+	}
+}
+
+.event-list {
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+
+	&__header {
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		padding: 15px 15px 15px 0;
+
+		&__back {
+			flex-shrink: 0;
+			margin-left: 4px;
+		}
+
+		&__search-input {
+			flex: 1;
+			margin: auto 15px;
+		}
+	}
+
+	&__content {
+		position: relative;
+		flex: 1;
+		min-height: 0;          // bound the inner list so its overflow:auto scrolls (route i dialog)
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+
+		&__loading {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		&__no-events {
+			position: absolute;   // přes celý obsah → centrování na střed bez ohledu na prázdný seznam
+			inset: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+			padding: 0 24px;
+
+			h2 {
+				margin: 0 0 8px;
+				font-size: 18px;
+				font-weight: 600;
+			}
+
+			h4 {
+				margin: 0;
+				font-size: 14px;
+				font-weight: 400;
+				opacity: 0.7;
+			}
+		}
+	}
+}

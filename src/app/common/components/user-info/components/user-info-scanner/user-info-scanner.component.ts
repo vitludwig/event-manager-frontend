@@ -1,5 +1,5 @@
 import { Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -11,22 +11,20 @@ import {MatIconModule} from '@angular/material/icon';
 import {AutoUppercaseDirective} from "../../../../directives/auto-uppercase.directive";
 
 @Component({
-	selector: 'app-user-info-scanner',
-	standalone: true,
-	imports: [
-		CommonModule,
-		MatButtonModule,
-		MatDialogModule,
-		MatTabsModule,
-		TranslateModule,
-		QrScannerComponent,
-		MatFormField,
-		MatInput,
-		MatIconModule,
-		AutoUppercaseDirective,
-	],
-	templateUrl: './user-info-scanner.component.html',
-	styleUrls: ['./user-info-scanner.component.scss']
+    selector: 'app-user-info-scanner',
+    imports: [
+    MatButtonModule,
+    MatDialogModule,
+    MatTabsModule,
+    TranslateModule,
+    QrScannerComponent,
+    MatFormField,
+    MatInput,
+    MatIconModule,
+    AutoUppercaseDirective
+],
+    templateUrl: './user-info-scanner.component.html',
+    styleUrls: ['./user-info-scanner.component.scss']
 })
 export class UserInfoScannerComponent {
 	private readonly dialogRef: MatDialogRef<void> = inject(MatDialogRef<void>);

@@ -1,88 +1,91 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, OnInit, Output, signal, ViewChild} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
-import {Subject, takeUntil} from 'rxjs';
 import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatInput} from '@angular/material/input';
+import {PermissionsService} from "../../services/permissions/permissions.service";
 
 @Component({
-	selector: 'app-qr-scanner',
-	standalone: true,
-	imports: [
-		CommonModule,
-		ZXingScannerModule,
-		FormsModule,
-		TranslateModule,
-		MatSelectModule,
-		MatDialogModule,
-		MatInput,
-	],
-	templateUrl: './qr-scanner.component.html',
-	styleUrls: ['./qr-scanner.component.scss']
+    selector: 'app-qr-scanner',
+    imports: [
+        ZXingScannerModule,
+        FormsModule,
+        TranslateModule,
+        MatSelectModule,
+        MatDialogModule,
+    ],
+    templateUrl: './qr-scanner.component.html',
+    styleUrls: ['./qr-scanner.component.scss']
 })
-export class QrScannerComponent implements OnInit, OnDestroy {
-	@ViewChild('scanner')
-	public scanner!: ZXingScannerComponent;
+export class QrScannerComponent implements OnInit {
+    private readonly permissionsService: PermissionsService = inject(PermissionsService);
+    private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
-	get currentDeviceId(): string {
-		return this.currentDevice?.deviceId;
-	}
+    @ViewChild('scanner')
+    public scanner!: ZXingScannerComponent;
 
-	set currentDeviceId(value: string) {
-		this.currentDevice = this.cameras.find((device) => device.deviceId === value);
-	}
+    get currentDeviceId(): string {
+        return this.currentDevice?.deviceId;
+    }
 
-	public cameraNotFound: boolean = false;
+    set currentDeviceId(value: string) {
+        this.currentDevice = this.cameras.find((device) => device.deviceId === value);
+    }
 
-	@Output()
-	public scanned: EventEmitter<string> = new EventEmitter();
+    public cameraNotFound = signal(false);
+    protected hasPermission = signal(false);
 
-	protected cameras: any[] = [];
-	protected currentDevice: any = null;
+    @Output()
+    public scanned: EventEmitter<string> = new EventEmitter();
 
-	protected tryScannerInterval: number | null = null;
-	protected destroy: Subject<void> = new Subject<void>();
+    protected cameras: any[] = [];
+    protected currentDevice: any = null;
 
-	public ngOnInit() {
-		this.tryScannerInterval = window.setInterval(() => {
-			if(!this.scanner) {
-				return;
-			}
+    public async ngOnInit() {
+        const hasCameraPermission = await this.permissionsService.requestCameraPermissions();
 
-			// @ts-ignore
-			this.cameraNotFound = !this.scanner.hasPermission;
-			if(this.scanner.permissionResponse) {
-				this.scanner.permissionResponse.pipe(takeUntil(this.destroy)).subscribe((value) => {
-					this.cameraNotFound = !value;
-				});
-			}
-			clearInterval(this.tryScannerInterval!);
-		}, 333);
-	}
+        if (hasCameraPermission) {
+            this.hasPermission.set(true);
+            this.initScanning();
+        }
+    }
 
-	public ngOnDestroy() {
-		if(this.tryScannerInterval) {
-			clearInterval(this.tryScannerInterval);
-		}
-		this.destroy.next();
-		this.destroy.complete();
-	}
+    private initScanning() {
+        let subscribed = false;
+        const intervalId = window.setInterval(() => {
+            if (!this.scanner) {
+                return;
+            }
 
-	public camerasFoundHandler($event: any[]) {
-		const defaultCamera = $event.find((device) => device.deviceId === localStorage.getItem('cameraId'));
-		this.cameras = $event;
-		const backCamera = $event.find((obj) => obj.label.includes('back')) ?? $event[0]
-		this.currentDevice = defaultCamera ?? backCamera;
-	}
+            this.cameraNotFound.set(!(this.scanner as any).hasPermission);
+            if (!subscribed && this.scanner.permissionResponse) {
+                subscribed = true;
+                this.scanner.permissionResponse.pipe(
+                    takeUntilDestroyed(this.destroyRef),
+                ).subscribe((value) => {
+                    this.cameraNotFound.set(!value);
+                });
+            }
+            clearInterval(intervalId);
+        }, 333);
 
-	public async handleQrCodeResult(resultString: string): Promise<void> {
-		this.scanned.emit(resultString);
-	}
+        this.destroyRef.onDestroy(() => clearInterval(intervalId));
+    }
 
-	public camerasNotFoundHandler($event: any) {
-		this.cameraNotFound = true;
-	}
+    public camerasFoundHandler($event: any[]) {
+        const defaultCamera = $event.find((device) => device.deviceId === localStorage.getItem('cameraId'));
+        this.cameras = $event;
+        const backCamera = $event.find((obj) => obj.label.includes('back')) ?? $event[0]
+        this.currentDevice = defaultCamera ?? backCamera;
+    }
+
+    public async handleQrCodeResult(resultString: string): Promise<void> {
+        this.scanned.emit(resultString);
+    }
+
+    public camerasNotFoundHandler($event: any) {
+        this.cameraNotFound.set(true);
+    }
 }

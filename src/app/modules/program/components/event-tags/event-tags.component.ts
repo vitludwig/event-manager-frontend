@@ -5,15 +5,14 @@ import {MatIcon} from "@angular/material/icon";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-event-tags',
-  standalone: true,
-  imports: [
-    MatChipSet,
-    MatChip,
-    MatIcon
-  ],
-  templateUrl: './event-tags.component.html',
-  styleUrl: './event-tags.component.scss'
+    selector: 'app-event-tags',
+    imports: [
+        MatChipSet,
+        MatChip,
+        MatIcon
+    ],
+    templateUrl: './event-tags.component.html',
+    styleUrl: './event-tags.component.scss'
 })
 export class EventTagsComponent {
   protected readonly translate: TranslateService = inject(TranslateService);

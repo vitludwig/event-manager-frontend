@@ -1,21 +1,25 @@
 <div style="position: relative">
-    <div class="list-timeline-bg"></div>
-    <div class="list-timeline">
-        <div class="list-timeline__segment"
-            [style.width]="FullProgramConfig.segmentWidth + 'px'"
-            *ngFor="let segment of segments; let isFirst = first"
+  <div class="list-timeline-bg"></div>
+  <div class="list-timeline">
+    @for (segment of segments(); track segment; let isFirst = $first) {
+      <div class="list-timeline__segment"
+        [style.width]="FullProgramConfig.segmentWidth + 'px'"
         >
-            <div class="list-timeline__segment__border--now"
-                #segmentNow
-                *ngIf="segment.time === timeNow">
+        @if (segment.time === timeNow) {
+          <div class="list-timeline__segment__border--now"
+            #segmentNow
+            >
+          </div>
+        }
+        @if (segment.isWholeHour) {
+          @if (!isFirst) {
+            <div class="list-timeline__segment__border"
+              >
             </div>
-
-            <ng-container *ngIf="segment.isWholeHour">
-                <div class="list-timeline__segment__border"
-                    *ngIf="!isFirst">
-                </div>
-                <span class="list-timeline__segment__time">{{ segment.time }}</span>
-            </ng-container>
-        </div>
-</div>
+          }
+          <span class="list-timeline__segment__time">{{ segment.time }}</span>
+        }
+      </div>
+    }
+  </div>
 </div>

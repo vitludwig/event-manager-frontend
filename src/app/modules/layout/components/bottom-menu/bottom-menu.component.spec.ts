@@ -1,23 +1,152 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {signal} from '@angular/core';
+import {RouterTestingModule} from '@angular/router/testing';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {By} from '@angular/platform-browser';
+import {RouterLink} from '@angular/router';
+import {ERoute} from '../../../../common/types/ERoute';
 
-import { BottomMenuComponent } from './bottom-menu.component';
+import {BottomMenuComponent} from './bottom-menu.component';
+import {SettingsService} from '../../../../common/services/settings/settings.service';
+import {EDisplayDevice} from '../../../../common/types/EDisplayDevice';
+import {CustomizationService} from '../../../../common/services/customization/customization.service';
 
-describe('TopMenuComponent', () => {
-  let component: BottomMenuComponent;
-  let fixture: ComponentFixture<BottomMenuComponent>;
+describe('BottomMenuComponent', () => {
+	let component: BottomMenuComponent;
+	let fixture: ReturnType<typeof TestBed.createComponent<BottomMenuComponent>>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BottomMenuComponent ]
-    })
-    .compileComponents();
+	const mockSettingsService = {
+		device: signal(EDisplayDevice.BASIC),
+	};
 
-    fixture = TestBed.createComponent(BottomMenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+	let mockCustomization: {
+		faqUrlCs?: string;
+		faqUrlEn?: string;
+		configurableButtonIcon?: string;
+		configurableButtonLabelCs?: string;
+		configurableButtonLabelEn?: string;
+	};
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	function setup(): void {
+		TestBed.configureTestingModule({
+			imports: [BottomMenuComponent, RouterTestingModule, TranslateModule.forRoot()],
+			providers: [
+				{provide: SettingsService, useValue: mockSettingsService},
+				{provide: CustomizationService, useValue: mockCustomization},
+			],
+		});
+
+		fixture = TestBed.createComponent(BottomMenuComponent);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	}
+
+	beforeEach(() => {
+		mockCustomization = {};
+		mockSettingsService.device.set(EDisplayDevice.BASIC);
+	});
+
+	it('should create', () => {
+		setup();
+		expect(component).toBeTruthy();
+	});
+
+	it('renders Oblíbené as a routed tab', () => {
+		setup();
+		const labels = Array.from(fixture.nativeElement.querySelectorAll('.bottom-menu__label'))
+			.map((e: any) => e.textContent.trim());
+		expect(labels).toContain('Oblíbené');
+	});
+
+	it('Oblíbené is a router link to the favorites route', () => {
+		setup();
+		const links = fixture.debugElement.queryAll(By.directive(RouterLink));
+		// Program, Mapa, Notifikace, Oblíbené (configurable button has no routerLink)
+		expect(links.length).toBe(4);
+		const targets = links.map((l) => l.injector.get(RouterLink));
+		// RouterLink stores its value in routerLinkInput (setter-only in Angular 21)
+		expect(targets.some((rl: any) => {
+			const input = rl.routerLinkInput;
+			return Array.isArray(input)
+				? input.includes(ERoute.FAVORITES)
+				: input === ERoute.FAVORITES;
+		})).toBeTrue();
+	});
+
+	it('hides Oblíbené in the info-panel display', () => {
+		mockSettingsService.device.set(EDisplayDevice.INFO_PANEL);
+		setup();
+		const labels = Array.from(fixture.nativeElement.querySelectorAll('.bottom-menu__label'))
+			.map((e: any) => e.textContent.trim());
+		expect(labels).not.toContain('Oblíbené');
+	});
+
+	it('hides the configurable button when no URL is set', () => {
+		mockCustomization = {};
+		setup();
+		expect((component as any).showConfigurableButton).toBeFalse();
+	});
+
+	it('shows the configurable button with the configured icon when URL and icon are set', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help', configurableButtonIcon: 'info'};
+		setup();
+		expect((component as any).showConfigurableButton).toBeTrue();
+		expect((component as any).configurableButtonIcon).toBe('info');
+	});
+
+	it('falls back to the help icon when URL is set but icon is missing', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help'};
+		setup();
+		expect((component as any).showConfigurableButton).toBeTrue();
+		expect((component as any).configurableButtonIcon).toBe('help');
+	});
+
+	it('opens the configured URL in a new tab with noopener,noreferrer on click', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help'};
+		setup();
+		const openSpy = spyOn(window, 'open');
+		(component as any).openConfigurableButton();
+		expect(openSpy).toHaveBeenCalledWith('https://example.test/help', '_blank', 'noopener,noreferrer');
+	});
+
+	it('uses the Czech URL when language is cs', () => {
+		mockCustomization = {faqUrlCs: 'https://example.test/cs', faqUrlEn: 'https://example.test/en'};
+		setup();
+		(TestBed.inject(TranslateService) as any).currentLang = 'cs';
+		const openSpy = spyOn(window, 'open');
+		(component as any).openConfigurableButton();
+		expect(openSpy).toHaveBeenCalledWith('https://example.test/cs', '_blank', 'noopener,noreferrer');
+	});
+
+	it('falls back to the other language URL when the current language has none', () => {
+		mockCustomization = {faqUrlCs: 'https://example.test/cs'}; // only CS configured
+		setup();
+		(TestBed.inject(TranslateService) as any).currentLang = 'en'; // English user
+		expect((component as any).showConfigurableButton).toBeTrue();
+		expect((component as any).configurableButtonUrl).toBe('https://example.test/cs');
+	});
+
+	it('shows the Czech configurable-button label when language is cs', () => {
+		mockCustomization = {
+			faqUrlEn: 'https://example.test/help',
+			configurableButtonLabelCs: 'Nápověda',
+			configurableButtonLabelEn: 'Help',
+		};
+		setup();
+		(TestBed.inject(TranslateService) as any).currentLang = 'cs';
+		expect((component as any).configurableButtonLabel).toBe('Nápověda');
+	});
+
+	it('falls back to the other language label when the current language has none', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help', configurableButtonLabelCs: 'Nápověda'};
+		setup();
+		(TestBed.inject(TranslateService) as any).currentLang = 'en';
+		expect((component as any).configurableButtonLabel).toBe('Nápověda');
+	});
+
+	it('returns an empty configurable-button label when none is configured', () => {
+		mockCustomization = {faqUrlEn: 'https://example.test/help'};
+		setup();
+		expect((component as any).configurableButtonLabel).toBe('');
+	});
 });

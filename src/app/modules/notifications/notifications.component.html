@@ -1,17 +1,31 @@
 <mat-toolbar class="notifications-toolbar">
-	<span style="color: white">{{'Notifikace' | translate}}</span>
-	<div class="notifications-toolbar__actions">
-
-	</div>
+  <span style="color: white">{{'Notifikace' | translate}}</span>
+  <div class="notifications-toolbar__actions">
+    @if (isNativePlatform) {
+      <mat-slide-toggle
+        [checked]="notificationService.isSubscribedToStories()"
+        (change)="onStoryToggle($event.checked)">
+        {{ 'Příběhové notifikace' | translate }}
+      </mat-slide-toggle>
+    }
+  </div>
 </mat-toolbar>
 
+@if (notificationService.notifications().length === 0) {
+  <div class="notifications-empty">
+    <p>{{ 'Žádné notifikace' | translate }}</p>
+  </div>
+}
+
 <mat-list class="notifications-list">
-	<mat-list-item *ngFor="let notification of notificationService.notifications()"
-		class="notifications-list__item"
-	>
-		<span matListItemTitle class="notifications-list__item__title">
-			{{ notification.headings[translate.currentLang] }}
-		</span>
-		<p class="notifications-list__item__detail" [innerText]="notification.contents[translate.currentLang]"></p>
-	</mat-list-item>
+  @for (notification of notificationService.notifications(); track notification) {
+    <mat-list-item
+      class="notifications-list__item"
+      >
+      <span matListItemTitle class="notifications-list__item__title">
+        {{ notification.headings[translate.currentLang] }}
+      </span>
+      <p class="notifications-list__item__detail" [innerText]="notification.contents[translate.currentLang]"></p>
+    </mat-list-item>
+  }
 </mat-list>

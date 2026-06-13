@@ -1,3 +1,10 @@
+// Layout konstanty pro ořez obsahu krátkých karet
+// (viz docs/superpowers/specs/2026-06-12-short-event-card-overlap-design.md).
+// minTagWidthPx (skrytí tagů podle šířky) žije ve FullProgramConfig, protože ho čte TS.
+$tag-strip-height: 26px;          // rezervovaný dolní pruh pro řádek tagů (sedí na výšku .tag)
+$title-max-lines: 3;              // ořez názvu bez tagů
+$title-max-lines-with-tags: 2;    // ořez názvu s tagy (vejde se nad rezervovaný pruh)
+
 .place__segment__event {
 	height: 65px;
 	position: absolute;
@@ -7,7 +14,6 @@
 	border-radius: 5px;
 	font-size: 15px;
 	color: #1e1e1e;
-	opacity: 0.8;
 	line-height: 15px !important;
 	font-weight: 500;
 	margin: 0 1px;
@@ -20,18 +26,23 @@
 	cursor: pointer;
 	text-align: left;
 
-	.card-sidebar {
+	.card-favorite {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 2;
+		width: 22px;
+		height: 22px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		flex-shrink: 0;
-		width: 25px;
-		border-right: 1px solid black;
 
-		mat-icon {
-			font-size: 18px;
-			width: 20px;
-			height: 20px;
+		.favorite-icon {
+			font-size: 14px;
+			width: 14px;
+			height: 14px;
+			line-height: 14px;
+			color: var(--mat-app-background-color, #1e1b16);   // barva pozadí programu podle tématu
 		}
 	}
 
@@ -47,6 +58,23 @@
 		//font-weight: 700;
 		//letter-spacing: 0.5px;
 		font-size: 13px;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: $title-max-lines;
+		line-clamp: $title-max-lines;
+		overflow: hidden;
+		overflow-wrap: anywhere;
+	}
+
+	&.has-tags {
+		.card-content {
+			padding-bottom: $tag-strip-height;
+		}
+
+		.card-title {
+			-webkit-line-clamp: $title-max-lines-with-tags;
+			line-clamp: $title-max-lines-with-tags;
+		}
 	}
 
 	.card-title-secondary {
@@ -67,12 +95,19 @@
 	}
 }
 
-.tag {
-	font-size: 11px;
+.tags {
 	position: absolute;
 	right: 5px;
 	bottom: 3px;
-	border: 1px solid #00000060;
-	border-radius: 5px;
-	padding: 2px 5px;
+	display: flex;
+	gap: 5px;
+}
+
+.tag {
+	font-size: 11px;
+	background: rgba(100, 100, 100, 0.12);
+	border: 1px solid rgba(0, 0, 0, 0.22);
+	border-radius: 6px;
+	padding: 3px 7px;
+	white-space: nowrap;
 }

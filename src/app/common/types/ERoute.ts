@@ -3,5 +3,6 @@ export enum ERoute {
 	EVENT_DETAIL = 'event-detail',
 	NOTIFICATIONS = 'notifications',
 	MAP = 'map',
+	FAVORITES = 'favorites',
 	FAQ = 'afq',
 }

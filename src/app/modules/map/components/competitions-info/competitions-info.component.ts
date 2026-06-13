@@ -1,24 +1,16 @@
-import {Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, inject, input} from '@angular/core';
 import {MatListModule} from '@angular/material/list';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {HttpClient} from "@angular/common/http";
+import {ICompetitionInfo} from "../../types/ICompetitionInfo";
 
 @Component({
-	selector: 'app-competitions-info',
-	standalone: true,
-	imports: [CommonModule, MatListModule, TranslateModule],
-	templateUrl: './competitions-info.component.html',
-	styleUrls: ['./competitions-info.component.scss']
+    selector: 'app-competitions-info',
+    imports: [MatListModule, TranslateModule],
+    templateUrl: './competitions-info.component.html',
+    styleUrls: ['./competitions-info.component.scss']
 })
 export class CompetitionsInfoComponent {
 	protected readonly translate: TranslateService = inject(TranslateService);
-	private readonly http: HttpClient = inject(HttpClient);
 
-	protected competitionsInfo$;
-
-	constructor() {
-		this.competitionsInfo$ = this.http.get<any[]>('/assets/competitions-info.json');
-	}
-
+	readonly data = input.required<ICompetitionInfo[]>();
 }

@@ -1,15 +1,15 @@
-import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, firstValueFrom, Observable, of} from 'rxjs';
-import {IEvent} from '../../types/IEvent';
-import * as dayjs from 'dayjs';
-import {IProgramPlace} from '../../types/IProgramPlace';
-import {IProgramFilterOptions} from '../../components/full-program/types/IProgramFilterOptions';
-import {EventService} from '../event/event.service';
-import {HttpClient} from "@angular/common/http";
-import {IEventType} from "../../types/IEventType";
-import {environment} from "../../../../../environments/environment";
+import { inject, Injectable, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { IEvent } from '../../types/IEvent';
+import dayjs from 'dayjs';
+import { IProgramPlace } from '../../types/IProgramPlace';
+import { IProgramFilterOptions } from '../../components/full-program/types/IProgramFilterOptions';
+import { EventService } from '../event/event.service';
+import { HttpClient } from "@angular/common/http";
+import { IEventType } from "../../types/IEventType";
+import { environment } from "../../../../../environments/environment";
 import ProgramConfig from "../../config/ProgramConfig";
-import {IEventTag} from "../../types/IEventTag";
+import { IEventTag } from "../../types/IEventTag";
 
 @Injectable({
 	providedIn: 'root'
@@ -19,7 +19,7 @@ export class ProgramService {
 
 	public get userFilterOptions(): IProgramFilterOptions {
 		const savedOptions = JSON.parse(localStorage.getItem('userFilterOptions') || '{}');
-		if(Object.keys(savedOptions).length > 0) {
+		if (Object.keys(savedOptions).length > 0) {
 			this.#userFilterOptions = savedOptions;
 		}
 
@@ -28,20 +28,32 @@ export class ProgramService {
 
 	public set userFilterOptions(value: IProgramFilterOptions) {
 		this.#userFilterOptions = value;
-		this.activeFiltersCount = Object.values(value).filter((v) => !!v).length;
+		this.activeFiltersCount = Object.values(value).filter((v) => {
+			if(Array.isArray(v)) {
+				return v?.length > 0;
+			}
+			return !!v;
+		}).length;
 		localStorage.setItem('userFilterOptions', JSON.stringify(value));
 	}
 
 	public activeFiltersCount: number = 0;
 	public favorites: IEvent[] = [];
-	public eventTypes: IEventType[] = [];
+	readonly #eventTypes = signal<IEventType[]>([]);
+	// Signal so OnPush consumers (e.g. the event legend) refresh when types load,
+	// including after a websocket reconnect (loadEventTypes fires no other signal).
+	public readonly eventTypes = this.#eventTypes.asReadonly();
 	public tags: IEventTag[] = [];
-	public selectedDay: number; // used to persist the selected day between routes
-	#showEventDetails: boolean = false; // show detailed information of event in program (i.e. abbreviation of event type)
+	public selectedDay = signal<number | undefined>(undefined);
+	#showEventDetails: boolean = false;
 
 
 	public get showEventDetails(): boolean {
-		return localStorage.getItem('showEventDetails') === 'true' ?? this.#showEventDetails;
+		const showDetails = localStorage.getItem('showEventDetails');
+		if (showDetails == null) {
+			return this.#showEventDetails;
+		}
+		return localStorage.getItem('showEventDetails') === 'true';
 	}
 
 	public set showEventDetails(value: boolean) {
@@ -62,19 +74,16 @@ export class ProgramService {
 
 	/**
 	 * Filtered events in program
-	 * This subject is used to subscribe to all changes and filtering in events, but these changes are also propagated
-	 * to allEvents, so we can use it offline
-	 *
-	 * TODO: implement store?
 	 * @private
 	 */
-	#events: BehaviorSubject<IEvent[]> = new BehaviorSubject(this.#allEvents);
-	#places: BehaviorSubject<IProgramPlace[]> = new BehaviorSubject(this.#allPlaces);
-	#days: BehaviorSubject<Record<number, number>> = new BehaviorSubject<Record<number, number>>({});
+	#events = signal<IEvent[]>([]);
+	#places = signal<IProgramPlace[]>([]);
+	#days = signal<Record<number, number>>({});
 	#userFilterOptions: IProgramFilterOptions = {};
 
-	public places$: Observable<IProgramPlace[]> = this.#places.asObservable();
-	public days$ = this.#days.asObservable();
+	public readonly places = this.#places.asReadonly();
+	public readonly days = this.#days.asReadonly();
+	public readonly events = this.#events.asReadonly();
 
 	public get allPlaces(): IProgramPlace[] {
 		return this.#allPlaces;
@@ -84,41 +93,72 @@ export class ProgramService {
 
 	public async loadCachedData(): Promise<void> {
 		try {
-			await this.checkCacheValidity();
-
 			const localPlaces = localStorage.getItem('places');
 			const localEvents = localStorage.getItem('events');
 			if (localPlaces && localEvents) {
 				await this.loadProgramData(JSON.parse(localPlaces), JSON.parse(localEvents));
 			}
-		} catch(e) {
+		} catch (e) {
 			console.error("Cannot load program from cached data", e);
 		}
 	}
 
+	public readonly eventsLoadFailed = signal(false);
+	public readonly eventsLoading = signal(true);
+
 	public async initWebsocket(): Promise<void> {
 		try {
-			if(window.navigator.onLine) {
+			if (window.navigator.onLine) {
 				await this.eventService.initWebsocket();
 				await this.loadProgramData();
+				this.registerWebsocketHandlers();
 
-				this.eventService.on<IEvent>('newEvent', (data) => {
-					this.#allEvents = [...this.#allEvents, data];
-					this.propagateEventUpdate();
-				});
-
-				this.eventService.on<IEvent>('updateEvent', (data) => {
-					const index = this.#allEvents.findIndex((event) => event.id === data.id);
-					this.#allEvents[index] = data;
-					localStorage.setItem('events', JSON.stringify(this.#allEvents));
-
-					this.updateFavorites();
-					this.propagateEventUpdate();
+				this.eventService.onReconnected(async () => {
+					try {
+						await this.loadProgramData();
+					} catch (e) {
+						console.error('Error reloading data after reconnection: ', e);
+					}
 				});
 			}
-		} catch(e) {
+			this.eventsLoadFailed.set(false);
+		} catch (e) {
 			console.error('Error while initializing websocket communication: ', e);
+			this.eventsLoadFailed.set(true);
+		} finally {
+			this.eventsLoading.set(false);
 		}
+	}
+
+	private registerWebsocketHandlers(): void {
+		this.eventService.off('eventCreated');
+		this.eventService.off('eventUpdated');
+		this.eventService.off('eventDeleted');
+
+		this.eventService.on<IEvent>('eventCreated', (data) => {
+			this.#allEvents = [...this.#allEvents, data];
+			this.propagateEventUpdate();
+		});
+
+		this.eventService.on<IEvent>('eventUpdated', (data) => {
+			const index = this.#allEvents.findIndex((event) => event.id === data.id);
+			if (index === -1) {
+				return;
+			}
+			this.#allEvents = [...this.#allEvents.slice(0, index), data, ...this.#allEvents.slice(index + 1)];
+			localStorage.setItem('events', JSON.stringify(this.#allEvents));
+
+			this.updateFavorites();
+			this.propagateEventUpdate();
+		});
+
+		this.eventService.on<string>('eventDeleted', (eventId) => {
+			this.#allEvents = this.#allEvents.filter((event) => event.id !== eventId);
+			localStorage.setItem('events', JSON.stringify(this.#allEvents));
+
+			this.updateFavorites();
+			this.propagateEventUpdate();
+		});
 	}
 
 	public async loadProgramData(places?: IProgramPlace[], events?: IEvent[]): Promise<void> {
@@ -127,28 +167,16 @@ export class ProgramService {
 		localStorage.setItem('places', JSON.stringify(this.#allPlaces));
 		localStorage.setItem('events', JSON.stringify(this.#allEvents));
 
-		for(const event of this.#allEvents) {
+		for (const event of this.#allEvents) {
 			event.favorite = this.favorites.map((obj) => obj.id).includes(event.id);
 		}
 
+		this.#places.set(this.#allPlaces);
 		this.loadDays();
+		this.autoSelectDay();
 		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
 		await this.loadEventTypes();
-		await this.loadTags();
-	}
-
-	public getEvents(day?: number): Observable<IEvent[]> {
-		let result = this.#allEvents;
-
-		if(day) {
-			result = this.#allEvents.filter((event) => {
-				return dayjs(event.start).isSame(day, 'day');
-			});
-		}
-
-		this.#events.next(result);
-
-		return this.#events;
+		this.extractTags();
 	}
 
 	public getEvent(id: string): IEvent | undefined {
@@ -161,8 +189,7 @@ export class ProgramService {
 	 */
 	public filterEvents(filterOptions: Partial<IProgramFilterOptions>): void {
 		const result = this.applyEventFilters(this.#allEvents, filterOptions);
-
-		this.#events.next(result);
+		this.#events.set(result);
 	}
 
 	/**
@@ -170,30 +197,30 @@ export class ProgramService {
 	 * @param placeId
 	 */
 	public filterPlaces(placeId: string[] | null = null): void {
-		if(placeId) {
+		if (placeId) {
 			const newPlaces = this.#allPlaces.filter((place) => placeId.includes(place.id));
-			this.#places.next(newPlaces);
+			this.#places.set(newPlaces);
 		} else {
-			this.#places.next(this.#allPlaces);
+			this.#places.set(this.#allPlaces);
 		}
 	}
 
-	public getPlaceById(id: string): Observable<IProgramPlace | undefined> {
-		return of(this.#allPlaces.find((place) => place.id === id));
+	public getPlaceById(id: string): IProgramPlace | undefined {
+		return this.#allPlaces.find((place) => place.id === id);
 	}
 
-	public getEventById(id: string): Observable<IEvent | undefined> {
-		return of(this.#allEvents.find((event) => event.id === id));
+	public getEventById(id: string): IEvent | undefined {
+		return this.#allEvents.find((event) => event.id === id);
 	}
 
-	public updateEvent(event: IEvent, property: keyof IEvent, value: string | number | boolean): void {
-		const eventToUpdate: IEvent | undefined = this.#allEvents.find((e) => e.id === event.id);
-		if(eventToUpdate) {
-			// TODO: resolve typing issue
-			// @ts-ignore
-			eventToUpdate[property] = value;
+	public updateEvent<K extends keyof IEvent>(event: IEvent, property: K, value: IEvent[K]): void {
+		const index = this.#allEvents.findIndex((e) => e.id === event.id);
+		if (index !== -1) {
+			this.#allEvents = this.#allEvents.map((e, i) =>
+				i === index ? { ...e, [property]: value } : e
+			);
 		}
-		if(property === 'favorite') {
+		if (property === 'favorite') {
 			this.updateFavorites();
 		}
 		this.propagateEventUpdate();
@@ -209,7 +236,7 @@ export class ProgramService {
 	}
 
 	public loadFavorites(value: string[]): void {
-		for(const event of this.#allEvents) {
+		for (const event of this.#allEvents) {
 			event.favorite = value.includes(event.id);
 		}
 
@@ -220,82 +247,101 @@ export class ProgramService {
 	}
 
 	public async loadEventTypes(): Promise<void> {
-		this.eventTypes = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/eventTypes`));
+		this.#eventTypes.set(await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`)));
 	}
 
-	public async loadTags(): Promise<void> {
-		this.tags = await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/tags`));
+	/**
+	 * Extract unique tags from loaded events (no standalone public tags endpoint)
+	 */
+	private extractTags(): void {
+		const tagMap = new Map<string, IEventTag>();
+		for (const event of this.#allEvents) {
+			for (const tag of event.tags) {
+				if (!tagMap.has(tag.id)) {
+					tagMap.set(tag.id, tag);
+				}
+			}
+		}
+		this.tags = Array.from(tagMap.values());
 	}
 
 	private propagateEventUpdate(): void {
 		const newEvents = this.applyEventFilters(this.#allEvents, this.userFilterOptions);
-		this.#events.next(newEvents);
+		this.#events.set(newEvents);
 	}
 
 	private applyEventFilters(events: IEvent[], filterOptions: IProgramFilterOptions): IEvent[] {
-		let result = events;
-		if(!filterOptions || !Object.keys(filterOptions).length) {
-			return result;
+		if (!filterOptions || !Object.keys(filterOptions).length) {
+			return events;
 		}
 
-		result = result.filter((event) => {
-			let include = true;
-
-			if(filterOptions.placeId !== undefined) {
-				include = !filterOptions.placeId.includes(event.placeId);
+		return events.filter((event) => {
+			if (filterOptions.locationId !== undefined && filterOptions.locationId.length > 0) {
+				if (!filterOptions.locationId.includes(event.locationId)) {
+					return false;
+				}
 			}
 
-			if(filterOptions.eventType !== undefined) {
-				include = filterOptions.eventType.includes(event.type.id);
+			if (filterOptions.eventType !== undefined && filterOptions.eventType.length > 0) {
+				if (!filterOptions.eventType.includes(event.eventType.id)) {
+					return false;
+				}
 			}
 
-			if(filterOptions.tags !== undefined && filterOptions.tags.length > 0) {
+			if (filterOptions.tags !== undefined && filterOptions.tags.length > 0) {
 				const eventTagIds = event.tags.map((tag) => tag.id);
-				include = filterOptions.tags.some((tag) => eventTagIds.includes(tag));
+				if (!filterOptions.tags.some((tag) => eventTagIds.includes(tag))) {
+					return false;
+				}
 			}
 
-			if(filterOptions.onlyFavorite === true) {
-				include = event.favorite
+			if (filterOptions.onlyFavorite === true) {
+				if (!event.favorite) {
+					return false;
+				}
 			}
 
-			return include;
+			return true;
 		});
+	}
 
-		return result;
+	private autoSelectDay(): void {
+		if (this.selectedDay() !== undefined) {
+			return;
+		}
+		const days = this.#days();
+		const entries = Object.entries(days).sort();
+		if (entries.length === 0) {
+			return;
+		}
+		const today = dayjs();
+		const todayEntry = entries.find(([_, date]) => dayjs(date).isSame(today, 'day'));
+		this.selectedDay.set(todayEntry ? Number(todayEntry[0]) : Number(entries[0][0]));
 	}
 
 	private loadDays(): void {
-		const days = this.#days.getValue();
-		for(const event of this.#allEvents) {
-			const startDate = dayjs(event.start).startOf('day').valueOf();
-			const endDate = dayjs(event.end);
+		const days = { ...this.#days() };
+		for (const event of this.#allEvents) {
+			const startDate = dayjs(event.startAt).startOf('day').valueOf();
+			const endDate = dayjs(event.endAt);
 
-			if(Object.values(days).length > 0 && endDate.get('hour') <= ProgramConfig.eventEndHourThreshold) {
+			if (Object.values(days).length > 0 && endDate.get('hour') <= ProgramConfig.eventEndHourThreshold) {
 				continue;
 			}
 
-			if(!days[startDate]) {
+			if (!days[startDate]) {
 				days[startDate] = startDate;
 			}
 		}
 
-		this.#days.next(days);
+		this.#days.set(days);
 	}
 
-	private async checkCacheValidity(): Promise<void> {
-		const appEventIdStored = localStorage.getItem('appEventId');
-		const appEventId = await this.getAppEventId();
-		if(appEventIdStored !== appEventId) {
-			localStorage.clear();
-			localStorage.setItem('appEventId', appEventId);
+	private readonly programCacheKeys = ['events', 'places', 'favorites', 'userFilterOptions', 'showEventDetails'];
+
+	private clearProgramCache(): void {
+		for (const key of this.programCacheKeys) {
+			localStorage.removeItem(key);
 		}
-	}
-
-	/**
-	 * Used to invalidate events in local storage from another event
-	 * @private
-	 */
-	private getAppEventId(): Promise<string> {
-		return firstValueFrom(this.http.get<string>('/assets/appEventId.txt', { responseType: 'text' as 'json'}));
 	}
 }

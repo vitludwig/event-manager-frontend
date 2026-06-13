@@ -1,60 +1,62 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "Roztoč program",
-  "short_name": "Roztoč program",
-  "theme_color": "#c158bb",
+  "name": "RZB Festival App",
+  "short_name": "RZB Festival App",
+  "theme_color": "#fecc00",
   "background_color": "#000000",
   "display": "standalone",
   "scope": "./",
   "start_url": "/",
   "icons": [
     {
-      "src": "assets/icons/roztoc/icon-72x72.png",
+      "src": "assets/icons/icon-48.webp",
+      "type": "image/png",
+      "sizes": "48x48",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-72.webp",
+      "type": "image/png",
       "sizes": "72x72",
-      "type": "image/png"
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/roztoc/icon-96x96.png",
+      "src": "assets/icons/icon-96.webp",
+      "type": "image/png",
       "sizes": "96x96",
-      "type": "image/png"
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/roztoc/icon-128x128.png",
+      "src": "assets/icons/icon-128.webp",
+      "type": "image/png",
       "sizes": "128x128",
-      "type": "image/png"
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/roztoc/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/roztoc/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/roztoc/icon-192x192.png",
+      "src": "assets/icons/icon-192.webp",
+      "type": "image/png",
       "sizes": "192x192",
-      "type": "image/png"
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/roztoc/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png"
+      "src": "assets/icons/icon-256.webp",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/roztoc/icon-512x512.png",
+      "src": "assets/icons/icon-512.webp",
+      "type": "image/png",
       "sizes": "512x512",
-      "type": "image/png"
+      "purpose": "any maskable"
     }
   ],
   "screenshots": [
-      {
-        "src": "/assets/images/screenshot1.jpg",
-        "type": "image/jpg",
-        "sizes": "415x912",
-        "form_factor": "narrow"
-      }
-    ]
+    {
+      "src": "/assets/images/screenshot1.jpg",
+      "type": "image/jpg",
+      "sizes": "415x912",
+      "form_factor": "narrow"
+    }
+  ]
 }

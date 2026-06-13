@@ -1,19 +1,22 @@
-import {inject, Injectable, isDevMode, signal, WritableSignal} from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {inject, Injectable, signal, WritableSignal} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {environment} from '../../../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';
-import {OneSignal} from 'onesignal-ngx';
-import {TranslateService} from '@ngx-translate/core';
-
+import OneSignal  from 'onesignal-cordova-plugin';
+import {ActionPerformed, Channel, LocalNotifications, ScheduleOptions} from "@capacitor/local-notifications";
+import {Capacitor} from "@capacitor/core";
+import {ELocalNotificationAction, ILocalNotificationPayload} from "../../types/ILocalNotificationPayload";
+import {Router} from "@angular/router";
+import {ERoute} from "../../../../common/types/ERoute";
+import {CustomizationService} from "../../../../common/services/customization/customization.service";
 
 @Injectable({
 	providedIn: 'root'
 })
 export class NotificationService {
 	public notifications: WritableSignal<IOneSignalNotification[]> = signal([]);
-	public subscription: PushSubscription | null;
-	public notificationRegistration: ServiceWorkerRegistration;
+	private readonly router: Router = inject(Router);
 
 	public get showNotifications(): boolean {
 		return localStorage.getItem('showNotifications') === 'true';
@@ -24,94 +27,164 @@ export class NotificationService {
 	}
 
 	private readonly http = inject(HttpClient);
-	private readonly oneSignal: OneSignal = inject(OneSignal);
-	private readonly translate = inject(TranslateService);
+	private readonly customizationService = inject(CustomizationService);
 
+	private readonly defaultChannelId = 'local_notification_channel';
+	private readonly storyTagKey = 'story_notifications';
+	private readonly storyLocalStorageKey = 'storyNotificationsEnabled';
+	private readonly storySegmentName = 'Story Subscribers';
+	public readonly isSubscribedToStories = signal(localStorage.getItem('storyNotificationsEnabled') === 'true');
+	private oneSignalReady = false;
 
 	constructor() {
+		this.initLocalNotifications();
+		this.addNotificationActionListeners();
+		this.initOneSignal();
 		this.loadNotifications();
 	}
 
-	public unsubscribe() {
-		if(!this.subscription) {
-			console.warn('Cannot unsubscribe, subscription is null.');
-			return;
-		}
-	}
-
-	public showLocalNotification(title: string, body: string = ''): Promise<void> {
-		return this.notificationRegistration.showNotification(title, {
-			body: body,
-			icon: '/assets/icons/icon-72x72.png',
-		});
-	}
-
-	public async initOneSignal(): Promise<void> {
-		if(isDevMode()) {
-			return;
-		}
-		try {
-			const oneSignal = this.oneSignal.init({
-				appId: environment.oneSignalAppId,
-				allowLocalhostAsSecureOrigin: true,
-				safari_web_id: "web.onesignal.auto.45e32f52-047f-48ea-8b6f-5a9d2fcde2db",
-				promptOptions: {
-					slidedown: {
-						enabled: true,
-						autoPrompt: true,
-						timeDelay: 5,
-						pageViews: 1,
-						text: this.translate.currentLang === 'en' ? 'We would like to send you notifications about upcoming events and program updates.' : 'Rádi bychom vám posílali notifikace o nadcházejících akcích a aktualizacích programu.',
+	async showLocalNotification(
+		title: string,
+		body: string,
+		data?: ILocalNotificationPayload,
+	): Promise<void> {
+		const notificationId = Math.floor(Math.random() * 0x7FFFFFFF);
+		const options: ScheduleOptions = {
+			notifications: [
+				{
+					id: notificationId,
+					title: title,
+					body: body,
+					channelId: this.defaultChannelId,
+					smallIcon: 'res://mipmap/ic_launcher',
+					sound: 'default',
+					schedule: {
+						at: new Date(Date.now() + 1000),
+						allowWhileIdle: true,
 					},
-
-					customlink: {
-						enabled: true, /* Required to use the Custom Link */
-						style: "button", /* Has value of 'button' or 'link' */
-						size: "medium", /* One of 'small', 'medium', or 'large' */
-						color: {
-							button: '#7859a0', /* Color of the button background if style = "button" */
-							text: '#FFFFFF', /* Color of the prompt's text */
-						},
-						text: {
-							subscribe: this.translate.currentLang === 'en' ? 'Enable notifications' : 'Povolit notifikace',
-							unsubscribe: this.translate.currentLang === 'en' ? "Disable notifications" : 'Zakázat notifikace',
-						},
-						unsubscribeEnabled: true, /* Controls whether the prompt is visible after subscription */
-					},
+					extra: data,
 				},
-			});
-			await oneSignal;
+			],
+		};
 
-			console.log('OneSignal initialized');
-			this.oneSignal.on('subscriptionChange', (isSubscribed) => {
-				console.log("The user's subscription state is now:", isSubscribed);
-				this.showNotifications = isSubscribed;
-			});
+		try {
+			await LocalNotifications.schedule(options);
+		} catch (error) {
+			console.error('Error scheduling notification:', error);
+		}
+	}
 
-			return oneSignal;
+	private async initLocalNotifications() {
+		if(Capacitor.getPlatform() === 'android') {
+			await this.createDefaultLocalNotificationChannel();
+		}
+	}
+
+	private async createDefaultLocalNotificationChannel() {
+		const channel: Channel = {
+			id: 'local_notification_channel',
+			name: 'Local notification channel',
+			description: '',
+			importance: 4,
+			visibility: 1,
+			sound: 'default',
+			vibration: true,
+		};
+		try {
+			await LocalNotifications.createChannel(channel);
+		} catch (error) {
+			console.error('Error creating channel:', error);
+		}
+	}
+
+	private async initOneSignal(): Promise<void> {
+		if(!Capacitor.isNativePlatform()) {
+			return;
+		}
+
+		try {
+			const oneSignalAppId = this.customizationService.oneSignalAppId;
+			if (!oneSignalAppId) {
+				console.warn('OneSignal app ID not configured');
+				return;
+			}
+
+			OneSignal.initialize(oneSignalAppId);
+
+			const accepted = await OneSignal.Notifications.requestPermission(true);
+			console.log('OneSignal: permission accepted:', accepted);
+
+			OneSignal.Notifications.addEventListener('click', () => this.router.navigate([`/${ERoute.NOTIFICATIONS}`]));
+			OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+				event.getNotification().display();
+			});
+			this.oneSignalReady = true;
 		} catch(e) {
-			console.error('OneSignal initialization failed: ', e);
+			console.error('Cannot initialize OneSignal:', e);
 		}
 	}
 
 	public async loadNotifications(): Promise<void> {
 		try {
-			// TODO: add this to interceptor
-			const headers = new HttpHeaders({
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': 'Basic ' + environment.oneSignalApiKey,
-			});
-
 			const notifications = await firstValueFrom(
-				this.http.get<IOneSignalNotificationsResponse>(`https://onesignal.com/api/v1/notifications?app_id=${environment.oneSignalAppId}`,
-					{headers})
+				this.http.get<IOneSignalNotificationsResponse>(`${environment.apiUrl}/notification`)
 			);
-			notifications.notifications = notifications.notifications.filter(obj => Object.keys(obj.headings).length > 0);
 
-			this.notifications.set(notifications.notifications);
+			const filtered = this.isSubscribedToStories()
+				? notifications.notifications
+				: notifications.notifications.filter(
+					n => !(n.included_segments ?? []).includes(this.storySegmentName)
+				);
+
+			this.notifications.set(filtered);
 		} catch(e) {
-			console.error('Cannot load notifications: ', e);
+			console.error('Cannot load notifications:', e);
+		}
+	}
+
+	public async subscribeToStories(): Promise<void> {
+		localStorage.setItem(this.storyLocalStorageKey, 'true');
+		this.isSubscribedToStories.set(true);
+		if (Capacitor.isNativePlatform() && this.oneSignalReady) {
+			try {
+				OneSignal.User.addTag(this.storyTagKey, 'true');
+			} catch (e) {
+				localStorage.setItem(this.storyLocalStorageKey, 'false');
+				this.isSubscribedToStories.set(false);
+				console.error('OneSignal: failed to add tag', e);
+			}
+		}
+	}
+
+	public async unsubscribeFromStories(): Promise<void> {
+		localStorage.setItem(this.storyLocalStorageKey, 'false');
+		this.isSubscribedToStories.set(false);
+		if (Capacitor.isNativePlatform() && this.oneSignalReady) {
+			try {
+				OneSignal.User.removeTag(this.storyTagKey);
+			} catch (e) {
+				localStorage.setItem(this.storyLocalStorageKey, 'true');
+				this.isSubscribedToStories.set(true);
+				console.error('OneSignal: failed to remove tag', e);
+			}
+		}
+	}
+
+	private addNotificationActionListeners() {
+		if(Capacitor.getPlatform() === 'android') {
+			LocalNotifications.addListener(
+				'localNotificationActionPerformed',
+				(notificationAction: ActionPerformed) => {
+					const data = notificationAction.notification.extra as ILocalNotificationPayload;
+					if (data) {
+						switch(data.actionId) {
+							case ELocalNotificationAction.NAVIGATE_TO:
+								this.router.navigate([data.value])
+								break;
+						}
+					}
+				}
+			);
 		}
 	}
 }

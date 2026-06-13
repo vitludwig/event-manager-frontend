@@ -3,52 +3,66 @@
 		<button mat-button
 			class="bottom-menu__button"
 			routerLinkActive="bottom-menu__button--active"
-            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
 			[routerLink]="ERoute.PROGRAM"
-            [queryParamsHandling]="'merge'"
+			[queryParamsHandling]="'merge'"
 		>
-			<mat-icon>view_list</mat-icon>
-            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
-                {{ 'Program' | translate }}
-            }
-        </button>
-
-        <button mat-button
-            routerLinkActive="bottom-menu__button--active"
-            class="bottom-menu__button"
-            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
-            [routerLink]="ERoute.MAP"
-            [queryParamsHandling]="'merge'"
-        >
-            <mat-icon> place</mat-icon>
-            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
-                {{ 'Mapa' | translate }}
-            }
-        </button>
-
-		<button mat-button
-			routerLinkActive="bottom-menu__button--active"
-			class="bottom-menu__button"
-            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
-			[routerLink]="ERoute.NOTIFICATIONS"
-            [queryParamsHandling]="'merge'"
-		>
-			<mat-icon>notifications</mat-icon>
-            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
-                {{ 'Notifikace' | translate }}
-            }
+			<span class="bottom-menu__inner">
+				<mat-icon>view_list</mat-icon>
+				<span class="bottom-menu__label">{{ 'Program' | translate }}</span>
+			</span>
 		</button>
 
 		<button mat-button
 			routerLinkActive="bottom-menu__button--active"
 			class="bottom-menu__button"
-            [class.with-text]="settingsService.device === EDisplayDevice.INFO_PANEL"
-			(click)="openFAQ()"
+			[routerLink]="ERoute.MAP"
+			[queryParamsHandling]="'merge'"
 		>
-			<mat-icon>help</mat-icon>
-            @if(settingsService.device === EDisplayDevice.INFO_PANEL) {
-                {{ 'FAQ' | translate }}
-            }
+			<span class="bottom-menu__inner">
+				<mat-icon>place</mat-icon>
+				<span class="bottom-menu__label">{{ 'Mapa' | translate }}</span>
+			</span>
 		</button>
+
+        @if (settingsService.device() !== EDisplayDevice.INFO_PANEL) {
+            <button mat-button
+                routerLinkActive="bottom-menu__button--active"
+                class="bottom-menu__button"
+                [routerLink]="ERoute.NOTIFICATIONS"
+                [queryParamsHandling]="'merge'"
+            >
+                <span class="bottom-menu__inner">
+                    <mat-icon>notifications</mat-icon>
+                    <span class="bottom-menu__label">{{ 'Notifikace' | translate }}</span>
+                </span>
+            </button>
+        }
+
+		@if (settingsService.device() !== EDisplayDevice.INFO_PANEL) {
+			<button mat-button
+				routerLinkActive="bottom-menu__button--active"
+				class="bottom-menu__button"
+				[routerLink]="ERoute.FAVORITES"
+				[queryParamsHandling]="'merge'"
+			>
+				<span class="bottom-menu__inner">
+					<mat-icon>favorite</mat-icon>
+					<span class="bottom-menu__label">{{ 'Oblíbené' | translate }}</span>
+				</span>
+			</button>
+		}
+        @if (settingsService.device() !== EDisplayDevice.INFO_PANEL) {
+            @if (showConfigurableButton) {
+                <button mat-button
+                    class="bottom-menu__button"
+                    (click)="openConfigurableButton()"
+                >
+                    <span class="bottom-menu__inner">
+                        <mat-icon>{{ configurableButtonIcon }}</mat-icon>
+                        <span class="bottom-menu__label">{{ configurableButtonLabel }}</span>
+                    </span>
+                </button>
+            }
+        }
 	</div>
 </mat-toolbar>

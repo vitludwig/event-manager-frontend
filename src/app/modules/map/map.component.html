@@ -1,55 +1,69 @@
-@if(environment.festivalId === EFestivalID.ROZTOCFEST) {
-    <div class="img-wrapper">
-        <img src="assets/map/roztoc-map.png" alt="Map">
-    </div>
-} @else {
-    <mat-tab-group>
-        <mat-tab [label]="'Hlavní' | translate">
+<mat-tab-group class="full-height">
+    @if (festivalMap) {
+        <mat-tab [label]="festivalMapLabel">
             <ng-template matTabContent>
-                <div class="img-wrapper">
-                    <img src="assets/map/festival.png">
-                </div>
+                <pinch-zoom style="height: 100%">
+                    <div class="img-wrapper">
+                        <img [src]="festivalMap" alt="Map">
+                    </div>
+                </pinch-zoom>
             </ng-template>
         </mat-tab>
+    }
 
-        <mat-tab [label]="'Soutěže' | translate">
+    @if (competitionMap || competitionsInfo) {
+        <mat-tab [label]="competitionMapLabel">
             <ng-template matTabContent>
                 <mat-tab-group class="sub-tabs">
-                    <mat-tab [label]="'Mapa' | translate">
-                        <ng-template matTabContent>
-                            <div class="img-wrapper">
-                                <img src="assets/map/souteze.png">
-                            </div>
-                        </ng-template>
-                    </mat-tab>
+                    @if (competitionMap) {
+                        <mat-tab [label]="'Mapa' | translate">
+                            <ng-template matTabContent>
+                                <pinch-zoom style="height: 100%">
+                                    <div class="img-wrapper">
+                                        <img [src]="competitionMap" alt="Map">
+                                    </div>
+                                </pinch-zoom>
+                            </ng-template>
+                        </mat-tab>
+                    }
 
-                    <mat-tab [label]="'Otevírací doba' | translate">
-                        <ng-template matTabContent>
-                            <app-competitions-info />
-                        </ng-template>
-                    </mat-tab>
+                    @if (competitionsInfo) {
+                        <mat-tab [label]="'další info' | translate">
+                            <ng-template matTabContent>
+                                <app-competitions-info [data]="competitionsInfo!"/>
+                            </ng-template>
+                        </mat-tab>
+                    }
                 </mat-tab-group>
             </ng-template>
         </mat-tab>
+    }
 
-        <mat-tab [label]="'Atrakce&kmeny' | translate">
+    @if (tribesMap || tribesInfo) {
+        <mat-tab [label]="tribesMapLabel">
             <ng-template matTabContent>
                 <mat-tab-group class="sub-tabs">
-                    <mat-tab [label]="'Mapa' | translate">
-                        <ng-template matTabContent>
-                            <div class="img-wrapper">
-                                <img src="assets/map/kmeny.png">
-                            </div>
-                        </ng-template>
-                    </mat-tab>
+                    @if (tribesMap) {
+                        <mat-tab [label]="'Mapa' | translate">
+                            <ng-template matTabContent>
+                                <pinch-zoom style="height: 100%">
+                                    <div class="img-wrapper">
+                                        <img [src]="tribesMap" alt="Map">
+                                    </div>
+                                </pinch-zoom>
+                            </ng-template>
+                        </mat-tab>
+                    }
 
-                    <mat-tab [label]="'Otevírací doba' | translate">
-                        <ng-template matTabContent>
-                            <app-tribes-info />
-                        </ng-template>
-                    </mat-tab>
+                    @if (tribesInfo) {
+                        <mat-tab [label]="'další info' | translate">
+                            <ng-template matTabContent>
+                                <app-tribes-info [data]="tribesInfo!"/>
+                            </ng-template>
+                        </mat-tab>
+                    }
                 </mat-tab-group>
             </ng-template>
         </mat-tab>
-    </mat-tab-group>
-}
+    }
+</mat-tab-group>

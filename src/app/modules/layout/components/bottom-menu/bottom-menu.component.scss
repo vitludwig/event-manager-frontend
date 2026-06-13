@@ -1,6 +1,9 @@
 .bottom-menu {
-	border-top: 1px solid var(--mat-standard-button-toggle-selected-state-background-color);
+	border-top: 1px solid var(--mat-button-toggle-selected-state-background-color);
 	padding: 0;
+	flex-shrink: 0;
+	margin-bottom: constant(safe-area-inset-bottom);
+	margin-bottom: env(safe-area-inset-bottom);
 
 	&__content {
 		width: 100%;
@@ -12,21 +15,47 @@
 
 	&__button {
 		flex-grow: 1;
+		min-width: 0;          // ať se 4 tlačítka s popiskem vejdou i na úzký telefon
+		padding: 0 4px;
 		height: 100%;
 		border-radius: 0;
 
 		&--active {
-			background-color: var(--mat-standard-button-toggle-selected-state-background-color) !important;
+			background-color: var(--mat-button-toggle-selected-state-background-color) !important;
+		}
+
+		// bound the Material label wrapper so the text can ellipsis instead of overflowing
+		::ng-deep .mdc-button__label {
+			min-width: 0;
+			max-width: 100%;
+		}
+
+		// ikona menší + popisek pod ní (mobil i info-panel)
+		.bottom-menu__inner {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 3px;
+			min-width: 0;
+			max-width: 100%;
 		}
 
 		mat-icon {
-			transform: scale(1.5);
+			font-size: 22px;
+			width: 22px;
+			height: 22px;
 			margin: 0;
 		}
-		&.with-text {
-			mat-icon {
-				margin-right: 15px;
-			}
+
+		.bottom-menu__label {
+			max-width: 100%;
+			font-size: 11px;
+			line-height: 1.1;
+			font-weight: 500;
+			letter-spacing: 0.2px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 	}
 }

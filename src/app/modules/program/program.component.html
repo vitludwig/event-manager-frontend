@@ -1,3 +1,9 @@
 <div class="program">
-	<app-full-program></app-full-program>
+	@if (programService.eventsLoading()) {
+		<div class="program__loading">
+			<mat-spinner diameter="48"></mat-spinner>
+		</div>
+	} @else {
+		<app-full-program></app-full-program>
+	}
 </div>

@@ -21,7 +21,11 @@
   "Atrakce&kmeny": "Spectacles&tribes",
   "Soutěže": "Competitions",
   "Mapa": "Map",
+  "Oblíbené": "Favorites",
+  "Zatím žádné oblíbené": "No favorites yet",
+  "Označ si akce srdíčkem v programu": "Tap the heart on a program event to save it",
   "Otevírací doba": "Opening hours",
+  "další info": "More info",
   "Kmeny": "Tribes",
   "Zkontrolujte nastavení filtrů": "Check filter settings",
   "Peněženka": "Wallet",
@@ -53,5 +57,7 @@
   "Čtvrtek": "Thursday",
   "Pátek": "Friday",
   "Sobota": "Saturday",
-  "Neděle": "Sunday"
+  "Neděle": "Sunday",
+  "Příběhové notifikace": "Story notifications",
+  "Žádné notifikace": "No notifications"
 }

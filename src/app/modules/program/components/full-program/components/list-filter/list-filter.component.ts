@@ -1,5 +1,5 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, inject} from '@angular/core';
+
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatDividerModule} from '@angular/material/divider';
@@ -13,57 +13,53 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {IEventType} from '../../../../types/IEventType';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {IEventTag} from "../../../../types/IEventTag";
+import {IProgramPlace} from '../../../../types/IProgramPlace';
+import {LocalizedNamePipe} from '../../../../pipes/localized-name/localized-name.pipe';
+import {localizedName} from '../../../../pipes/localized-name/localized-name';
 
 @Component({
-	selector: 'app-list-filter',
-	standalone: true,
-	imports: [
-		CommonModule,
-		FormsModule,
-		MatButtonModule,
-		MatDialogModule,
-		MatDividerModule,
-		MatIconModule,
-		MatFormFieldModule,
-		MatSelectModule,
-		MatSlideToggleModule,
-		TranslateModule,
-	],
-	templateUrl: './list-filter.component.html',
-	styleUrls: ['./list-filter.component.scss']
+    selector: 'app-list-filter',
+    imports: [
+    FormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    TranslateModule,
+    LocalizedNamePipe,
+],
+    templateUrl: './list-filter.component.html',
+    styleUrls: ['./list-filter.component.scss']
 })
-export class ListFilterComponent implements OnInit {
-	protected eventTypes: IEventType[] = [];
-	protected tags: IEventTag[] = [];
-
-	protected placeId: string[] | undefined;
-	protected selectedEventType: string[] | undefined;
-	protected selectedTags: string[] | undefined;
-	protected onlyFavorite: boolean = false;
-
+export class ListFilterComponent {
 	protected translate: TranslateService = inject(TranslateService);
 	protected programService: ProgramService = inject(ProgramService);
 	#data: { options: IProgramFilterOptions } = inject(MAT_DIALOG_DATA);
 	#dialogRef: MatDialogRef<ListFilterComponent, IProgramFilterOptions> = inject(MatDialogRef<ListFilterComponent, IProgramFilterOptions>);
 
-
-	public ngOnInit(): void {
-		this.eventTypes = this.programService.eventTypes;
-		this.tags = this.programService.tags;
-
-		this.placeId = this.#data.options.placeId ?? undefined;
-		this.selectedEventType = this.#data.options.eventType ?? undefined;
-		this.selectedTags = this.#data.options.tags ?? undefined;
-		this.onlyFavorite = this.#data.options.onlyFavorite ?? false;
-	}
+	protected places: IProgramPlace[] = [...this.programService.allPlaces]
+		.sort((a, b) => localizedName(a, this.translate.currentLang)
+			.localeCompare(localizedName(b, this.translate.currentLang), this.translate.currentLang));
+	protected eventTypes: IEventType[] = [...this.programService.eventTypes()]
+		.sort((a, b) => localizedName(a, this.translate.currentLang)
+			.localeCompare(localizedName(b, this.translate.currentLang), this.translate.currentLang));
+	protected tags: IEventTag[] = [...this.programService.tags]
+		.sort((a, b) => this.tagLabel(a).localeCompare(this.tagLabel(b), this.translate.currentLang));
+	protected locationId: string[] | undefined = this.#data.options.locationId ?? undefined;
+	protected selectedEventType: string[] | undefined = this.#data.options.eventType ?? undefined;
+	protected selectedTags: string[] | undefined = this.#data.options.tags ?? undefined;
+	protected onlyFavorite: boolean = this.#data.options.onlyFavorite ?? false;
 
 	protected applyFilters(): void {
 		this.selectedEventType = this.selectedEventType?.length ? this.selectedEventType : undefined;
-		this.placeId = this.placeId?.length ? this.placeId : undefined;
+		this.locationId = this.locationId?.length ? this.locationId : undefined;
 
 		this.#dialogRef.close({
 			eventType: this.selectedEventType,
-			placeId: this.placeId,
+			locationId: this.locationId,
 			onlyFavorite: this.onlyFavorite,
 			tags: this.selectedTags,
 		});
@@ -71,10 +67,14 @@ export class ListFilterComponent implements OnInit {
 
 	protected resetFilters(): void {
 		this.selectedEventType = undefined;
-		this.placeId = undefined;
+		this.locationId = undefined;
 		this.onlyFavorite = false;
 		this.selectedTags = undefined;
 
 		this.applyFilters();
+	}
+
+	private tagLabel(tag: IEventTag): string {
+		return this.translate.currentLang === 'cs' ? tag.nameCs : (tag.nameEn ?? tag.nameCs);
 	}
 }

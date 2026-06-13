@@ -3,7 +3,8 @@ import {IEvent} from './IEvent';
 export interface IProgramPlace {
 	id: string;
 	name: string;
-	color: string;
+	nameEn?: string | null;
+	order?: number;
 }
 
 export interface IProgramEvent extends IEvent {

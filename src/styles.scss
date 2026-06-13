@@ -1,42 +1,45 @@
-@use '@angular/material' as mat;
-@use 'app/styles/roztoc-theme-light';
+//@use '@angular/material' as mat;
+//@use 'app/styles/themes/roztoc-theme';
+//
+//@font-face {
+//	font-family: rdman;
+//	src: url(/assets/fonts/3rd_man.otf);
+//}
+//
+//@font-face {
+//	font-family: Oswald;
+//	src: url(/assets/fonts/Oswald-Regular.ttf);
+//	font-weight: normal;
+//}
+//
+//@font-face {
+//	font-family: Oswald;
+//	src: url(/assets/fonts/Oswald-Bold.ttf);
+//	font-weight: bold;
+//}
+//
+//@include mat.core();
+//
+//:root {
+//	@include mat.core-theme(roztoc-theme-light.$light-theme);
+//	@include mat.button-theme(roztoc-theme-light.$light-theme);
+//	@include mat.all-component-themes(roztoc-theme-light.$light-theme);
+//
+//	@include mat.color-variants-backwards-compatibility(roztoc-theme-light.$light-theme);
+//	@include mat.typography-hierarchy(roztoc-theme-light.$light-theme);
+//}
 
-@font-face {
-	font-family: rdman;
-	src: url(/assets/fonts/3rd_man.otf);
-}
+@use "app/styles/overides";
+@use "app/styles/utilities";
 
-@font-face {
-	font-family: Oswald;
-	src: url(/assets/fonts/Oswald-Regular.ttf);
-	font-weight: normal;
-}
 
-@font-face {
-	font-family: Oswald;
-	src: url(/assets/fonts/Oswald-Bold.ttf);
-	font-weight: bold;
-}
-
-@include mat.core();
-
-:root {
-	@include mat.core-theme(roztoc-theme-light.$light-theme);
-	@include mat.button-theme(roztoc-theme-light.$light-theme);
-	@include mat.all-component-themes(roztoc-theme-light.$light-theme);
-
-	@include mat.color-variants-backwards-compatibility(roztoc-theme-light.$light-theme);
-	@include mat.typography-hierarchy(roztoc-theme-light.$light-theme);
-}
-
-@import "app/styles/overides";
-@import "app/styles/utilities";
-
-@import "app/styles/roztoc-overrides";
 
 html, body {
 	height: 100%;
 	margin: 0;
+	padding: 0 constant(safe-area-inset-right) 0 constant(safe-area-inset-left);
+	padding: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left);
+	background-color: var(--mat-app-background-color, #303030);
 }
 .onesignal-customlink-container {
 	min-height: auto !important;
@@ -84,3 +87,4 @@ body.display-info-panel {
 p {
 	white-space: pre-line;
 }
+
