@@ -257,6 +257,28 @@ describe('ProgramService', () => {
 			expect(filtered.every(e => e.favorite)).toBeTrue();
 		});
 
+		it('filters by event type when events embed eventType without an id (match by name)', fakeAsync(() => {
+			// The real backend embeds eventType as {name,color} with NO id, while the
+			// filter selects ids from /public/event-types. Matching must still work.
+			const events = [
+				createMockEvent({id: 'n1', eventType: {name: 'Ceremony', color: '#f00'} as unknown as IEventType}),
+				createMockEvent({id: 'n2', eventType: {name: 'Workshop', color: '#0f0'} as unknown as IEventType}),
+			];
+
+			service.loadProgramData([], events);
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([
+				{id: 'type1', name: 'Ceremony', color: '#f00'},
+				{id: 'type2', name: 'Workshop', color: '#0f0'},
+			] as IEventType[]);
+			tick();
+
+			service.filterEvents({eventType: ['type2']});
+			const filtered = service.events();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('n2');
+		}));
+
 		it('should return all events with empty filter options', () => {
 			service.filterEvents({});
 			expect(service.events().length).toBe(3);

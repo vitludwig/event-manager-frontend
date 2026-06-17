@@ -275,6 +275,11 @@ export class ProgramService {
 			return events;
 		}
 
+		// Events embed their eventType as {name, color} without an id, while the
+		// filter selects ids from the /public/event-types endpoint. Bridge the two
+		// by resolving the event's type id via its name (id is used directly when present).
+		const typeIdByName = new Map(this.#eventTypes().map((type) => [type.name, type.id]));
+
 		return events.filter((event) => {
 			if (filterOptions.locationId !== undefined && filterOptions.locationId.length > 0) {
 				if (!filterOptions.locationId.includes(event.locationId)) {
@@ -283,7 +288,8 @@ export class ProgramService {
 			}
 
 			if (filterOptions.eventType !== undefined && filterOptions.eventType.length > 0) {
-				if (!filterOptions.eventType.includes(event.eventType.id)) {
+				const eventTypeId = event.eventType?.id ?? typeIdByName.get(event.eventType?.name);
+				if (eventTypeId === undefined || !filterOptions.eventType.includes(eventTypeId)) {
 					return false;
 				}
 			}
