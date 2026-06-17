@@ -4,7 +4,15 @@
             <ng-template matTabContent>
                 <pinch-zoom style="height: 100%">
                     <div class="img-wrapper">
-                        <img [src]="festivalMap" alt="Map">
+                        <img [src]="festivalMap" alt="Map"
+                            (load)="festivalMapError.set(false)"
+                            (error)="festivalMapError.set(true)">
+                        @if (festivalMapError()) {
+                            <div class="img-wrapper__offline">
+                                <mat-icon>cloud_off</mat-icon>
+                                <span>{{ 'Mapa není dostupná' | translate }}</span>
+                            </div>
+                        }
                     </div>
                 </pinch-zoom>
             </ng-template>
@@ -20,7 +28,15 @@
                             <ng-template matTabContent>
                                 <pinch-zoom style="height: 100%">
                                     <div class="img-wrapper">
-                                        <img [src]="competitionMap" alt="Map">
+                                        <img [src]="competitionMap" alt="Map"
+                                            (load)="competitionMapError.set(false)"
+                                            (error)="competitionMapError.set(true)">
+                                        @if (competitionMapError()) {
+                                            <div class="img-wrapper__offline">
+                                                <mat-icon>cloud_off</mat-icon>
+                                                <span>{{ 'Mapa není dostupná' | translate }}</span>
+                                            </div>
+                                        }
                                     </div>
                                 </pinch-zoom>
                             </ng-template>
@@ -48,7 +64,15 @@
                             <ng-template matTabContent>
                                 <pinch-zoom style="height: 100%">
                                     <div class="img-wrapper">
-                                        <img [src]="tribesMap" alt="Map">
+                                        <img [src]="tribesMap" alt="Map"
+                                            (load)="tribesMapError.set(false)"
+                                            (error)="tribesMapError.set(true)">
+                                        @if (tribesMapError()) {
+                                            <div class="img-wrapper__offline">
+                                                <mat-icon>cloud_off</mat-icon>
+                                                <span>{{ 'Mapa není dostupná' | translate }}</span>
+                                            </div>
+                                        }
                                     </div>
                                 </pinch-zoom>
                             </ng-template>

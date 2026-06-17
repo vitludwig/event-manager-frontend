@@ -1,7 +1,7 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {environment} from '../../../../../environments/environment';
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom, timeout} from 'rxjs';
 import {IOneSignalNotification, IOneSignalNotificationsResponse} from '../../types/IOneSignalNotificationsResponse';
 import OneSignal  from 'onesignal-cordova-plugin';
 import {ActionPerformed, Channel, LocalNotifications, ScheduleOptions} from "@capacitor/local-notifications";
@@ -127,7 +127,7 @@ export class NotificationService {
 	public async loadNotifications(): Promise<void> {
 		try {
 			const notifications = await firstValueFrom(
-				this.http.get<IOneSignalNotificationsResponse>(`${environment.apiUrl}/notification`)
+				this.http.get<IOneSignalNotificationsResponse>(`${environment.apiUrl}/notification`).pipe(timeout(10_000))
 			);
 
 			const filtered = this.isSubscribedToStories()

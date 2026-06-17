@@ -399,4 +399,19 @@ describe('ProgramService', () => {
 			expect(service.favorites.length).toBe(1);
 		});
 	});
+
+	describe('initWebsocket error handling (slow/lost network)', () => {
+		it('flags eventsLoadFailed and clears eventsLoading when the program load rejects', fakeAsync(() => {
+			// Simulates a request timing out / failing on weak signal.
+			mockEventService.initWebsocket.and.resolveTo();
+			mockEventService.getPlaces.and.rejectWith(new Error('timeout'));
+			mockEventService.getEvents.and.rejectWith(new Error('timeout'));
+
+			service.initWebsocket();
+			tick();
+
+			expect(service.eventsLoadFailed()).toBeTrue();
+			expect(service.eventsLoading()).toBeFalse();
+		}));
+	});
 });

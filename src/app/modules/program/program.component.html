@@ -1,5 +1,5 @@
 <div class="program">
-	@if (programService.eventsLoading()) {
+	@if (programService.eventsLoading() && programService.events().length === 0) {
 		<div class="program__loading">
 			<mat-spinner diameter="48"></mat-spinner>
 		</div>

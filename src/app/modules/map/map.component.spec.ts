@@ -61,4 +61,31 @@ describe('MapComponent', () => {
 		expect((component as any).competitionMap).toBe('u2');
 		expect((component as any).tribesMap).toBe('');
 	});
+
+	describe('info normalization', () => {
+		afterEach(() => {
+			mockCustomization.competitionsInfo = undefined;
+			mockCustomization.tribesInfo = undefined;
+		});
+
+		it('treats an empty competitionsInfo array as no info', () => {
+			(mockCustomization as any).competitionsInfo = [];
+			expect((component as any).competitionsInfo).toBeUndefined();
+		});
+
+		it('returns competitionsInfo when it has items', () => {
+			(mockCustomization as any).competitionsInfo = [{title: 'x'}];
+			expect((component as any).competitionsInfo).toEqual([{title: 'x'}]);
+		});
+
+		it('treats an empty tribesInfo array as no info', () => {
+			(mockCustomization as any).tribesInfo = [];
+			expect((component as any).tribesInfo).toBeUndefined();
+		});
+
+		it('returns tribesInfo when it has items', () => {
+			(mockCustomization as any).tribesInfo = [{title: 'y'}];
+			expect((component as any).tribesInfo).toEqual([{title: 'y'}]);
+		});
+	});
 });

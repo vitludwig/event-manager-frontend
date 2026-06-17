@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatIconModule} from '@angular/material/icon';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {TribesInfoComponent} from './components/tribes-info/tribes-info.component';
@@ -10,7 +11,7 @@ import {CustomizationService, IMapImage} from "../../common/services/customizati
 
 @Component({
     selector: 'app-map',
-    imports: [MatTabsModule, MatProgressSpinnerModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent, PinchZoomComponent],
+    imports: [MatTabsModule, MatIconModule, MatProgressSpinnerModule, TranslateModule, CompetitionsInfoComponent, TribesInfoComponent, PinchZoomComponent],
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +20,12 @@ export class MapComponent {
     private readonly customizationService = inject(CustomizationService);
     private readonly translate = inject(TranslateService);
     private readonly cdr = inject(ChangeDetectorRef);
+
+    // Map images are loaded from the network; flag a failed load so we can show
+    // an offline placeholder instead of a broken/blank image.
+    protected readonly festivalMapError = signal(false);
+    protected readonly competitionMapError = signal(false);
+    protected readonly tribesMapError = signal(false);
 
     constructor() {
         // Tab titles are dynamic data (not via the translate pipe), so refresh on language change under OnPush.
@@ -49,12 +56,16 @@ export class MapComponent {
         return this.mapLabel(this.getMap('map3'));
     }
 
+    // Treat an empty info array as "no info" so we don't render an empty tab
+    // when there's neither a map nor any "more info" content.
     protected get competitionsInfo() {
-        return this.customizationService.competitionsInfo;
+        const info = this.customizationService.competitionsInfo;
+        return info && info.length > 0 ? info : undefined;
     }
 
     protected get tribesInfo() {
-        return this.customizationService.tribesInfo;
+        const info = this.customizationService.tribesInfo;
+        return info && info.length > 0 ? info : undefined;
     }
 
     private getMap(name: string): IMapImage | undefined {

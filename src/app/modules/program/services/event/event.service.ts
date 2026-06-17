@@ -4,7 +4,7 @@ import {IProgramPlace} from '../../types/IProgramPlace';
 import {TEventMethodName} from './types/TEventMethodName';
 import {IEvent} from '../../types/IEvent';
 import {environment} from "../../../../../environments/environment";
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom, timeout} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
 
 @Injectable({
@@ -79,10 +79,10 @@ export class EventService {
 	}
 
 	public async getEvents(): Promise<IEvent[]> {
-		return firstValueFrom(this.http.get<IEvent[]>(`${environment.apiUrl}/public/events`));
+		return firstValueFrom(this.http.get<IEvent[]>(`${environment.apiUrl}/public/events`).pipe(timeout(10_000)));
 	}
 
 	public async getPlaces(): Promise<IProgramPlace[]> {
-		return firstValueFrom(this.http.get<IProgramPlace[]>(`${environment.apiUrl}/public/locations`));
+		return firstValueFrom(this.http.get<IProgramPlace[]>(`${environment.apiUrl}/public/locations`).pipe(timeout(10_000)));
 	}
 }

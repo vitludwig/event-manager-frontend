@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { IEvent } from '../../types/IEvent';
 import dayjs from 'dayjs';
 import { IProgramPlace } from '../../types/IProgramPlace';
@@ -247,7 +247,7 @@ export class ProgramService {
 	}
 
 	public async loadEventTypes(): Promise<void> {
-		this.#eventTypes.set(await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`)));
+		this.#eventTypes.set(await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`).pipe(timeout(10_000))));
 	}
 
 	/**
