@@ -33,7 +33,7 @@ export class MapComponent {
     }
 
     protected get festivalMap(): string | undefined {
-        return this.getMap('map1')?.value;
+        return this.mapValue(this.getMap('map1'));
     }
 
     protected get festivalMapLabel(): string {
@@ -41,7 +41,7 @@ export class MapComponent {
     }
 
     protected get competitionMap(): string | undefined {
-        return this.getMap('map2')?.value;
+        return this.mapValue(this.getMap('map2'));
     }
 
     protected get competitionMapLabel(): string {
@@ -49,7 +49,7 @@ export class MapComponent {
     }
 
     protected get tribesMap(): string | undefined {
-        return this.getMap('map3')?.value;
+        return this.mapValue(this.getMap('map3'));
     }
 
     protected get tribesMapLabel(): string {
@@ -70,6 +70,13 @@ export class MapComponent {
 
     private getMap(name: string): IMapImage | undefined {
         return this.customizationService.maps.find(m => m.name === name);
+    }
+
+    private mapValue(map: IMapImage | undefined): string | undefined {
+        if (!map) {
+            return undefined;
+        }
+        return this.translate.currentLang === 'en' && map.valueEn ? map.valueEn : map.value;
     }
 
     private mapLabel(map: IMapImage | undefined): string {

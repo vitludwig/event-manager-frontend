@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 export interface IMapImage {
 	name: string;
 	value: string;
+	valueEn?: string;
 	labelCs?: string;
 	labelEn?: string;
 }
@@ -122,6 +123,8 @@ export class CustomizationService {
 			this.resolvedMaps = (source ?? []).map(m => ({
 				name: m.name,
 				value: this.resolveUrl(m.value) ?? m.value,
+				// resolveUrl(undefined) is undefined, so valueEn stays absent when the backend omits it.
+				valueEn: this.resolveUrl(m.valueEn) ?? m.valueEn,
 				labelCs: m.labelCs,
 				labelEn: m.labelEn,
 			}));

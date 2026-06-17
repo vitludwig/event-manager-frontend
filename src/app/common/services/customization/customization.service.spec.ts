@@ -27,6 +27,26 @@ describe('CustomizationService', () => {
 		expect(maps[0].labelEn).toBe('EN');
 	});
 
+	it('resolves and keeps valueEn on map entries when present', () => {
+		(service as any).data.set({
+			maps: [{name: 'map1', value: '/cs.png', valueEn: '/en.png'}],
+		});
+
+		const maps = service.maps;
+		expect(maps[0].value).toBe(`${environment.apiUrl}/cs.png`);
+		expect(maps[0].valueEn).toBe(`${environment.apiUrl}/en.png`);
+	});
+
+	it('leaves valueEn undefined when the backend omits it', () => {
+		(service as any).data.set({
+			maps: [{name: 'map1', value: 'https://x.test/p.png'}],
+		});
+
+		const maps = service.maps;
+		expect(maps[0].value).toBe('https://x.test/p.png');
+		expect(maps[0].valueEn).toBeUndefined();
+	});
+
 	describe('eventCardTagCount', () => {
 		it('returns undefined when unset', () => {
 			(service as any).data.set({});

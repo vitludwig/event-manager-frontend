@@ -88,4 +88,35 @@ describe('MapComponent', () => {
 			expect((component as any).tribesInfo).toEqual([{title: 'y'}]);
 		});
 	});
+
+	describe('localized map value (value / valueEn)', () => {
+		const originalMaps = mockCustomization.maps;
+		afterEach(() => {
+			(mockCustomization as any).maps = originalMaps;
+		});
+
+		it('uses valueEn in English when present', () => {
+			(mockCustomization as any).maps = [{name: 'map1', value: 'cs.png', valueEn: 'en.png'}];
+			translate.use('en');
+			expect((component as any).festivalMap).toBe('en.png');
+		});
+
+		it('uses value in Czech even when valueEn is present', () => {
+			(mockCustomization as any).maps = [{name: 'map1', value: 'cs.png', valueEn: 'en.png'}];
+			translate.use('cs');
+			expect((component as any).festivalMap).toBe('cs.png');
+		});
+
+		it('falls back to value in English when valueEn is absent', () => {
+			(mockCustomization as any).maps = [{name: 'map1', value: 'cs.png'}];
+			translate.use('en');
+			expect((component as any).festivalMap).toBe('cs.png');
+		});
+
+		it('falls back to value in English when valueEn is an empty string', () => {
+			(mockCustomization as any).maps = [{name: 'map1', value: 'cs.png', valueEn: ''}];
+			translate.use('en');
+			expect((component as any).festivalMap).toBe('cs.png');
+		});
+	});
 });
