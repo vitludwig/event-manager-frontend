@@ -2,13 +2,12 @@ import {Component, DestroyRef, inject, NgZone, OnInit} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TranslateService} from '@ngx-translate/core';
 import {NotificationService} from './modules/notifications/services/notification/notification.service';
+import {EventReminderService} from './modules/notifications/services/event-reminder/event-reminder.service';
 import {ProgramService} from './modules/program/services/program/program.service';
-import dayjs from 'dayjs';
 import {filter} from 'rxjs';
 import {NavigationEnd, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {ERoute} from './common/types/ERoute';
-import {ELocalNotificationAction} from "./modules/notifications/types/ILocalNotificationPayload";
 import {SettingsService} from "./common/services/settings/settings.service";
 import {EDisplayDevice} from "./common/types/EDisplayDevice";
 import {App} from '@capacitor/app';
@@ -27,7 +26,9 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 export class AppComponent implements OnInit {
 
 	private readonly translate: TranslateService = inject(TranslateService);
+	// Injected for its bootstrap side-effect (OneSignal + local-notification channel init).
 	private readonly notificationService: NotificationService = inject(NotificationService);
+	private readonly reminderService: EventReminderService = inject(EventReminderService);
 	private readonly programService: ProgramService = inject(ProgramService);
 	private readonly router: Router = inject(Router);
 	private readonly location: Location = inject(Location);
@@ -39,11 +40,10 @@ export class AppComponent implements OnInit {
 
 	protected EDisplayDevice = EDisplayDevice;
 
-	#alreadyNotified: string[] = [];
-
 	public async ngOnInit(): Promise<void> {
 		this.handleLanguage();
-		this.initLocalNotifications();
+		this.initAppLifecycle();
+		this.initReminderResync();
 		this.initHardwareBackButton();
 		await this.initStatusBar();
 
@@ -114,6 +114,22 @@ export class AppComponent implements OnInit {
 		}
 	}
 
+	private initAppLifecycle(): void {
+		if (!Capacitor.isNativePlatform()) {
+			return;
+		}
+
+		// On resume the socket may have been suspended and data gone stale. ensureConnected()
+		// is idempotent — it reconnects only if the socket was never started (e.g. launched
+		// offline) and otherwise lets socket.io's reconnection refresh things. It never opens
+		// a second socket, so notifications/websocket handlers are not duplicated.
+		App.addListener('appStateChange', ({isActive}) => {
+			if (isActive) {
+				this.ngZone.run(() => void this.programService.ensureConnected());
+			}
+		});
+	}
+
 	private initHardwareBackButton(): void {
 		if(!Capacitor.isNativePlatform()) {
 			return;
@@ -136,32 +152,12 @@ export class AppComponent implements OnInit {
 		});
 	}
 
-	private initLocalNotifications(): void {
-		const intervalId = setInterval(() => {
-			const now = dayjs();
-			for(const favorite of this.programService.favorites) {
-				const event = this.programService.getEvent(favorite.id);
-				if(!event) {
-					continue;
-				}
-
-				const diff = Math.abs(now.diff(dayjs(event.startAt), 'minutes'));
-				const isInRange = diff >= 9 && diff <= 11;
-				if(!this.#alreadyNotified.includes(favorite.id) && isInRange) {
-					const isCs = this.translate.currentLang === 'cs';
-					const eventName = isCs ? favorite.nameCs : favorite.nameEn;
-					const title = isCs ? 'Nadcházející akce' : 'Upcoming event';
-					const body = isCs ? `${eventName} začíná za 10 minut!` : `${eventName} starts in 10 minutes!`;
-					this.notificationService.showLocalNotification(title, body,
-						{
-							actionId: ELocalNotificationAction.NAVIGATE_TO,
-							value: `/event-detail/${favorite.id}`
-						});
-					this.#alreadyNotified.push(favorite.id);
-				}
-			}
-		}, 60000);
-
-		this.destroyRef.onDestroy(() => clearInterval(intervalId));
+	private initReminderResync(): void {
+		// Favorite reminders are scheduled with the OS by ProgramService whenever favorites or
+		// program data change. Reminder text is language-specific, so re-sync on language change
+		// to refresh already-scheduled reminders. (No-op on web.)
+		this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+			void this.reminderService.sync(this.programService.favorites);
+		});
 	}
 }
