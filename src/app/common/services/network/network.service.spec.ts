@@ -29,4 +29,20 @@ describe('NetworkService', () => {
 
 		expect(seen).toEqual([false, true]);
 	});
+
+	it('does not re-notify listeners when connectivity does not actually change', async () => {
+		await service.init();
+
+		const seen: boolean[] = [];
+		service.addConnectedListener((connected) => seen.push(connected));
+
+		// Duplicate same-state events (as Android's networkStatusChange can fire) must be ignored,
+		// otherwise each would trigger a full data refetch.
+		window.dispatchEvent(new Event('offline'));
+		window.dispatchEvent(new Event('offline'));
+		window.dispatchEvent(new Event('online'));
+		window.dispatchEvent(new Event('online'));
+
+		expect(seen).toEqual([false, true]);
+	});
 });

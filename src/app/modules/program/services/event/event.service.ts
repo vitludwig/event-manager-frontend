@@ -48,7 +48,10 @@ export class EventService {
 			return;
 		}
 
-		this.socket = io(environment.apiUrl, {
+		// Connect to the server ORIGIN so socket.io uses the default namespace "/". environment.apiUrl
+		// includes the REST base path (/api); passing it whole makes socket.io treat "/api" as the
+		// namespace → server rejects it with "Invalid namespace". socket.io is served at /socket.io/.
+		this.socket = io(new URL(environment.apiUrl).origin, {
 			transports: ['websocket', 'polling'],
 			reconnection: true,
 			reconnectionAttempts: Infinity,

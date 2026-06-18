@@ -64,6 +64,13 @@ export class NetworkService {
 	}
 
 	private update(connected: boolean): void {
+		// Only react to an ACTUAL change in connectivity. On Android @capacitor/network fires
+		// networkStatusChange frequently (e.g. on connection-type changes while still online);
+		// notifying listeners on every event would trigger a full data refetch each time — a
+		// polling-like storm seen only on native. The web online/offline events don't do this.
+		if (this._connected() === connected) {
+			return;
+		}
 		// Native plugin callbacks fire outside Angular's zone; re-enter it so signal
 		// writes (and listener-driven work like a data refresh) trigger change detection.
 		this.ngZone.run(() => {
