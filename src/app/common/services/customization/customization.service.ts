@@ -2,10 +2,14 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { StorageService } from '../storage/storage.service';
+import { retryWithBackoff } from '../../utils/retry-with-backoff';
+const CUSTOMIZATION_CACHE_KEY = 'customization';
 
 export interface IMapImage {
 	name: string;
 	value: string;
+	valueEn?: string;
 	labelCs?: string;
 	labelEn?: string;
 }
@@ -32,6 +36,7 @@ export interface ICustomization {
 })
 export class CustomizationService {
 	private readonly http = inject(HttpClient);
+	private readonly storage = inject(StorageService);
 	private readonly data = signal<ICustomization>({});
 	private resolvedMaps: IMapImage[] = [];
 	private resolvedMapsSource: IMapImage[] | undefined | null = null;
@@ -40,25 +45,45 @@ export class CustomizationService {
 		return this.data();
 	}
 
+	/**
+	 * Stale-while-revalidate: render immediately from the durable cache and refresh
+	 * from the network in the background. Only a cold start with no usable cache
+	 * blocks on the network (otherwise the whole app would wait on a round-trip
+	 * even when we already have data to show — costly on slow/unstable links).
+	 */
 	public async load(): Promise<void> {
-		try {
-			const cached = localStorage.getItem('customization');
-			if (cached) {
-				try {
-					this.data.set(JSON.parse(cached));
-				} catch {
-					// A corrupt cache must not block the network fetch below.
-					localStorage.removeItem('customization');
-				}
+		let hasValidCache = false;
+		const cached = await this.storage.get(CUSTOMIZATION_CACHE_KEY);
+		if (cached) {
+			try {
+				this.data.set(JSON.parse(cached));
+				hasValidCache = true;
+			} catch {
+				// A corrupt cache must not be trusted nor block the network fetch below.
+				void this.storage.remove(CUSTOMIZATION_CACHE_KEY);
 			}
+		}
 
-			const result = await firstValueFrom(
-				this.http.get<ICustomization>(`${environment.apiUrl}/public/customization`).pipe(
-					timeout(10_000)
-				)
-			);
+		if (hasValidCache) {
+			// We already have something to show — don't block startup on the network,
+			// and keep retrying in the background to converge on fresh data.
+			void this.refreshFromNetwork(true);
+		} else {
+			// Cold start with nothing cached: a single bounded attempt (same as before).
+			// Retrying here would hold the splash for the whole timeout+backoff window
+			// on a slow/offline first launch.
+			await this.refreshFromNetwork(false);
+		}
+	}
+
+	private async refreshFromNetwork(withRetry: boolean): Promise<void> {
+		try {
+			const request$ = this.http
+				.get<ICustomization>(`${environment.apiUrl}/public/customization`)
+				.pipe(timeout(10_000));
+			const result = await firstValueFrom(withRetry ? request$.pipe(retryWithBackoff()) : request$);
 			this.data.set(result);
-			localStorage.setItem('customization', JSON.stringify(result));
+			void this.storage.set(CUSTOMIZATION_CACHE_KEY, JSON.stringify(result));
 		} catch (e) {
 			console.error('Cannot load customization: ', e);
 		}
@@ -122,6 +147,8 @@ export class CustomizationService {
 			this.resolvedMaps = (source ?? []).map(m => ({
 				name: m.name,
 				value: this.resolveUrl(m.value) ?? m.value,
+				// resolveUrl(undefined) is undefined, so valueEn stays absent when the backend omits it.
+				valueEn: this.resolveUrl(m.valueEn) ?? m.valueEn,
 				labelCs: m.labelCs,
 				labelEn: m.labelEn,
 			}));

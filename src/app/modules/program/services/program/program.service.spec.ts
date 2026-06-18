@@ -4,6 +4,8 @@ import {provideHttpClient} from '@angular/common/http';
 
 import {ProgramService} from './program.service';
 import {EventService} from '../event/event.service';
+import {StorageService} from '../../../../common/services/storage/storage.service';
+import {EventReminderService} from '../../../notifications/services/event-reminder/event-reminder.service';
 import {IEvent} from '../../types/IEvent';
 import {IProgramPlace} from '../../types/IProgramPlace';
 import {IEventType} from '../../types/IEventType';
@@ -52,15 +54,30 @@ function loadAndFlush(
 	tick();
 }
 
+/** In-memory StorageService stub for the durable cache (places/events/favorites). */
+class FakeStorage {
+	private readonly map = new Map<string, string>();
+	seed(key: string, value: string): void { this.map.set(key, value); }
+	peek(key: string): string | null { return this.map.has(key) ? this.map.get(key)! : null; }
+	async get(key: string): Promise<string | null> { return this.map.has(key) ? this.map.get(key)! : null; }
+	async set(key: string, value: string): Promise<void> { this.map.set(key, value); }
+	async remove(key: string): Promise<void> { this.map.delete(key); }
+}
+
 describe('ProgramService', () => {
 	let service: ProgramService;
 	let httpTesting: HttpTestingController;
 	let mockEventService: jasmine.SpyObj<EventService>;
+	let storage: FakeStorage;
+	let reminderService: jasmine.SpyObj<EventReminderService>;
 
 	beforeEach(() => {
 		mockEventService = jasmine.createSpyObj('EventService', ['initWebsocket', 'on', 'off', 'onReconnected', 'getEvents', 'getPlaces']);
 		mockEventService.getEvents.and.resolveTo([]);
 		mockEventService.getPlaces.and.resolveTo([]);
+		storage = new FakeStorage();
+		reminderService = jasmine.createSpyObj('EventReminderService', ['sync']);
+		reminderService.sync.and.resolveTo();
 
 		localStorage.clear();
 
@@ -69,6 +86,8 @@ describe('ProgramService', () => {
 				provideHttpClient(),
 				provideHttpClientTesting(),
 				{provide: EventService, useValue: mockEventService},
+				{provide: StorageService, useValue: storage},
+				{provide: EventReminderService, useValue: reminderService},
 			],
 		});
 		service = TestBed.inject(ProgramService);
@@ -126,14 +145,14 @@ describe('ProgramService', () => {
 			expect(dayKeys.length).toBe(2);
 		}));
 
-		it('should persist events and places to localStorage', fakeAsync(() => {
+		it('should persist events and places to the durable cache', fakeAsync(() => {
 			const places = [createMockPlace('p1')];
 			const events = [createMockEvent()];
 
 			loadAndFlush(service, httpTesting, places, events);
 
-			expect(JSON.parse(localStorage.getItem('places')!)).toEqual(places);
-			expect(JSON.parse(localStorage.getItem('events')!)).toEqual(jasmine.arrayContaining([
+			expect(JSON.parse(storage.peek('places')!)).toEqual(places);
+			expect(JSON.parse(storage.peek('events')!)).toEqual(jasmine.arrayContaining([
 				jasmine.objectContaining({id: 'event1'}),
 			]));
 		}));
@@ -201,8 +220,8 @@ describe('ProgramService', () => {
 				createMockEvent({id: 'e3', locationId: 'p1', eventType: createMockEventType('concert')}),
 			];
 
-			// Pre-set favorites in localStorage so loadProgramData marks e3 as favorite
-			localStorage.setItem('favorites', JSON.stringify(['e3']));
+			// Pre-set favorites in the durable cache so loadProgramData marks e3 as favorite
+			storage.seed('favorites', JSON.stringify(['e3']));
 			loadAndFlush(service, httpTesting, [createMockPlace('p1'), createMockPlace('p2')], events);
 		}));
 
@@ -256,6 +275,53 @@ describe('ProgramService', () => {
 			expect(filtered.length).toBe(2);
 			expect(filtered.every(e => e.favorite)).toBeTrue();
 		});
+
+		it('filters by event type when events embed eventType without an id (match by name)', fakeAsync(() => {
+			// The real backend embeds eventType as {name,color} with NO id, while the
+			// filter selects ids from /public/event-types. Matching must still work.
+			const events = [
+				createMockEvent({id: 'n1', eventType: {name: 'Ceremony', color: '#f00'} as unknown as IEventType}),
+				createMockEvent({id: 'n2', eventType: {name: 'Workshop', color: '#0f0'} as unknown as IEventType}),
+			];
+
+			service.loadProgramData([], events);
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([
+				{id: 'type1', name: 'Ceremony', color: '#f00'},
+				{id: 'type2', name: 'Workshop', color: '#0f0'},
+			] as IEventType[]);
+			tick();
+
+			service.filterEvents({eventType: ['type2']});
+			const filtered = service.events();
+			expect(filtered.length).toBe(1);
+			expect(filtered[0].id).toBe('n2');
+		}));
+
+		it('re-applies a saved eventType filter once event types finish loading', fakeAsync(() => {
+			// Saved filter selects a type by id; events embed eventType by name only, so the
+			// name→id resolution needs the loaded event types. Filtering runs before types load.
+			localStorage.setItem('userFilterOptions', JSON.stringify({eventType: ['type-concert']}));
+			const events = [
+				createMockEvent({id: 'c1', eventType: {name: 'Concert', color: '#f00'} as unknown as IEventType}),
+				createMockEvent({id: 'w1', eventType: {name: 'Workshop', color: '#0f0'} as unknown as IEventType}),
+			];
+
+			service.loadProgramData([], events);
+			tick();
+			// Before types load, the eventType filter cannot resolve → program would be empty.
+			expect(service.events().length).toBe(0);
+
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([
+				{id: 'type-concert', name: 'Concert', color: '#f00'},
+				{id: 'type-workshop', name: 'Workshop', color: '#0f0'},
+			] as IEventType[]);
+			tick();
+
+			// Types loaded → filter re-applied → matching event appears.
+			expect(service.events().length).toBe(1);
+			expect(service.events()[0].id).toBe('c1');
+		}));
 
 		it('should return all events with empty filter options', () => {
 			service.filterEvents({});
@@ -341,6 +407,13 @@ describe('ProgramService', () => {
 			expect(service.favorites[0].id).toBe('e1');
 		});
 
+		it('schedules reminders when favorites change', () => {
+			const event = service.getEvent('e1')!;
+			reminderService.sync.calls.reset();
+			service.updateEvent(event, 'favorite', true);
+			expect(reminderService.sync).toHaveBeenCalledWith(service.favorites);
+		});
+
 		it('should propagate update to events signal', () => {
 			const event = service.getEvent('e1')!;
 			service.updateEvent(event, 'nameCs', 'Updated Name');
@@ -398,5 +471,69 @@ describe('ProgramService', () => {
 			expect(service.getEvent('e2')!.favorite).toBeFalse();
 			expect(service.favorites.length).toBe(1);
 		});
+	});
+
+	describe('initWebsocket error handling (slow/lost network)', () => {
+		it('flags eventsLoadFailed and clears eventsLoading when the program load rejects', fakeAsync(() => {
+			// Simulates a request timing out / failing on weak signal.
+			mockEventService.initWebsocket.and.resolveTo();
+			mockEventService.getPlaces.and.rejectWith(new Error('timeout'));
+			mockEventService.getEvents.and.rejectWith(new Error('timeout'));
+
+			service.initWebsocket();
+			tick();
+
+			expect(service.eventsLoadFailed()).toBeTrue();
+			expect(service.eventsLoading()).toBeFalse();
+		}));
+	});
+
+	describe('connection resilience', () => {
+		beforeEach(() => {
+			mockEventService.initWebsocket.and.resolveTo();
+			mockEventService.getPlaces.and.resolveTo([]);
+			mockEventService.getEvents.and.resolveTo([]);
+		});
+
+		// Safety guarantee: a second socket would register duplicate handlers and could
+		// produce duplicate websocket events / notifications. ensureConnected must not do that.
+		it('starts the socket only once across initWebsocket + ensureConnected', fakeAsync(() => {
+			service.initWebsocket();
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([]);
+			tick();
+
+			service.ensureConnected();
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([]);
+			tick();
+
+			expect(mockEventService.initWebsocket).toHaveBeenCalledTimes(1);
+			expect(mockEventService.onReconnected).toHaveBeenCalledTimes(1);
+		}));
+	});
+
+	describe('loadCachedData', () => {
+		it('hydrates the program from the cached places/events', fakeAsync(() => {
+			storage.seed('places', JSON.stringify([createMockPlace('p1')]));
+			storage.seed('events', JSON.stringify([createMockEvent({id: 'e1', locationId: 'p1'})]));
+
+			service.loadCachedData();
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/event-types`).flush([]);
+			tick();
+
+			expect(service.allEvents.length).toBe(1);
+			expect(service.allPlaces.length).toBe(1);
+		}));
+
+		it('does nothing when there is no cached program', fakeAsync(() => {
+			// No cache seeded → no program load, no requests.
+			service.loadCachedData();
+			tick();
+
+			httpTesting.expectNone(`${environment.apiUrl}/public/event-types`);
+			expect(service.allEvents.length).toBe(0);
+		}));
 	});
 });

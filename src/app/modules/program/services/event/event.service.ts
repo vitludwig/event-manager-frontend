@@ -4,8 +4,9 @@ import {IProgramPlace} from '../../types/IProgramPlace';
 import {TEventMethodName} from './types/TEventMethodName';
 import {IEvent} from '../../types/IEvent';
 import {environment} from "../../../../../environments/environment";
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom, timeout} from 'rxjs';
 import {io, Socket} from 'socket.io-client';
+import {retryWithBackoff} from "../../../../common/utils/retry-with-backoff";
 
 @Injectable({
 	providedIn: 'root'
@@ -40,7 +41,17 @@ export class EventService {
 	}
 
 	public async initWebsocket(): Promise<void> {
-		this.socket = io(environment.apiUrl, {
+		// Idempotent: never create a second socket. A duplicate socket would register
+		// duplicate handlers (and could produce duplicate notifications). socket.io's
+		// own reconnection handles drops once the single socket exists.
+		if (this.socket) {
+			return;
+		}
+
+		// Connect to the server ORIGIN so socket.io uses the default namespace "/". environment.apiUrl
+		// includes the REST base path (/api); passing it whole makes socket.io treat "/api" as the
+		// namespace → server rejects it with "Invalid namespace". socket.io is served at /socket.io/.
+		this.socket = io(new URL(environment.apiUrl).origin, {
 			transports: ['websocket', 'polling'],
 			reconnection: true,
 			reconnectionAttempts: Infinity,
@@ -52,7 +63,10 @@ export class EventService {
 			console.log('Socket.IO connected');
 		});
 
-		this.socket.on('reconnect', () => {
+		// Reconnection events are emitted by the Manager (this.socket.io), NOT the Socket;
+		// `this.socket.on('reconnect')` would never fire, so the post-reconnect data refresh
+		// would silently never run.
+		this.socket.io.on('reconnect', () => {
 			this.reconnectedCallback?.();
 		});
 
@@ -79,10 +93,10 @@ export class EventService {
 	}
 
 	public async getEvents(): Promise<IEvent[]> {
-		return firstValueFrom(this.http.get<IEvent[]>(`${environment.apiUrl}/public/events`));
+		return firstValueFrom(this.http.get<IEvent[]>(`${environment.apiUrl}/public/events`).pipe(timeout(10_000), retryWithBackoff()));
 	}
 
 	public async getPlaces(): Promise<IProgramPlace[]> {
-		return firstValueFrom(this.http.get<IProgramPlace[]>(`${environment.apiUrl}/public/locations`));
+		return firstValueFrom(this.http.get<IProgramPlace[]>(`${environment.apiUrl}/public/locations`).pipe(timeout(10_000), retryWithBackoff()));
 	}
 }

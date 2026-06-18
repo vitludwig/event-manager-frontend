@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { IEvent } from '../../types/IEvent';
 import dayjs from 'dayjs';
 import { IProgramPlace } from '../../types/IProgramPlace';
@@ -10,6 +10,14 @@ import { IEventType } from "../../types/IEventType";
 import { environment } from "../../../../../environments/environment";
 import ProgramConfig from "../../config/ProgramConfig";
 import { IEventTag } from "../../types/IEventTag";
+import { StorageService } from "../../../../common/services/storage/storage.service";
+import { NetworkService } from "../../../../common/services/network/network.service";
+import { EventReminderService } from "../../../notifications/services/event-reminder/event-reminder.service";
+import { retryWithBackoff } from "../../../../common/utils/retry-with-backoff";
+
+const PLACES_CACHE_KEY = 'places';
+const EVENTS_CACHE_KEY = 'events';
+const FAVORITES_CACHE_KEY = 'favorites';
 
 @Injectable({
 	providedIn: 'root'
@@ -90,11 +98,20 @@ export class ProgramService {
 	}
 
 	private readonly eventService: EventService = inject(EventService);
+	private readonly storage: StorageService = inject(StorageService);
+	private readonly networkService: NetworkService = inject(NetworkService);
+	private readonly reminderService: EventReminderService = inject(EventReminderService);
+
+	#websocketInitialized = false;
+	#networkListenerRegistered = false;
+	#connectInFlight: Promise<void> | null = null;
 
 	public async loadCachedData(): Promise<void> {
 		try {
-			const localPlaces = localStorage.getItem('places');
-			const localEvents = localStorage.getItem('events');
+			const [localPlaces, localEvents] = await Promise.all([
+				this.storage.get(PLACES_CACHE_KEY),
+				this.storage.get(EVENTS_CACHE_KEY),
+			]);
 			if (localPlaces && localEvents) {
 				await this.loadProgramData(JSON.parse(localPlaces), JSON.parse(localEvents));
 			}
@@ -108,18 +125,11 @@ export class ProgramService {
 
 	public async initWebsocket(): Promise<void> {
 		try {
-			if (window.navigator.onLine) {
-				await this.eventService.initWebsocket();
-				await this.loadProgramData();
-				this.registerWebsocketHandlers();
+			await this.networkService.init();
+			this.registerNetworkListener();
 
-				this.eventService.onReconnected(async () => {
-					try {
-						await this.loadProgramData();
-					} catch (e) {
-						console.error('Error reloading data after reconnection: ', e);
-					}
-				});
+			if (await this.networkService.isConnected()) {
+				await this.connectAndLoad();
 			}
 			this.eventsLoadFailed.set(false);
 		} catch (e) {
@@ -128,6 +138,74 @@ export class ProgramService {
 		} finally {
 			this.eventsLoading.set(false);
 		}
+	}
+
+	/**
+	 * Bring up the socket (once) and load fresh data. Idempotent: if the socket is
+	 * already up we just refresh data — we never open a second socket or re-register
+	 * handlers, which protects against duplicate websocket events / notifications.
+	 */
+	private connectAndLoad(): Promise<void> {
+		// Re-entrancy guard: initial init, app-resume and network-regain can all call
+		// this concurrently. Without it, overlapping calls (before #websocketInitialized
+		// is set, several awaits in) would each run loadProgramData and re-register
+		// handlers. Coalesce concurrent callers onto a single in-flight operation.
+		if (this.#connectInFlight) {
+			return this.#connectInFlight;
+		}
+		this.#connectInFlight = this.#runConnectAndLoad().finally(() => {
+			this.#connectInFlight = null;
+		});
+		return this.#connectInFlight;
+	}
+
+	async #runConnectAndLoad(): Promise<void> {
+		if (this.#websocketInitialized) {
+			await this.loadProgramData();
+			return;
+		}
+
+		await this.eventService.initWebsocket();
+		await this.loadProgramData();
+		this.registerWebsocketHandlers();
+
+		this.eventService.onReconnected(async () => {
+			try {
+				await this.loadProgramData();
+			} catch (e) {
+				console.error('Error reloading data after reconnection: ', e);
+			}
+		});
+
+		this.#websocketInitialized = true;
+	}
+
+	/**
+	 * Called on app resume and when connectivity returns. Safe to call repeatedly:
+	 * connects the socket only if it was never started (e.g. app launched offline),
+	 * otherwise lets socket.io's own reconnection handle the live link.
+	 */
+	public async ensureConnected(): Promise<void> {
+		try {
+			if (await this.networkService.isConnected()) {
+				await this.connectAndLoad();
+				this.eventsLoadFailed.set(false);
+			}
+		} catch (e) {
+			console.error('Error ensuring websocket connection: ', e);
+		}
+	}
+
+	private registerNetworkListener(): void {
+		if (this.#networkListenerRegistered) {
+			return;
+		}
+		this.#networkListenerRegistered = true;
+		this.networkService.addConnectedListener((connected) => {
+			if (connected) {
+				void this.ensureConnected();
+			}
+		});
 	}
 
 	private registerWebsocketHandlers(): void {
@@ -146,7 +224,7 @@ export class ProgramService {
 				return;
 			}
 			this.#allEvents = [...this.#allEvents.slice(0, index), data, ...this.#allEvents.slice(index + 1)];
-			localStorage.setItem('events', JSON.stringify(this.#allEvents));
+			void this.storage.set(EVENTS_CACHE_KEY, JSON.stringify(this.#allEvents));
 
 			this.updateFavorites();
 			this.propagateEventUpdate();
@@ -154,7 +232,7 @@ export class ProgramService {
 
 		this.eventService.on<string>('eventDeleted', (eventId) => {
 			this.#allEvents = this.#allEvents.filter((event) => event.id !== eventId);
-			localStorage.setItem('events', JSON.stringify(this.#allEvents));
+			void this.storage.set(EVENTS_CACHE_KEY, JSON.stringify(this.#allEvents));
 
 			this.updateFavorites();
 			this.propagateEventUpdate();
@@ -162,21 +240,32 @@ export class ProgramService {
 	}
 
 	public async loadProgramData(places?: IProgramPlace[], events?: IEvent[]): Promise<void> {
-		this.#allPlaces = places ?? (await this.eventService.getPlaces());
-		this.#allEvents = events ?? (await this.eventService.getEvents());
-		localStorage.setItem('places', JSON.stringify(this.#allPlaces));
-		localStorage.setItem('events', JSON.stringify(this.#allEvents));
+		// Fetch the two heavy resources concurrently instead of serially — saves a
+		// full round-trip on high-latency mobile links. (Event types stay sequential
+		// below: they're non-critical and must not be requested if these fail.)
+		const [resolvedPlaces, resolvedEvents] = await Promise.all([
+			places ?? this.eventService.getPlaces(),
+			events ?? this.eventService.getEvents(),
+		]);
+		this.#allPlaces = resolvedPlaces;
+		this.#allEvents = resolvedEvents;
+		void this.storage.set(PLACES_CACHE_KEY, JSON.stringify(this.#allPlaces));
+		void this.storage.set(EVENTS_CACHE_KEY, JSON.stringify(this.#allEvents));
 
 		for (const event of this.#allEvents) {
 			event.favorite = this.favorites.map((obj) => obj.id).includes(event.id);
 		}
 
+		const cachedFavorites = await this.storage.get(FAVORITES_CACHE_KEY);
 		this.#places.set(this.#allPlaces);
 		this.loadDays();
 		this.autoSelectDay();
-		this.loadFavorites(JSON.parse(localStorage.getItem('favorites') || '[]'));
-		await this.loadEventTypes();
+		this.loadFavorites(JSON.parse(cachedFavorites || '[]'));
 		this.extractTags();
+		// Event types are non-critical (legend/filter only) and populate a signal
+		// reactively — never await them, or a slow/offline /event-types (with retry)
+		// would block the awaited startup path (loadCachedData runs in APP_INITIALIZER).
+		this.loadEventTypes().catch((e) => console.error('Cannot load event types: ', e));
 	}
 
 	public getEvent(id: string): IEvent | undefined {
@@ -232,7 +321,8 @@ export class ProgramService {
 
 	private updateFavorites(): void {
 		this.favorites = this.getFavorites();
-		localStorage.setItem('favorites', JSON.stringify(this.favorites.map((obj) => obj.id)));
+		void this.storage.set(FAVORITES_CACHE_KEY, JSON.stringify(this.favorites.map((obj) => obj.id)));
+		void this.reminderService.sync(this.favorites);
 	}
 
 	public loadFavorites(value: string[]): void {
@@ -241,13 +331,21 @@ export class ProgramService {
 		}
 
 		this.favorites = this.getFavorites();
-		localStorage.setItem('favorites', JSON.stringify(this.favorites.map((obj) => obj.id)));
+		void this.storage.set(FAVORITES_CACHE_KEY, JSON.stringify(this.favorites.map((obj) => obj.id)));
+		void this.reminderService.sync(this.favorites);
 
 		this.propagateEventUpdate();
 	}
 
 	public async loadEventTypes(): Promise<void> {
-		this.#eventTypes.set(await firstValueFrom(this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`)));
+		const types = await firstValueFrom(
+			this.http.get<IEventType[]>(`${environment.apiUrl}/public/event-types`).pipe(timeout(10_000), retryWithBackoff())
+		);
+		this.#eventTypes.set(types);
+		// An active "event type" filter resolves event names → ids via #eventTypes, and the
+		// filter pass in loadProgramData runs before types are loaded. Re-apply now so a saved
+		// eventType filter doesn't leave the program empty until the user interacts.
+		this.propagateEventUpdate();
 	}
 
 	/**
@@ -275,6 +373,11 @@ export class ProgramService {
 			return events;
 		}
 
+		// Events embed their eventType as {name, color} without an id, while the
+		// filter selects ids from the /public/event-types endpoint. Bridge the two
+		// by resolving the event's type id via its name (id is used directly when present).
+		const typeIdByName = new Map(this.#eventTypes().map((type) => [type.name, type.id]));
+
 		return events.filter((event) => {
 			if (filterOptions.locationId !== undefined && filterOptions.locationId.length > 0) {
 				if (!filterOptions.locationId.includes(event.locationId)) {
@@ -283,7 +386,8 @@ export class ProgramService {
 			}
 
 			if (filterOptions.eventType !== undefined && filterOptions.eventType.length > 0) {
-				if (!filterOptions.eventType.includes(event.eventType.id)) {
+				const eventTypeId = event.eventType?.id ?? typeIdByName.get(event.eventType?.name);
+				if (eventTypeId === undefined || !filterOptions.eventType.includes(eventTypeId)) {
 					return false;
 				}
 			}
@@ -337,11 +441,11 @@ export class ProgramService {
 		this.#days.set(days);
 	}
 
-	private readonly programCacheKeys = ['events', 'places', 'favorites', 'userFilterOptions', 'showEventDetails'];
+	private readonly programCacheKeys = [EVENTS_CACHE_KEY, PLACES_CACHE_KEY, FAVORITES_CACHE_KEY, 'userFilterOptions', 'showEventDetails'];
 
 	private clearProgramCache(): void {
 		for (const key of this.programCacheKeys) {
-			localStorage.removeItem(key);
+			void this.storage.remove(key);
 		}
 	}
 }
