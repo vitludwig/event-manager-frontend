@@ -1,26 +1,28 @@
 <div class="event-detail">
-  @if (event && place) {
+  @if (event(); as ev) {
     <button mat-icon-button
-      mat-dialog-close
       class="event-detail__close"
       aria-label="Close event detail"
+      (click)="close()"
       >
       <mat-icon>keyboard_backspace</mat-icon>
     </button>
   <div class="event-detail__content--wrapper">
     <div class="event-detail__content">
       <div class="event-detail__content__title">
-        <h3>{{ event | translateEventProperty: 'name' }}</h3>
+        <h3>{{ ev | translateEventProperty: 'name' }}</h3>
         <div>
-          {{ event.eventType | localizedName }}
+          {{ ev.eventType | localizedName }}
         </div>
-        <div style="display: flex; justify-content: center"><app-event-tags [event]="event" /></div>
-        <div>{{ event.startAt | date: 'HH:mm' }} - {{ event.endAt | date: 'HH:mm' }}</div>
-        <div>{{ place | localizedName }}</div>
+        <div style="display: flex; justify-content: center"><app-event-tags [event]="ev" /></div>
+        <div>{{ ev.startAt | date: 'HH:mm' }} - {{ ev.endAt | date: 'HH:mm' }}</div>
+        @if (place(); as pl) {
+          <div>{{ pl | localizedName }}</div>
+        }
       </div>
       <mat-divider></mat-divider>
       <div class="event-detail__content__description">
-        <p>{{ event | translateEventProperty: 'description' }}</p>
+        <p>{{ ev | translateEventProperty: 'description' }}</p>
       </div>
     </div>
   </div>
@@ -28,17 +30,27 @@
     <button mat-mini-fab
       class="favorite-button"
       (click)="toggleFavorite()">
-      <mat-icon>{{ event.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+      <mat-icon>{{ ev.favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
     </button>
   </div>
+} @else if (loading()) {
+  <div class="event-detail__no-data">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
 } @else {
+  <button mat-icon-button
+    class="event-detail__close"
+    aria-label="Close"
+    (click)="close()"
+    >
+    <mat-icon>keyboard_backspace</mat-icon>
+  </button>
   <div class="event-detail__no-data">
     <div class="event-detail__no-data__text">
       <mat-icon>error_outline</mat-icon>
-      <h2>Event not found</h2>
+      <h2>{{ 'Akce nenalezena' | translate }}</h2>
     </div>
   </div>
 }
 
 </div>
-

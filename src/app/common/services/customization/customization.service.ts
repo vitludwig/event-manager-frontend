@@ -4,7 +4,6 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { StorageService } from '../storage/storage.service';
 import { retryWithBackoff } from '../../utils/retry-with-backoff';
-
 const CUSTOMIZATION_CACHE_KEY = 'customization';
 
 export interface IMapImage {
