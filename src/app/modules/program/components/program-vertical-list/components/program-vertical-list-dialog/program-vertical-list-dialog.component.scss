@@ -4,6 +4,10 @@
 
 	.mat-mdc-dialog-content {
 		padding: 0 !important;
+		// Material defaults dialog content to max-height: 65vh, which capped the
+		// search list at 65% of the screen and left empty space below. This dialog
+		// is a full-screen overlay, so let it fill the available height instead.
+		max-height: none !important;
 	}
 }
 
