@@ -360,6 +360,36 @@ describe('FullProgramComponent', () => {
 			expect(layout.eventsByStartSegment[0].length).toBe(2);
 		});
 
+		it('should position an after-midnight-only event at the top of the timeline (startSegment 0)', () => {
+			// Regression: with "only favorites" active and favorites containing ONLY an
+			// after-midnight event (belonging to the previous festival day), that event is
+			// the earliest/only one. dayStart must follow firstEventAt, not the selected
+			// calendar date — otherwise the event is pushed a full day down and vanishes.
+			const baseDay = dayjs('2025-07-10');
+			const nextDay = dayjs('2025-07-11');
+			const day = baseDay.startOf('day').valueOf();
+			const events = [
+				createMockEvent({
+					id: 'e1',
+					locationId: 'p1',
+					favorite: true,
+					startAt: nextDay.hour(1).minute(0).second(0).toISOString(),
+					endAt: nextDay.hour(2).minute(0).second(0).toISOString(),
+				}),
+			];
+			mockProgramService.events.set(events);
+			mockProgramService.selectedDay.set(day);
+
+			TestBed.flushEffects();
+
+			const layout = (component as any).eventsByPlaces()['p1'];
+			expect(layout).toBeDefined();
+			expect(layout.eventsByStartSegment[0]).toBeDefined();
+			expect(layout.eventsByStartSegment[0].length).toBe(1);
+			expect(layout.eventsByStartSegment[0][0].id).toBe('e1');
+			expect(layout.eventsByStartSegment[0][0].startSegment).toBe(0);
+		});
+
 		it('should split two time-overlapping events into two lanes', () => {
 			const baseDay = dayjs('2025-07-10');
 			const day = baseDay.startOf('day').valueOf();

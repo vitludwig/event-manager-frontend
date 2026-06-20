@@ -2,7 +2,7 @@
     @if (festivalMap) {
         <mat-tab [label]="festivalMapLabel">
             <ng-template matTabContent>
-                <pinch-zoom style="height: 100%">
+                <pinch-zoom style="height: 100%" [limitZoom]="6">
                     <div class="img-wrapper">
                         <img [src]="festivalMap" alt="Map"
                             (load)="festivalMapError.set(false)"
@@ -26,7 +26,7 @@
                     @if (competitionMap) {
                         <mat-tab [label]="'Mapa' | translate">
                             <ng-template matTabContent>
-                                <pinch-zoom style="height: 100%">
+                                <pinch-zoom style="height: 100%" [limitZoom]="6">
                                     <div class="img-wrapper">
                                         <img [src]="competitionMap" alt="Map"
                                             (load)="competitionMapError.set(false)"
@@ -62,7 +62,7 @@
                     @if (tribesMap) {
                         <mat-tab [label]="'Mapa' | translate">
                             <ng-template matTabContent>
-                                <pinch-zoom style="height: 100%">
+                                <pinch-zoom style="height: 100%" [limitZoom]="6">
                                     <div class="img-wrapper">
                                         <img [src]="tribesMap" alt="Map"
                                             (load)="tribesMapError.set(false)"

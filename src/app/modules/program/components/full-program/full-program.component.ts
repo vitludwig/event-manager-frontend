@@ -189,11 +189,14 @@ export class FullProgramComponent implements AfterViewInit {
 		const eventsByLocation: Record<string, IProgramEvent[]> = {};
 
 		for(const event of allEvents) {
-			const selectedDayJs = dayjs(selectedDay);
 			const eventStart = dayjs(event.startAt);
 			const eventEnd = dayjs(event.endAt);
-			const dayStart = eventStart.set('hour', firstEventAt.hour()).set('minutes', firstEventAt.minute()).set('date', selectedDayJs.get('date'));
-			const startSegment = this.getSegmentsFromMilliseconds(Math.abs(dayStart.diff(eventStart)));
+			// Position every event relative to firstEventAt — the same origin allSegments
+			// uses for the grid. Reconstructing the origin from selectedDay's calendar date
+			// breaks for after-midnight events (they live on selectedDay+1): when such an
+			// event is itself the earliest one, the date mismatch shifts it a full day down
+			// and it disappears (e.g. "only favorites" with only post-midnight events).
+			const startSegment = this.getSegmentsFromMilliseconds(Math.abs(firstEventAt.diff(eventStart)));
 			const segmentCount = this.getSegmentsFromMilliseconds(Math.abs(eventStart.diff(eventEnd)));
 
 			if(!eventsByLocation[event.locationId]) {
