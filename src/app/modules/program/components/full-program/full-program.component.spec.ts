@@ -1,4 +1,4 @@
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {signal} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {TranslateModule} from '@ngx-translate/core';
@@ -123,6 +123,39 @@ describe('FullProgramComponent', () => {
 			mockProgramService.selectedDay.set(123);
 			expect((component as any).selectedDay).toBe(123);
 		});
+	});
+
+	describe('scrollToNow (NOW button)', () => {
+		it('switches to today and defers the scroll until after the day re-renders', fakeAsync(() => {
+			const today = dayjs().startOf('day').valueOf();
+			mockProgramService.days.set({[today]: today});
+			TestBed.flushEffects();
+
+			const scrollSpy = jasmine.createSpy('scrollToNowSegment');
+			component.timeline = {scrollToNowSegment: scrollSpy} as any;
+
+			(component as any).scrollToNow();
+
+			expect(mockProgramService.selectedDay()).toBe(today);
+			// Changing the day triggers an async re-render; scrolling now would target
+			// the stale/old timeline, so it must wait for the new day to render.
+			expect(scrollSpy).not.toHaveBeenCalled();
+
+			tick();
+			expect(scrollSpy).toHaveBeenCalled();
+		}));
+
+		it('falls back to day 0 when today is not part of the festival', fakeAsync(() => {
+			const otherDay = dayjs().add(5, 'day').startOf('day').valueOf();
+			mockProgramService.days.set({[otherDay]: otherDay});
+			TestBed.flushEffects();
+			component.timeline = {scrollToNowSegment: jasmine.createSpy()} as any;
+
+			(component as any).scrollToNow();
+
+			expect(mockProgramService.selectedDay()).toBe(0);
+			tick();
+		}));
 	});
 
 	describe('filteredEvents computed signal', () => {

@@ -57,6 +57,19 @@ describe('ListTimelineComponent', () => {
 		it('should not throw when segmentNow is not present', () => {
 			expect(() => component.scrollToNowSegment()).not.toThrow();
 		});
+
+		it('scrolls so the now-segment lands 200px from the left, accounting for container offset and current scroll', () => {
+			component.segmentNow = {
+				nativeElement: {getBoundingClientRect: () => ({left: 500})},
+			} as any;
+			spyOn(mockContainer, 'getBoundingClientRect').and.returnValue({left: 50} as DOMRect);
+			Object.defineProperty(mockContainer, 'scrollLeft', {value: 100, configurable: true});
+
+			component.scrollToNowSegment();
+
+			// scrollLeft(100) + (segment.left(500) - container.left(50)) - 200 = 350
+			expect(mockContainer.scrollTo as jasmine.Spy).toHaveBeenCalledWith({left: 350});
+		});
 	});
 
 	describe('interval cleanup', () => {

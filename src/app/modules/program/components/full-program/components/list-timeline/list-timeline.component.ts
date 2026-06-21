@@ -2,6 +2,7 @@ import {AfterViewInit, Component, DestroyRef, ElementRef, inject, input, ViewChi
 
 import {FullProgramConfig} from '../../FullProgramConfig';
 import {IProgramSegment} from '../../types/IProgramSegment';
+import {roundToQuarterHour} from '../../utils/round-to-quarter-hour';
 import dayjs from 'dayjs';
 
 @Component({
@@ -17,7 +18,6 @@ export class ListTimelineComponent implements AfterViewInit {
 	@ViewChild('segmentNow')
 	public segmentNow: ElementRef;
 
-	protected segmentNowLeft: number;
 	protected timeNow: string;
 
 	protected readonly FullProgramConfig = FullProgramConfig;
@@ -29,19 +29,13 @@ export class ListTimelineComponent implements AfterViewInit {
 
 		const intervalId = setInterval(() => {
 			this.setRoundedNow();
-			if(this.segmentNow) {
-				this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
-			}
 		}, 300000);
 
 		destroyRef.onDestroy(() => clearInterval(intervalId));
 	}
 
 	public ngAfterViewInit(): void {
-		if(this.segmentNow) {
-			this.segmentNowLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
-			this.scrollToNowSegment();
-		}
+		this.scrollToNowSegment();
 	}
 
 	public scrollToNowSegment(): void {
@@ -49,19 +43,20 @@ export class ListTimelineComponent implements AfterViewInit {
 			return;
 		}
 
-		this.parentContainer().scrollTo({
-			left: this.segmentNowLeft - 200,
-		})
+		// Measure live: the now-segment's position depends on the selected day, the
+		// zoom level and the current scroll offset, so a cached value goes stale as
+		// soon as any of those change. getBoundingClientRect() is viewport-relative,
+		// so translate it into the container's scroll coordinate space.
+		const container = this.parentContainer();
+		const segmentLeft = this.segmentNow.nativeElement.getBoundingClientRect().left;
+		const containerLeft = container.getBoundingClientRect().left;
+
+		container.scrollTo({
+			left: container.scrollLeft + (segmentLeft - containerLeft) - 200,
+		});
 	}
 
 	private setRoundedNow() {
-		const hours = dayjs().hour();
-		const minutes = (Math.round(dayjs().minute() / 15) * 15) % 60;
-		const hour =  ((((minutes/105) + .5) | 0) + hours) % 24;
-
-		this.timeNow = dayjs()
-			.set('hour', hour)
-			.set('minutes', minutes)
-			.format('HH:mm');
+		this.timeNow = roundToQuarterHour(dayjs());
 	}
 }

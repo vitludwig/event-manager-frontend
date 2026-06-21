@@ -278,7 +278,11 @@ export class FullProgramComponent implements AfterViewInit {
 	protected scrollToNow(): void {
 		const today = this.findToday(this.days());
 		this.programService.selectedDay.set(today?.id ?? 0);
-		this.timeline.scrollToNowSegment();
+		// Defer until the new day's timeline has rendered, otherwise we'd scroll the
+		// old (or not-yet-rendered) timeline — same reason the selectedDay setter does this.
+		setTimeout(() => {
+			this.timeline?.scrollToNowSegment();
+		}, 0);
 	}
 
 	protected toggleEventDetails(): void {
