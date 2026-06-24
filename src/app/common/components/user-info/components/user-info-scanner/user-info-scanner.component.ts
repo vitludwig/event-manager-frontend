@@ -34,8 +34,8 @@ export class UserInfoScannerComponent {
 			return;
 		}
 
-		const userId = resultString.substring(0, resultString.length - 6);
-		const token = resultString.slice(-6)
+		const userId = Number(resultString.substring(0, resultString.length - 6));
+		const token = resultString.slice(-6);
 		this.dialogRef.close({userId, token});
 	}
 }

@@ -29,7 +29,7 @@ export class UserService {
 	public set userId(value: number | undefined) {
 		this.#userId = value;
 		if(value) {
-			localStorage.setItem('userId', JSON.stringify(value));
+			localStorage.setItem('userId', String(value));
 		}
 	}
 
@@ -41,7 +41,7 @@ export class UserService {
 		this.#lastChecked = value;
 
 		if(value) {
-			localStorage.setItem('lastChecked', JSON.stringify(value));
+			localStorage.setItem('lastChecked', value);
 		}
 	}
 
