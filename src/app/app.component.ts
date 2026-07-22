@@ -17,6 +17,7 @@ import {Keyboard} from '@capacitor/keyboard';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {PwaUpdateService} from './common/services/pwa-update/pwa-update.service';
+import {AppIdentityService} from './common/services/app-identity/app-identity.service';
 
 @Component({
     selector: 'app-root',
@@ -38,6 +39,8 @@ export class AppComponent implements OnInit {
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly snackBar: MatSnackBar = inject(MatSnackBar);
 	private readonly pwaUpdateService: PwaUpdateService = inject(PwaUpdateService);
+	// Injected for its side-effect: reactively applies the customizable title/favicon/PWA identity.
+	private readonly appIdentityService: AppIdentityService = inject(AppIdentityService);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 
 	protected EDisplayDevice = EDisplayDevice;

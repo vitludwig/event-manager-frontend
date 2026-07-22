@@ -105,8 +105,15 @@ export class ProgramService {
 	#websocketInitialized = false;
 	#networkListenerRegistered = false;
 	#connectInFlight: Promise<void> | null = null;
+	// Set while a festival switch is being applied, so the stale-festival cache isn't loaded back in.
+	#festivalChangePending = false;
 
 	public async loadCachedData(): Promise<void> {
+		// A festival switch is being applied concurrently — loading the old festival's cache here would
+		// race the purge and could resurrect stale data. Skip it; the reset reloads fresh data itself.
+		if (this.#festivalChangePending) {
+			return;
+		}
 		try {
 			const [localPlaces, localEvents] = await Promise.all([
 				this.storage.get(PLACES_CACHE_KEY),
@@ -448,12 +455,17 @@ export class ProgramService {
 	// need a raw removeItem — Preferences.remove would target a differently-prefixed key and miss them.
 	private readonly rawLocalStorageKeys = ['userFilterOptions', 'showEventDetails'];
 
-	private clearProgramCache(): void {
-		for (const key of this.storageCacheKeys) {
-			void this.storage.remove(key);
-		}
+	// Awaited so callers can sequence the reset against other cache writes (avoids a stale
+	// loadProgramData().storage.set landing after these removes). localStorage access is wrapped:
+	// removeItem can throw (Safari private mode / storage disabled) and must not abort the reset.
+	private async clearProgramCache(): Promise<void> {
+		await Promise.all(this.storageCacheKeys.map((key) => this.storage.remove(key)));
 		for (const key of this.rawLocalStorageKeys) {
-			localStorage.removeItem(key);
+			try {
+				localStorage.removeItem(key);
+			} catch (e) {
+				console.error(`Failed to clear localStorage key "${key}"`, e);
+			}
 		}
 	}
 
@@ -461,26 +473,37 @@ export class ProgramService {
 	 * Called when the backend switches to a new festival: everything cached for the previous one
 	 * (events, places, favorites, filters, view prefs) is now stale, so wipe both the persisted
 	 * cache and the in-memory state, then reload fresh program data for the new festival.
+	 *
+	 * Throws if it can't complete (e.g. offline): the caller then keeps the old festival marker so
+	 * the switch is retried on the next launch rather than leaving the user with a blank program.
 	 */
 	public async resetForNewFestival(): Promise<void> {
-		this.clearProgramCache();
+		// Don't wipe the cache until we know we can fetch the replacement — blanking the app offline
+		// would be worse than briefly showing the previous festival.
+		if (!(await this.networkService.isConnected())) {
+			throw new Error('Cannot switch festival while offline');
+		}
 
-		this.#allEvents = [];
-		this.#allPlaces = [];
-		this.favorites = [];
-		this.#userFilterOptions = {};
-		this.activeFiltersCount = 0;
-		this.#showEventDetails = false;
-		this.selectedDay.set(undefined);
-		this.#days.set({});
-		this.#events.set([]);
-		this.#places.set([]);
-
+		this.#festivalChangePending = true;
 		try {
-			// getEvents()/getPlaces() are plain HTTP, so this is safe even before the websocket is up.
-			await this.loadProgramData();
-		} catch (e) {
-			console.error('Failed to reload program after festival change: ', e);
+			await this.clearProgramCache();
+
+			this.#allEvents = [];
+			this.#allPlaces = [];
+			this.favorites = [];
+			this.#userFilterOptions = {};
+			this.activeFiltersCount = 0;
+			this.#showEventDetails = false;
+			this.selectedDay.set(undefined);
+			this.#days.set({});
+			this.#events.set([]);
+			this.#places.set([]);
+
+			// Reload through the same in-flight guard as the websocket path so a reset reload and a
+			// websocket-triggered load can never overlap and clobber each other's state.
+			await this.connectAndLoad();
+		} finally {
+			this.#festivalChangePending = false;
 		}
 	}
 }

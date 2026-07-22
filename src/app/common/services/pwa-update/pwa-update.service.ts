@@ -61,8 +61,22 @@ export class PwaUpdateService {
 			.pipe(takeUntilDestroyed(this.destroyRef))
 			.subscribe(() => {
 				// Activate right before reloading so the still-running old app never gets new lazy chunks.
-				// Served from cache — safe offline.
-				void this.swUpdate.activateUpdate().then(() => this.document.location.reload());
+				// Served from cache — safe offline. If activation rejects, reload anyway so a tap is never
+				// a dead end that leaves the user pinned to the stale build.
+				this.swUpdate.activateUpdate()
+					.then(() => this.document.location.reload())
+					.catch(() => this.document.location.reload());
+			});
+
+		ref.afterDismissed()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe((info) => {
+				// MatSnackBar has a single outlet, so an unrelated app snackbar can evict this prompt
+				// before the user acts. Re-arm (unless they tapped Reload) so a later VERSION_READY can
+				// surface it again instead of the user being stranded on the old build for the session.
+				if (!info.dismissedByAction) {
+					this.promptShown = false;
+				}
 			});
 	}
 }

@@ -33,6 +33,10 @@ export interface ICustomization {
 	tribesInfo?: any[];
 	oneSignalAppId?: string;
 	walletApiUrl?: string;
+	/** Custom page title / PWA name. Empty or missing → app keeps its built-in default. */
+	appName?: string;
+	/** Uploaded favicon (relative /uploads path or absolute URL). Missing/unloadable → default favicon. */
+	faviconUrl?: string;
 }
 
 @Injectable({
@@ -130,20 +134,27 @@ export class CustomizationService {
 			return;
 		}
 		const previous = await this.storage.get(FESTIVAL_ID_KEY);
-		if (previous !== null && previous !== festivalId) {
+		if (previous === festivalId) {
+			return;
+		}
+		if (previous !== null) {
+			// A real switch: purge the previous festival's data BEFORE advancing the marker. If the
+			// purge fails (e.g. offline, storage error), leave the marker so it is retried on the next
+			// launch instead of stranding stale data under the new festival's id forever.
 			try {
 				await this.festivalChangeCb?.();
 			} catch (e) {
-				console.error('Festival change handler failed: ', e);
+				console.error('Festival change handler failed; keeping old marker to retry next launch: ', e);
+				return;
 			}
 		}
-		if (previous !== festivalId) {
-			await this.storage.set(FESTIVAL_ID_KEY, festivalId);
-		}
+		await this.storage.set(FESTIVAL_ID_KEY, festivalId);
 	}
 
 	private resolveUrl(path: string | undefined): string | undefined {
-		if (!path) return undefined;
+		// Guard against non-string values: the public payload is untrusted (a misconfigured/hostile
+		// admin could store a number or object under a URL key), and path.startsWith would throw.
+		if (typeof path !== 'string' || path === '') return undefined;
 		if (path.startsWith('http') || path.startsWith('data:')) return path;
 		return `${environment.apiUrl}${path}`;
 	}
@@ -154,6 +165,18 @@ export class CustomizationService {
 
 	public get logoUrl(): string | undefined {
 		return this.resolveUrl(this.data().logoUrl);
+	}
+
+	public get appName(): string | undefined {
+		// Untrusted payload: coerce anything non-string to undefined so consumers (appName.trim())
+		// can never throw inside the app-identity effect.
+		const value = this.data().appName;
+		return typeof value === 'string' ? value : undefined;
+	}
+
+	public get faviconUrl(): string | undefined {
+		// resolveUrl('') -> undefined, so an empty string collapses to "no custom favicon".
+		return this.resolveUrl(this.data().faviconUrl);
 	}
 
 	public get faqUrlCs(): string | undefined {
