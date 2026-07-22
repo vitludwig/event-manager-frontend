@@ -134,4 +134,55 @@ describe('CustomizationService', () => {
 			httpTesting.verify();
 		}));
 	});
+
+	describe('festival change', () => {
+		it('fires the callback and purges when the fetched festivalId differs from the cached one', fakeAsync(() => {
+			storage.seed('customization', JSON.stringify({festivalId: 'old'}));
+			const httpTesting = TestBed.inject(HttpTestingController);
+			const onChange = jasmine.createSpy('onFestivalChange');
+			service.onFestivalChange(onChange);
+
+			service.load();
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/customization`).flush({festivalId: 'new'});
+			tick();
+
+			expect(onChange).toHaveBeenCalledTimes(1);
+			// Marker advanced to the new festival so it isn't purged again on the next refresh.
+			storage.get('festivalId').then((v) => expect(v).toBe('new'));
+			tick();
+			httpTesting.verify();
+		}));
+
+		it('does not fire when the festivalId is unchanged', fakeAsync(() => {
+			storage.seed('customization', JSON.stringify({festivalId: 'same'}));
+			const httpTesting = TestBed.inject(HttpTestingController);
+			const onChange = jasmine.createSpy('onFestivalChange');
+			service.onFestivalChange(onChange);
+
+			service.load();
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/customization`).flush({festivalId: 'same'});
+			tick();
+
+			expect(onChange).not.toHaveBeenCalled();
+			httpTesting.verify();
+		}));
+
+		it('does not fire on a first-ever run (no prior marker)', fakeAsync(() => {
+			const httpTesting = TestBed.inject(HttpTestingController);
+			const onChange = jasmine.createSpy('onFestivalChange');
+			service.onFestivalChange(onChange);
+
+			service.load();
+			tick();
+			httpTesting.expectOne(`${environment.apiUrl}/public/customization`).flush({festivalId: 'first'});
+			tick();
+
+			expect(onChange).not.toHaveBeenCalled();
+			storage.get('festivalId').then((v) => expect(v).toBe('first'));
+			tick();
+			httpTesting.verify();
+		}));
+	});
 });

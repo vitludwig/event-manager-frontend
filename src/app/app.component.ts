@@ -16,6 +16,7 @@ import {StatusBar, Style} from '@capacitor/status-bar';
 import {Keyboard} from '@capacitor/keyboard';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {PwaUpdateService} from './common/services/pwa-update/pwa-update.service';
 
 @Component({
     selector: 'app-root',
@@ -36,11 +37,13 @@ export class AppComponent implements OnInit {
 	private readonly ngZone: NgZone = inject(NgZone);
 	private readonly dialog: MatDialog = inject(MatDialog);
 	private readonly snackBar: MatSnackBar = inject(MatSnackBar);
+	private readonly pwaUpdateService: PwaUpdateService = inject(PwaUpdateService);
 	protected readonly settingsService: SettingsService = inject(SettingsService);
 
 	protected EDisplayDevice = EDisplayDevice;
 
 	public async ngOnInit(): Promise<void> {
+		this.pwaUpdateService.init();
 		this.handleLanguage();
 		this.initAppLifecycle();
 		this.initReminderResync();

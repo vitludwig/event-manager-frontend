@@ -12,6 +12,9 @@ export class InitService {
     private customizationService = inject(CustomizationService);
 
     public async init(): Promise<void> {
+        // Register before load() so even a cold start (which awaits the network) can purge program
+        // data cached under a previous festival the moment a switch is detected.
+        this.customizationService.onFestivalChange(() => this.programService.resetForNewFestival());
         await this.customizationService.load();
         await this.themeService.loadThemeBundle();
         await this.programService.loadCachedData();

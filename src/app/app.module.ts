@@ -1,5 +1,7 @@
-import { NgModule, inject, provideAppInitializer } from '@angular/core';
+import { NgModule, inject, isDevMode, provideAppInitializer } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
+import {provideServiceWorker} from '@angular/service-worker';
+import {Capacitor} from '@capacitor/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -64,6 +66,14 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
         return initializerFn();
       }),
         provideHttpClient(withInterceptorsFromDi()),
+        // Web only. On native (Capacitor) the app is served from a bundled local origin and updates
+        // with the native binary — a service worker there would cache the shell and fight Capacitor's
+        // file serving. Disabled in dev too, where ngsw-worker.js isn't emitted. This is what fixes
+        // stale-app-version loads on the web (see PwaUpdateService for the reload-on-new-version).
+        provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode() && !Capacitor.isNativePlatform(),
+            registrationStrategy: 'registerWhenStable:30000',
+        }),
     ]
 })
 export class AppModule {

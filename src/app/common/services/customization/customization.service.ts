@@ -5,6 +5,10 @@ import { environment } from '../../../../environments/environment';
 import { StorageService } from '../storage/storage.service';
 import { retryWithBackoff } from '../../utils/retry-with-backoff';
 const CUSTOMIZATION_CACHE_KEY = 'customization';
+// Standalone marker of the festival the cached program data belongs to. Kept separate from the
+// customization blob so we can compare "festival we last cached for" against the freshly fetched
+// one and wipe stale program data when the backend switches to a new festival.
+const FESTIVAL_ID_KEY = 'festivalId';
 
 export interface IMapImage {
 	name: string;
@@ -40,9 +44,19 @@ export class CustomizationService {
 	private readonly data = signal<ICustomization>({});
 	private resolvedMaps: IMapImage[] = [];
 	private resolvedMapsSource: IMapImage[] | undefined | null = null;
+	private festivalChangeCb: (() => void | Promise<void>) | null = null;
 
 	public get customization(): ICustomization {
 		return this.data();
+	}
+
+	/**
+	 * Register a callback fired when the freshly fetched festivalId differs from the one the
+	 * cached program data belongs to. Wire this BEFORE calling load() so a cold start (which
+	 * awaits the network) can also purge stale data. Only one consumer is expected.
+	 */
+	public onFestivalChange(cb: () => void | Promise<void>): void {
+		this.festivalChangeCb = cb;
 	}
 
 	/**
@@ -56,8 +70,13 @@ export class CustomizationService {
 		const cached = await this.storage.get(CUSTOMIZATION_CACHE_KEY);
 		if (cached) {
 			try {
-				this.data.set(JSON.parse(cached));
+				const parsed: ICustomization = JSON.parse(cached);
+				this.data.set(parsed);
 				hasValidCache = true;
+				// Seed the festival marker for existing users upgrading to this build: their program
+				// data was cached under parsed.festivalId, but the standalone marker doesn't exist yet.
+				// Writing it now lets the upcoming network refresh detect a switch to a new festival.
+				await this.seedFestivalMarkerIfMissing(parsed.festivalId);
 			} catch {
 				// A corrupt cache must not be trusted nor block the network fetch below.
 				void this.storage.remove(CUSTOMIZATION_CACHE_KEY);
@@ -84,8 +103,42 @@ export class CustomizationService {
 			const result = await firstValueFrom(withRetry ? request$.pipe(retryWithBackoff()) : request$);
 			this.data.set(result);
 			void this.storage.set(CUSTOMIZATION_CACHE_KEY, JSON.stringify(result));
+			await this.handleFestivalChange(result.festivalId);
 		} catch (e) {
 			console.error('Cannot load customization: ', e);
+		}
+	}
+
+	private async seedFestivalMarkerIfMissing(festivalId: string | undefined): Promise<void> {
+		if (!festivalId) {
+			return;
+		}
+		const existing = await this.storage.get(FESTIVAL_ID_KEY);
+		if (existing === null) {
+			await this.storage.set(FESTIVAL_ID_KEY, festivalId);
+		}
+	}
+
+	/**
+	 * Compare the freshly fetched festival against the marker of the festival our cached program
+	 * data belongs to. On a real switch, invoke the change callback (which purges + reloads the
+	 * program) and then advance the marker. First run ever (no marker) just records the id — there
+	 * is nothing stale to purge.
+	 */
+	private async handleFestivalChange(festivalId: string | undefined): Promise<void> {
+		if (!festivalId) {
+			return;
+		}
+		const previous = await this.storage.get(FESTIVAL_ID_KEY);
+		if (previous !== null && previous !== festivalId) {
+			try {
+				await this.festivalChangeCb?.();
+			} catch (e) {
+				console.error('Festival change handler failed: ', e);
+			}
+		}
+		if (previous !== festivalId) {
+			await this.storage.set(FESTIVAL_ID_KEY, festivalId);
 		}
 	}
 

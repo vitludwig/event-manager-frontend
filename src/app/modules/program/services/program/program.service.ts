@@ -441,11 +441,46 @@ export class ProgramService {
 		this.#days.set(days);
 	}
 
-	private readonly programCacheKeys = [EVENTS_CACHE_KEY, PLACES_CACHE_KEY, FAVORITES_CACHE_KEY, 'userFilterOptions', 'showEventDetails'];
+	// Program data cached via StorageService (Preferences: native SharedPreferences/UserDefaults,
+	// web localStorage under a "CapacitorStorage." prefix).
+	private readonly storageCacheKeys = [EVENTS_CACHE_KEY, PLACES_CACHE_KEY, FAVORITES_CACHE_KEY];
+	// User preferences written directly to window.localStorage (NOT via StorageService), so they
+	// need a raw removeItem — Preferences.remove would target a differently-prefixed key and miss them.
+	private readonly rawLocalStorageKeys = ['userFilterOptions', 'showEventDetails'];
 
 	private clearProgramCache(): void {
-		for (const key of this.programCacheKeys) {
+		for (const key of this.storageCacheKeys) {
 			void this.storage.remove(key);
+		}
+		for (const key of this.rawLocalStorageKeys) {
+			localStorage.removeItem(key);
+		}
+	}
+
+	/**
+	 * Called when the backend switches to a new festival: everything cached for the previous one
+	 * (events, places, favorites, filters, view prefs) is now stale, so wipe both the persisted
+	 * cache and the in-memory state, then reload fresh program data for the new festival.
+	 */
+	public async resetForNewFestival(): Promise<void> {
+		this.clearProgramCache();
+
+		this.#allEvents = [];
+		this.#allPlaces = [];
+		this.favorites = [];
+		this.#userFilterOptions = {};
+		this.activeFiltersCount = 0;
+		this.#showEventDetails = false;
+		this.selectedDay.set(undefined);
+		this.#days.set({});
+		this.#events.set([]);
+		this.#places.set([]);
+
+		try {
+			// getEvents()/getPlaces() are plain HTTP, so this is safe even before the websocket is up.
+			await this.loadProgramData();
+		} catch (e) {
+			console.error('Failed to reload program after festival change: ', e);
 		}
 	}
 }
