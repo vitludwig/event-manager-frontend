@@ -9,6 +9,15 @@
 		margin-top: constant(safe-area-inset-top);
 		margin-top: env(safe-area-inset-top);
 
+		// The bar is painted with the theme's primary color, so its content uses the theme's
+		// on-primary contrast (not the on-surface icon token, which is dark and invisible on it).
+		$toolbar-fg: var(--mat-button-filled-label-text-color, #fff);
+		color: $toolbar-fg;
+		--mat-icon-color: #{$toolbar-fg};
+		--mat-icon-button-icon-color: #{$toolbar-fg};
+		--mat-toolbar-container-text-color: #{$toolbar-fg};
+		--mat-outlined-button-label-text-color: #{$toolbar-fg};
+
 		.program-heading {
 			margin: 0;
 			letter-spacing: 1px;

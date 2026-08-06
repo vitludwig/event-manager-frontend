@@ -25,7 +25,7 @@
 	}
 	&__close {
 		z-index: 100;
-		color: white;
+		color: var(--mat-app-text-color, #fff);
 	}
 
 	&__image {
@@ -45,7 +45,8 @@
 
 		&__title {
 			word-wrap: break-word;
-			color: #eee;
+			// Theme-driven text color; #eee fallback keeps the original look on the default dark theme.
+			color: var(--mat-app-text-color, #eee);
 			text-align: center;
 
 			h3 {
@@ -55,7 +56,7 @@
 
 		&__description {
 			padding-top: 10px;
-			color: #eee;
+			color: var(--mat-app-text-color, #eee);
 		}
 	}
 

@@ -42,5 +42,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
 	}
 }
